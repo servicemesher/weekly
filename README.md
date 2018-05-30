@@ -18,6 +18,8 @@ Service Mesh 最新资料汇总，通过 [提交 Issue](https://github.com/servi
 - 译者：译者信息
 - 类型：见 Issue 模板，选择文章对应的类型
 
+**注意**：Issue 标题请使用英文原文的标题
+
 ### 提交 PR
 
 [提交 PR](https://github.com/servicemesher/trans/pulls) 就需要提交对应 Issue 的译文文档，使用 Markdown 格式。
