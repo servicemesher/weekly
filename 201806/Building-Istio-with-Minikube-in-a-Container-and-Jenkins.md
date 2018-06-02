@@ -2,7 +2,7 @@
 
 ​	原文链接https://blog.aspenmesh.io/blog/2018/01/building-istio-with-minikube-in-a-container-and-jenkins/
 
-​	作者：Andrew Jenkins 译者：戴佳顺
+​	作者：Andrew Jenkins   译者：戴佳顺
 
 ​	AspenMesh提供一种Istio的分布式架构支持，这意味着即使与上游Istio项目无关，我们也需要能够测试和修复Bug。为此我们已开发构建了我们自己的打包和测试基础架构方案。如果你对Istio的CI（持续集成）也感兴趣，请参考我们已经投入使用，可能是有用，但还没有提交给Circle CI或GKE的组件。
 
@@ -17,18 +17,18 @@
 ​	 [Minikube](https://github.com/kubernetes/minikube)可能对你来说是一个可以在随身携带的笔记本上通过虚机运行自己kubernetes集群的非常熟悉的项目。这种方法非常方便，但在某些情况下（比如不提供嵌套虚拟化的云提供商），你就不能或者不希望基于虚机来完成了。由于docker现在可以运行在docker内部，我们决定尝试在docker容器内制作我们自己的kubernetes集群。一个非持久性的kubernetes容器很容易启动，也可进行一些测试，并在完成后进行删除。同时这也非常适合持续集成。
 	在我们的模型方案中，Kubernetes集群创建子docker容器（而不是Jérôme Petazzoni所[提到](http://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/)的兄弟容器方案）。我们是故意这样做的，宁愿隔离子容器，而不是共享Docker构建的缓存。但是你应该在将你应用改造为DinD（在docker中运行docker）之前阅读Jérôme的文章，也许DooD（在docker外运行docker）是对你而言更好的方案。这篇文章供你参考。我们避免架构“变得更坏”的同时，对看起来“坏”和“丑”部分也应进行避免。
 
-​	当你启动docker容器时，会要求docker在OS内核中创建和设置一些命名空间（namespaces），然后在通过这些命名空间启动你的容器。命名空间像一个沙箱：当你在命名空间中（即通过命名空间隔离），通常只能看到命名空间内的东西。chroot命令，不仅影响文件系统，还影响PID，网络接口等。如果你通过**--privileged**参数启动了一个docker容器，那么所涉及的命名空间隔离将获得额外的权限，比如创建更多子命名空间隔离的能力。这是完成docker-in-docker（即在docker中运行docker）的核心技巧。有关更多细节，Jérôme是这方面的专家，请在[这里](https://blog.docker.com/2013/09/docker-can-now-run-within-docker/)关注他的详细说明。
+​	当你启动docker容器时，会要求docker在OS内核中创建和设置一些命名空间（namespaces），然后在通过这些命名空间启动你的容器。命名空间像一个沙箱：当你在命名空间中（即通过命名空间隔离），通常只能看到命名空间内的东西。chroot命令，不仅影响文件系统，还影响PID，网络接口等。如果你通过 **--privileged** 参数启动了一个docker容器，那么所涉及的命名空间隔离将获得额外的权限，比如创建更多子命名空间隔离的能力。这是完成docker-in-docker（即在docker中运行docker）的核心技巧。有关更多细节，Jérôme是这方面的专家，请在[这里](https://blog.docker.com/2013/09/docker-can-now-run-within-docker/)关注他的详细说明。
 
 ​	总之，这就是大致步骤：
 
 1. 构建一个容器环境，完成docker，minikube，kubectl和依赖项的安装。
 
 2. 添加一个假的systemctl shim来欺骗Minikube在没有真正安装systemd的环境中运行。
-3. 使用**--privileged**参数启动容器
+3. 使用 **--privileged** 参数启动容器
 4. 让容器启动它自己内部的dockerd，这就是DinD的一部分。
-5. 让容器通过参数**minikube --vm-driver = none**启动minikube，以便在容器中的minikube可以与与之一起运行的dockerd连接。
+5. 让容器通过参数 **minikube --vm-driver = none** 启动minikube，以便在容器中的minikube可以与与之一起运行的dockerd连接。
 
-​	所有你需要做的就是通过**docker run --privileged**运行容器，接着你就可以去使用kubectl了。这时如果你愿意，你可以在容器内运行kubectl，并得到一个真正的用完可随时删除的环境。
+​	所有你需要做的就是通过 **docker run --privileged** 运行容器，接着你就可以去使用kubectl了。这时如果你愿意，你可以在容器内运行kubectl，并得到一个真正的用完可随时删除的环境。
 
 ​	你现在可以试试它：
 
@@ -41,7 +41,7 @@ docker exec -it <container> /bin/bash
 # kubectl exec -it shell-demo -- /bin/bash
 ```
 
-​	当你退出时，启动时**—rm**参数使docker容器实例会被卸载并完全删除。
+​	当你退出时，启动时 **—rm** 参数使docker容器实例会被卸载并完全删除。
 
 ​	对于比较重量级的使用方案，你可能需要通过“docker cp”命令将kubeconfig文件存放到主机上，并通过8443端口暴露的kube API与容器内的kubernetes进行通信。
 
@@ -139,14 +139,14 @@ CMD /start.sh & sleep 4 && tail -F /var/log/docker.log /var/log/dind.log /var/lo
 ![](https://ws1.sinaimg.cn/large/78a165e1gy1frx9by15u1j20b20bhdgg.jpg)
 
 1. 
-   **Jenkins工作节点：**这是一个让Jenkins运行构建作业的虚拟机。它可能在同一时间被多个不同的构建作业共享。我们在工作节点上安装的任何工具对每个构建作业而言都是本地范围内（因此它不会影响其他构建），同时工作节点生命周期是临时短暂的（我们为了节省成本自动弹性缩放Jenkins工作节点），这一点很重要。
+    **Jenkins工作节点：** 这是一个让Jenkins运行构建作业的虚拟机。它可能在同一时间被多个不同的构建作业共享。我们在工作节点上安装的任何工具对每个构建作业而言都是本地范围内（因此它不会影响其他构建），同时工作节点生命周期是临时短暂的（我们为了节省成本自动弹性缩放Jenkins工作节点），这一点很重要。
 
-2. **Minikube容器：**我们所做的第一件事就是构建并进入到我们上文所谈到的Minikube容器。构建作业的其余部分在此容器（或其子容器）内进行。Jenkins打包的工作区挂载到这里。Jenkins的docker插件负责在成功或失败后卸载删除这个我们需要清理的，涉及正在运行的Kubernetes和Istio相关组件的容器。
+2.  **Minikube容器：** 我们所做的第一件事就是构建并进入到我们上文所谈到的Minikube容器。构建作业的其余部分在此容器（或其子容器）内进行。Jenkins打包的工作区挂载到这里。Jenkins的docker插件负责在成功或失败后卸载删除这个我们需要清理的，涉及正在运行的Kubernetes和Istio相关组件的容器。
 
-3. **构建作业的容器：**这是一个包含安装golang相关及其他构建工具的容器。这是我们编译Istio并构建其容器的地方。我们在minikube容器中测试这些组件，如果测试通过，则认为构建成功并将容器推送到我们的容器仓库中。
+3.  **构建作业的容器：** 这是一个包含安装golang相关及其他构建工具的容器。这是我们编译Istio并构建其容器的地方。我们在minikube容器中测试这些组件，如果测试通过，则认为构建成功并将容器推送到我们的容器仓库中。
 
 
-​	Jenkinsfile的大部分内容都是关于如何设置这些部分。接着，我们运行相同的步骤来构建Istio，以便在你的笔记本上进行**make depend**, **make build**, **make test**。
+​	Jenkinsfile的大部分内容都是关于如何设置这些部分。接着，我们运行相同的步骤来构建Istio，以便在你的笔记本上进行 **make depend** , **make build** , **make test** 。
 
 ​	在这里查看Jenkinsfile：
 
