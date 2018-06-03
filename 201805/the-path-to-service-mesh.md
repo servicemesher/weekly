@@ -2,74 +2,64 @@
 
 ![](https://ws1.sinaimg.cn/large/007ackX3ly1frux62q06sj333415oqv5.jpg)
 
-When we talk to people about service mesh, there are a few questions we’re always asked. These questions range from straightforward questions about the history of our project, to deep technical questions on why we made certain decisions for our product and architecture.
-
 当我们谈论服务网格的时候，有几个问题经常被提及。这些问题的范围覆盖从简单的了解服务网格的历史，到产品和架构相关的比较深入的技术问题。
-
-To answer those questions we’ll bring you a three-part blog series on our Aspen Mesh journey and why we chose to build on top of Istio.
 
 为了回答这些问题，通过 Aspen Mesh 之旅，我们带来三个主题的系列博文来讨论我们为什么选择了 Istio 。
 
-To begin, I’ll focus on one of the questions I’m most commonly asked.
-
 作为开始，我将重点讨论我最经常被问到的问题之一：
-
-*Why did you decide to focus on service mesh and what was the path that lead you there?*
 
 *为什么你选择服务网格，是什么原因促使你这样做？*
 
-#### LineRate Systems: High-Performance Software Only Load Balancing
+#### **LineRate ：高性能负载均衡软件**
 
-**LineRate 系统：高性能负载均衡软件**
+这个旅程起源于来自 Boulder 的初创公司 LineRate ，该公司在2013年被 F5 Networks 公司收购。 LineRate 除了是我曾经有幸参与的最聪明、最有才华的工程团队，还是一款轻量级高性能 L7 软件代理。当我说高性能时，我正在谈论的是如何将5年前在数据中心已经存在的服务器，变成一个高性能20+ Gbps 200,000+ HTTP 请求每秒的全功能负载。
 
-The journey starts with a small Boulder startup called LineRate Systems and the acquisition of that company by F5 Networks in 2013. Besides being one of the smartest and most talented engineering teams I have ever had the privilege ofbeing part of, LineRate was a lightweight high-performing software-only L7 proxy. When I say high performance, I am talking about turning a server you already had in your datacenter 5 years ago into a high performance 20+ Gbps200,000+ HTTP requests/second fully featured proxy.
+虽然性能本身是引入注目的并为我们的客户打开了大门，但是我们的出发点在于客户期望付费的是容量，而不是硬件。这种见解是 LineRate 的核心价值主张。这个简单的概念将使我们的客户能够改变他们在应用之前使用和部署负载均衡的方式。
 
-While the performance was eye-catching and certainly opened doors for our customers, our hypothesis was that customerswanted to pay for capacity, not hardware. That insight would turn out to be LineRate’s key value proposition. Thissimple concept would allow customers the ability to change the way that they consumed and deployed load balancers infront of their applications.
+为了满足这个需求，我们交付了一种产品和商业模式，使我们的客户能够基于 COTS （可在市场上买到的）硬件按需多次复制他们的软件，从而不管部署多少实例都可以获得峰值性能。如果客户需要更多的容量，他们只需要简单的升级其订购层并部署更多的产品副本，直到达到他们许可证允许的带宽，请求速率或者交易速率。
 
-To fulfill that need we delivered a product and business model that allowed our customers to replicate the software asmany times as needed across COTS hardware, allowing them to get peak performance regardless of how many instances theyused. If a customer needed more capacity they simply upgraded their subscription tier and deployed more copies of theproduct until they reached the bandwidth, request rate or transaction rates the license allowed.
+这很有吸引力，我们也取得了一些成就，但是很快我们有了新的想法......
 
-This was attractive, and we had some success there, but soon we had a new insight…
+#### 效率优于性能
 
-#### Efficiency Over Performance
+对于我们而言，应用架构正在发生变化，而客户的价值曲线随之变化的趋势也变得明显。我们在与资深团队沟通的过程中注意到，他们讨论的是诸如效率，敏捷，速度，印迹和横向扩展这类的概念。同时我们也开始听到这些领域的创新者开始采用Docker的新技术，以及它将如何改变应用和服务交付的方式。
 
-It became apparent to us that application architectures were changing and the value curve for our customerswas changing along with them. We noticed in conversations with leading-edge teams that they were talking about conceptslike efficiency, agility, velocity, footprint and horizontal scale. We also started to hear from innovators in the spaceabout this new technology called Docker, and how it was going to change the way that applications and services weredelivered.
+我们与这些团队交流的越多，思考我们如何开发自己的内部应用程序，我们就越意识到转变正在发生。团队从根本上改变他们交付应用的方式，结果是我们的客户开始更少的关注原始性能而是更多地关心分布式代理。这些转变还有更多地收益，包含减少应用的故障域，增加部署的灵活性和赋予应用将负载和网络作为配置管理的能力。
 
-The more we talked to these teams and thought about how we were developing our own internal applications the more werealized that a shift was happening. Teams were fundamentally changing how they were delivering theirapplications, and the result was our customers were beginning to care less about raw performance and more aboutdistributed proxies. There were many benefits to this shift including reducing the failure domains of applications,increased flexibility in deployments and the ability for applications to store their proxy and network configuration ascode alongside their application.
+与此同时容器和容器编排引擎也开始登上舞台，因此我们开始致力于通过一个新的控制面板以容器的方式交付 LineRate 的产品，并深入的思考人们未来会如何使用这些新技术来交付应用。
 
-At the same time containers and container orchestration systems were just starting to come on the scene, so we wentto work on delivering our LineRate product in a container with a new control plane and thinking deeply about how peoplewould be delivering applications using these new technologies in the future.
+这些发生在2015的早期讨论促使我们思考未来应用交付将会如何......
 
-These early conversations in 2015 drove us to think about what application delivery would look like in the future…
+#### 与时俱进的想法
 
-#### That Idea that Just Won’t Go Away
+随着我们对于未来应用交付方式的思考，我们开始关注云原声分布式应用领域中有关策略和网络服务的概念。尽管我们仍然有很多不同的优先级项目，改变应用蓝图，云原生应用和基于DevOps交付模式的想法始终在我们思想的最前端。
 
-As we thought more about the future of application delivery, we began to focus on the concept of policy and networkservices in a cloud-native distributed application world. Even though we had many different priorities and projects towork on, the idea of a changing application landscape, cloud-native applications and DevOps based delivery modelsremained in the forefront of our minds.
+在这个领域将会有一个新的市场。
 
-There just has to be a market for something new in this space.
+我们设计了许多项目，但由于种种原因未能成功。我们亲切的称这些项目为 v1.0 ，v1.5 和 v2.0 。每个项目都有一种解决分布式应用架构（微服务）挑战的独特技术。
 
-We came up with multiple projects that for various reasons never came to fruition. We lovingly referred to them as v1.0,v1.5, and v2.0. Each of these projects had unique approaches to solving challenges in distributedapplication architectures (microservices).
+我们尽最大可能去思考。下一个应用交付控制架构（ ADC ):一个完全与 API 驱动的控制面板和一个分离的数据面板。数据面板可能来自云你能够设想到的任意一种形式：靠近微服务的专用硬件，商用软件，或者云原生组件（就像服务网格）。这种无限可扩展的架构可以实现优雅的平衡，能够完美的工作于任意规模的任意组织的任意一种工作。很有野心吧？我们陷入了为客户提供所有东西的陷阱。
 
-So we thought as big as we could. A next-gen ADC architecture: a control plane that’s totally API-driven andseparate from the data plane. The data plane comes in any form you can think of: purpose-built hardware,software-on-COTS, or cloud-native components that live right near a microservice (like a service mesh). This infinitelyscalable architecture smooths out all tradeoffs and works perfectly for any organization of any size doing any kind ofwork. Pretty ambitious, huh? We had fallen into the trap of being all things to all users.
+接下来，我们在“1.5”中完善了我们的方法，我们决定开发一种策略语言...... 关键是要定义开源的策略接口并将它无缝地连接到完成工作的数据路径。在一个真正开放的平台中，其中一些数据路径也是开源的。但是仍然有很多发展中的事情没有一步到位；事后看来，其中一些事情已经到来了...... 市场还没有到来，加上我们在开源方面也没有专业知识，于是我们在描述我们在做什么以及为什么时遇到了麻烦。
 
-Next, we refined our approach in “1.5”, and we decided to define a policy language… The key was defining thatopen-source policy interface and connecting that seamlessly to the datapath pieces that get the work done. In a trulyopen platform, some of those datapath pieces are open source too. There were a lot of moving parts that didn’t all fallinto place at once; and in hindsight we should have seen some of them coming … The market wasn’t there yet, we didn’thave expertise in open source, and we had trouble describing what we were doing and why.
+但是想法仍然在我们的脑海中燃烧，而我们也没有放弃......
 
-But the idea just kept burning in the back of our minds, and we didn’t give up…
+在 2.0 版本，我们设计了一个帮助希望开始容器之旅的 F5 的用户的计划。技术是新的，而市场也刚刚开始走向成熟，我们决定用户将会通过三步开启他们的微服务之旅。
 
-For Version 2.0, we devised a plan that could help F5’s users who were getting started on their container journey.The technology was new and the market was just starting to mature, but we decided that customers would take three stepson their microservice journey:
+1. *试验* - 在笔记本、服务器或者云主机上通过容器测试应用。
+2. *生产规划* - 识别能够帮忙开发人员在生产环境部署容器化应用的技术。
+3. *规模经营* - 重点关注容器应用的可观察性，可操作性和安全性，以减少平均停机发现时间 MTTD 和平均故障恢复时间 MTTR。
 
-1. *Experimenting* - Testing applications in containers on a laptop, server or cloud instance.
-2. *Production Planning* - Identifying what technology is needed to start to enable developers to deploy container-basedapplications in production.
-3. *Operating at Scale* - Focus on increasing the observability, operability and security of container applications toreduce the mean-time-to-discovery (MTTD) and mean-time-to-resolution (MTTR) of outages.
+对于实验性用户我们做不了什么，但是对于生产规划，我们将创造一个开源的连接器，用来连接容器编排环境和 BIG-IP 。我们称之为 BIG-IP Container Connector，我们能够解决现有 F5 客户的问题，并和这些用户讨论下一步工作。BIG-IP ContainerConnector 的团队持续弥合在 ADC 和 快速改变的容器编排环境中的差距。
 
-We decided there was nothing we could do for experimenting customers, but for production planning, we could create anopen source connector for container orchestration environments and BIG-IP. We called this the BIG-IP ContainerConnector, and we were able to solve existing F5 customers’ problems, and start talking to them about the nextstep in their journey. The container connector team continues to this day to bridge the gap between ADC-as-you-know-itand fast-changing container orchestration environments.
+我们也开始开发一个新的轻量级容器化代理，称之为容器服务代理 （ Application Service Proxy ），或者 ASP 。 与 Linkerd 和 Envoy 类似的是，它被设计来促使微服务间的高效、灵活、可控的通信。与 Linkerd 和 Envoly 不同的是，它并没有开源社区。我们在考虑一种开源策略，同时它对于 ASP 意味着什么。
 
-We also started to work on a new lightweight containerized proxy called the Application Services Proxy, or ASP.Like Linkerd and Envoy, it was designed to help microservices talk to each other efficiently, flexibly and observably.Unlike Linkerd and Envoy, it didn’t have any open source community associated with it. We thought about ouropen source strategy and what it meant for the ASP.
+与此同时，F5 也在发生变化......
 
-At the same time, a change was taking place within F5…
+#### Aspen Mesh - F5 的创新
 
-#### Aspen Mesh - An F5 Innovation
+在我们开展 ASP 市场计划的同时，F5 通过孵化计划改变了投资新技术和新兴市场的方式。这两个事件与容器的爆炸性增长相结合，导致我们决定承诺在现有的开源服务网格之上构建产品。我们选择 Istio 是因为它具有吸引力的声明式策略语言，可扩展的控制平面架构以及其他我们将在更深入讨论时会涉及的内容。
 
-As we worked on our go to market plans for ASP, F5 changed how it invests in newtechnologies and nascent markets through incubation programs. These two events, combined with the explosive growth inthe container space, led us to the decision to commit commit to building a product on top of an existing open sourceservice mesh. We picked Istio because of its attractive declarative policy language, scalable control-plane architectureand other things that we’ll cover in more depth as we go.
+计划已定，是时候将我们的想法推向我们力所能及的位置。Aspen Mesh 是这次推广的结果，也是一段历程的结局，同时也开启了一个新的篇章。
 
-With a plan in place it was time to pitch our idea for the incubator to the powers that be. Aspen Mesh is the result ofthat pitch and the end of one journey, and the first step on a new one…
-
-Parts two and three of this series will focus on why we decided to use Istio for our service mesh core and what you canexpect to see over the coming months as we build the most fully supported enterprise service mesh on the market.
+本系列文章的第二和第三章节将会重点讨论为什么我们决定将 Istio 作为我们服务网格的核心，和我们将会在未来的几个月内推出什么样的商业化的服务网格。
