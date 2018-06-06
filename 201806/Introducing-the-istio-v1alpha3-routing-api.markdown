@@ -1,10 +1,10 @@
 # Istio v1aplha3 routing API介绍
 
-> 原文链接：https://kubernetes.io/blog/2018/01/extensible-admission-is-beta
+> 原文链接：https://istio.io/blog/2018/v1alpha3-routing
 >
 > 作者：Frank Budinsky (IBM) and Shriram Rajagopalan (VMware)
 >
-> 译者：[zhaohuabing](https://zhaohuabing.com)
+> 译者：[赵化冰](https://zhaohuabing.com)
 
 到目前为止，Istio提供了一个简单的API来进行流量管理，该API包括了四种资源：RouteRule，DestinationPolicy，EgressRule和Ingress（直接使用了Kubernets的Ingress资源）。借助此API，用户可以轻松管理Istio服务网格中的流量。该API允许用户将请求路由到特定版本的服务，为弹性测试注入延迟和失败，添加超时和断路器等等，所有这些功能都不必更改应用程序本身的代码。
 
