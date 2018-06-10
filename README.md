@@ -30,7 +30,7 @@ Service Mesh 最新资料汇总，通过 [提交 Issue](https://github.com/servi
 
 **文件名**
 
-文件使用英文命名，单词之间使用 `-` 连接，例如 `the-path-to-service-mesh.md`。
+文件使用英文命名，单词之间使用 `-` 连接，所有字母均为小写，例如 `the-path-to-service-mesh.md`。
 
 **组织结构**
 
