@@ -1,6 +1,6 @@
 # Istio服务网格的崛起
 
->原文链接：https://www.infoworld.com/article/3273547/containers/the-rise-of-the-istio-service-mesh.html
+> 原文链接：https://www.infoworld.com/article/3273547/containers/the-rise-of-the-istio-service-mesh.html
 >
 > 作者：Diogenes Rettori   
 >
