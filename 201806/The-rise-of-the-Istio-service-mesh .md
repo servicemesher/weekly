@@ -6,11 +6,11 @@
 >
 > 译者：戴佳顺
 
-你怎么确保微服务之间网络通信的可靠性、安全性和可管理性？ 使用服务网格吧！
+如何确保微服务之间网络通信的可靠性、安全性和可管理性？ 使用服务网格吧！
 
 在过去一年中，[Istio](https://istio.io/)服务网格技术引发关注度和吸引力的持续提升，这是一件非常有趣的事情。 事实上，在我写这篇文章时，Istio仅为0.8版本，但对于最近两届[KubeCon/CloudNativeCon](https://events.linuxfoundation.org/events/kubecon-cloudnativecon-europe-2018/)活动而言，它一直是[热门话题](https://events.linuxfoundation.org/events/kubecon-cloudnativecon-europe-2018/program/schedule/)，仅在丹麦的活动中就有超过十几个不同的活动议题。 那么它为什么会这样受欢迎？
 
-在深入研究Istio受欢迎的原因之前，让我们先来介绍一下服务网格。 这个一个通用术语，其早已被投入在多个不同场景中。例如定义不同无线设备之间的通信方法；或者定义一个系统，各个应用程序可以直接通过它与其他应用程序通信。[最近](https://istio.io/docs/concepts/what-is-istio/overview.html)，这个术语被用来表示应用或微服务的网络，以及它们之间的互相作用关系。后者是本文的重点。
+在深入研究Istio受欢迎的原因之前，让我们先来介绍一下服务网格。 这是一个通用术语，其早已被投入在多个不同场景中。例如定义不同无线设备之间的通信方法；或者定义一个系统，各个应用程序可以直接通过它与其他应用程序通信。[最近](https://istio.io/docs/concepts/what-is-istio/overview.html)，这个术语被用来表示应用或微服务的网络，以及它们之间的互相作用关系。后者是本文的重点。
 
 事实上红帽公司一直参与云原生和微服务领域建设，包括四年前决定将OpenShift向Kubernetes和Docker转变，这帮助我们理解了服务网格技术，尤其是Istio的重要性。 本文将探讨为什么我会坚信Istio很受欢迎的四个不同原因。 
 
@@ -32,13 +32,13 @@ Netflix构建并随后[开源](https://netflix.github.io/)了一系列涉及诸�
 
 在构建Netflix OSS堆栈的时代，虚拟机是在云中运行应用程序的唯一方式。因此Netflix选择Java作为开发语言来构建服务网格功能。
 
-除了Netflix OSS堆栈的纯Java依赖，另一个挑战是为了实现服务网格功能，开发人员必须将Java库包含在其应用程序中，并为代码中引用来使用这些组件。但在当时，那些希望强制使用这些技术的公司无法在平台级进行如上工作。
+除了Netflix OSS堆栈的纯Java依赖，另一个挑战是为了实现服务网格功能，开发人员必须将Java库包含在其应用程序中，并在代码中引用来使用这些组件。但在当时，那些希望强制使用这些技术的公司无法在平台级进行如上工作。
 
 随着[Kubernetes](https://www.infoworld.com/article/3268073/containers/what-is-kubernetes-container-orchestration-explained.html)的来临，诸如服务发现和负载均衡等功能成为平台本身的一部分，并且平台允许用任何语言编写的应用程序都可以使用。通过声明式和活动状态管理，Kubernetes还能够通过自动重启无响应的应用来提高整体应用的可用性。在当今世界，Kubernetes和容器是运行微服务应用程序的标准。
 
-在Kubernetes中，你的应用程序以由一个或多个容器组成“pod”运行。在pod中运行多个容器的技术有时也被称为“挎斗模式”，其实质上是一种将你的应用程序拆散，将子模块运行在共享隔离空间（pod）的解决方案。
+在Kubernetes中，你的应用程序以由一个或多个容器组成“pod”运行。在pod中运行多个容器的技术有时也被称为“sidecar”，其实质上是一种将你的应用程序拆散，将子模块运行在共享隔离空间（pod）的解决方案。
 
-Kubernetes为Istio这样的技术的崛起创造了有利条件。出行共享公司Lyft已经开始通过智能代理[Envoy](https://github.com/envoyproxy/envoy)来提供微服务部署所需的弹性和动态路由功能。 挎斗容器和Envoy这类架构允许为每个应用程序实例附加一个轻量级代理，以支持服务发现、负载均衡、断路器、链路跟踪以及服务网格的其他功能。将它与一个控制面板结合，并添加服务治理和Envoy实例配置管理功能，你就拥有了Istio。
+Kubernetes为Istio这样的技术的崛起创造了有利条件。出行共享公司Lyft已经开始通过智能代理[Envoy](https://github.com/envoyproxy/envoy)来提供微服务部署所需的弹性和动态路由功能。 sidecar容器和Envoy这类架构允许为每个应用程序实例附加一个轻量级代理，以支持服务发现、负载均衡、断路器、链路跟踪以及服务网格的其他功能。将它与一个控制面板结合，并添加服务治理和Envoy实例配置管理功能，你就拥有了Istio。
 
 ## 拥抱分布式架构
 
