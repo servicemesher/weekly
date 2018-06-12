@@ -1,11 +1,11 @@
 #
 [服务网格和Cookpad]()
 
-这个原文是5月初发表的[原文](http://techlife.cookpad.com/entry/2018/05/08/080000)的翻译。为了弥补这篇文章的背景，Cookpad是一家拥有200多种产品开发的中型科技公司，拥有10多支团队，每月平均用户数量达到9000万。[https://www.cookpadteam.com/](https://www.cookpadteam.com/)
+这个原文是5月初发表的[原文](http://techlife.cookpad.com/entry/2018/05/08/080000)的翻译。为了弥补这篇文章的背景，Cookpad 是一家拥有200多种产品开发的中型科技公司，拥有10多支团队，每月平均用户数量达到9000万。[https://www.cookpadteam.com/](https://www.cookpadteam.com/)
 
 ---
 
-你好，这是来自开发人员生产力团队的[Taiki](https://github.com/taiki45/)。目前，我想介绍一下在Cookpad上构建和使用服务网格所获得的知识。
+你好，这是来自开发人员生产力团队的[Taiki](https://github.com/taiki45/)。目前，我想介绍一下在 Cookpad 上构建和使用服务网格所获得的知识。
 
 对于服务网格本身，我认为您将对以下文章，公告和教程有完整的体验：
 
@@ -38,7 +38,7 @@ Cookpad 中的服务网格使用 Envoy 作为数据平面并创建了我们自�
 此次实施的服务网格的控制面部分由几个组件组成。我将解释每个组件的角色和操作流程：
 
 * 集中管理服务网格配置的存储库。
-* 使用名为 [kumonos](https://github.com/taiki45/kumonos) 的gem，将生成[Envoy xDS API](https://github.com/envoyproxy/data-plane-api/blob/5ea10b04a950260e1af0572aa244846b6599a38f/API_OVERVIEW.md) 响应JSON
+* 使用名为 [kumonos](https://github.com/taiki45/kumonos) 的gem，将生成[Envoy xDS API](https://github.com/envoyproxy/data-plane-api/blob/5ea10b04a950260e1af0572aa244846b6599a38f/API_OVERVIEW.md) 响应 JSON
 * 将生成的响应 JSON 放置在 Amazon S3 上，并将其用作 Envoy 的 xDS API
 
 该设置在中央存储库中进行管理的原因是，
@@ -46,7 +46,7 @@ Cookpad 中的服务网格使用 Envoy 作为数据平面并创建了我们自�
 * 我们希望随时跟踪更改历史记录并在稍后跟踪它
 * 我们希望能够检查各个组织（如SRE团队）的设置更改
 
-关于负载平衡，我最初是由Internal ELB设计的，但gRPC应用程序的基础架构也符合要求[\* 3](#f-815eb0a0)，我们使用SDS（服务发现服务）API[\* 4](#f-fc9c0292)准备了客户端负载平衡。我们在ECS任务中部署了一个侧车容器，用于对应用程序容器执行健康检查并在SDS API中注册连接目标信息。
+关于负载平衡，我最初是由 Internal ELB 设计的，但 gRPC 应用程序的基础架构也符合要求[\* 3](#f-815eb0a0)，我们使用SDS（服务发现服务）API[\* 4](#f-fc9c0292)准备了客户端负载平衡。我们在 ECS 任务中部署了一个侧车容器，用于对应用程序容器执行健康检查并在 SDS API 中注册连接目标信息。
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fs7pzdtqd9j20n60dq40a.jpg "F：ID：aladhi：20180501141121p：平纹")
 
