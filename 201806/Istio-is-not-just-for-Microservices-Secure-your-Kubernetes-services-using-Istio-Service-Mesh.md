@@ -1,35 +1,37 @@
 ![alt text][israel]
 
-# Istio is not just for microservices
+# Istio 不仅为微服务而生
 
-Secure Kubernetes platform services by using Istio Service Mesh.  Typically seeing live running code helps users understand how to apply concepts to their own use cases.  This project centers around a basic Node.js application demonstrating the power of Istio Service Mesh for persistence datastores such as etcd.
+通过使用 Istio Service Mesh 来保障 Kubernetes 平台服务。通常可以运行实例代码有助于用户更清晰的理解并将概念应用到实际的案例中。该项目围绕一个基本的 Node.js 应用程序演示了以 Istio Service Mesh 为 ETCD 的持久化数据服务的能力。
 
-## Background on Istio
-Istio is an open platform to connect, manage, and secure microservices. To learn more about Istio, please visit the [Intro page]( https://istio.io/about/intro.html).
+## Istio 背景
+Istio 是一个 连接、管理以及保障微服务的开放平台。如需要了解更多 Istio 的信息，请访问 [Intro page]( https://istio.io/about/intro.html) 。
 
-## Setup
-Getting started assumes an elementary understanding of Kubernetes.  In this project, there are a set of scripts that assume the prior installation of Docker, the Kubernetes CLI as well as jq for manipulating JSON objects returned from the various Kubernetes commands.  There is also the assumption around some level of Node.js knowledge.  
+## 安装
+假设已对 Kubernetes 有了初步了解。在这个项目中，有一组脚本，假定已预先安装了 Docker、Kubernetes CLI 以及JQ，用于操作 Kubernetes commands 返回的各种 JSON 对象。也有某种层度对 Node.js 知识的假设。
 
-**Here are some quick links to the various tools.**  
-**Docker Install:** https://docs.docker.com/install/  
-**Kubernetes Install:** https://kubernetes.io/docs/tasks/tools/install-kubectl/   
-**jq Download:** https://stedolan.github.io/jq/download/     
-**Node.js Download:** https://nodejs.org/en/download/     
+**各种工具的连接如下：.**  
+**Docker 安装:** https://docs.docker.com/install/  
+**Kubernetes 安装:** https://kubernetes.io/docs/tasks/tools/install-kubectl/   
+**jq 下载地址:** https://stedolan.github.io/jq/download/     
+**Node.js 下载地址:** https://nodejs.org/en/download/     
 
-## Kubernetes Providers
-The code below should run on any Kubernetes compliant provider and has been tested on both Minikube and IBM Cloud Private. Depending upon which provider chosen, the instructions will vary slightly.
+## Kubernetes Private
+以下代码可以运行在任何符合 Kubernetes 的提供者上，并且已经在 Minikube 和 私有 IBM Cloud 上。根据选择的提供者的不同，指令会略有不同。
 
 ### Minikube
-Minikube is available for download and installation instructions are located [here](https://kubernetes.io/docs/tasks/tools/install-minikube/). Minikube provides a simple and easy to use developer environment for learning about Kubernetes.
+Minikube 可用与下载和安装的地址：[点我](https://kubernetes.io/docs/tasks/tools/install-minikube/)。Minikube 为学习 Kubernetes 提供了一个简单易用的开发环境。
 
-### IBM Cloud Private
-IBM provides a Community Edition of their Kubernetes runtime free for development purposes and includes most of the same feature functions as their production version, Enterprise Edition, with the one exception being High Availability. To install IBM Cloud Private, please refer to the [Installation Guide for 2.1.0](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0/installing/install_containers_CE.html)
+### IBM 私有云
+IBM 为开发者提供了其 Kubernetes 运行时的免费社区版，并包含了与企业版生产版本相同的大多数功能，高可用性例外。安装 IBM 私有云服务，请查看  [2.1.0安装向导](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0/installing/install_containers_CE.html)
 
 ## Istio Index Conference 2018 Application
-To get started with the code, clone the repo ```git clone git@github.com:todkap/istio-index-conf2018.git```
+使用代码入手, 可克隆如下仓库 ```git clone git@github.com:todkap/istio-index-conf2018.git```
 
-### Kubernetes Setup
+### Kubernetes 安装
 - **Minikube:** Prior to deploying to Minikube, Minikube first needs to be started.   In the root directory of this project, there is a script ```createMinikubeEnv.sh``` that tears down the previous Minikube environment and initializes a new environment with the appropriate Kubernetes context.
+
+- **Minikube：** 请优先部署并第一个启动 Minikube 。在这个项目的根目录下，有一个脚本 ```createMinikubeEnv.sh``` ，
 
 - **IBM Cloud Private:** IBM Cloud Private has a [configure client](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0/manage_cluster/cfc_cli.html) step that will configure the Kubernetes CLI to point to a given IBM Cloud Private installation.  This context will be used each time the Kubectl CLI executes commands.
 
