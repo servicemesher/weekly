@@ -17,13 +17,13 @@ Istio 是一个 连接、管理以及保障微服务的开放平台。如需要�
 **Node.js 下载地址:** https://nodejs.org/en/download/     
 
 ## Kubernetes Private
-以下代码可以运行在任何符合 Kubernetes 的提供者上，并且已经在 Minikube 和私有 IBM Cloud 上。根据选择的提供者的不同，指令会略有不同。
+以下代码可以运行在任何符合 Kubernetes 的提供者上，并且已经在 Minikube 和私有 IBM Cloud上。根据选择的提供者的不同，指令会略有不同。
 
 ### Minikube
 Minikube 可用与下载和安装的地址：[点我](https://kubernetes.io/docs/tasks/tools/install-minikube/)。Minikube 为学习 Kubernetes 提供了一个简单易用的开发环境。
 
 ### IBM 私有云
-IBM 为开发者提供了其 Kubernetes 运行时的免费社区版，并包含了与企业版生产版本相同的大多数功能，高可用性例外。安装 IBM 私有云服务，请查看  [2.1.0安装向导](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0/installing/install_containers_CE.html)
+IBM 为开发者提供了其 Kubernetes 运行时的免费社区版，并包含了与企业版生产版本相同的大多数功能，高可用性例外。安装 IBM 私有云服务，请查看  [2.1.0安装向导](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0/installing/install_containers_CE.html)
 
 ## Istio Index Conference 2018 Application
 从代码入手, 可克隆如下仓库 ```git clone git@github.com:todkap/istio-index-conf2018.git```
