@@ -1,14 +1,14 @@
 ![alt text][israel]
 
-# Istio 不仅为微服务而生
+# Istio 不仅为微服务而生
 
-通过使用 Istio Service Mesh 来保障 Kubernetes 平台服务。通常可以运行实例代码有助于用户更清晰的理解并将概念应用到实际的案例中。该项目围绕一个基本的 Node.js 应用程序演示了以 Istio Service Mesh 为 ETCD 的持久化数据服务的能力。
+通过使用 Istio Service Mesh 来保障 Kubernetes 平台服务。通常可以运行实例代码有助于用户更清晰的理解并将概念应用到实际的案例中。该项目围绕一个基本的 Node.js 应用程序演示了以 Istio Service Mesh 为 ETCD 的持久化数据服务的能力。
 
 ## Istio 背景
 Istio 是一个 连接、管理以及保障微服务的开放平台。如需要了解更多 Istio 的信息，请访问 [Intro page]( https://istio.io/about/intro.html) 。
 
 ## 安装
-假设已对 Kubernetes 有了初步了解。在这个项目中，有一组脚本，假定已预先安装了 Docker、Kubernetes CLI 以及JQ，用于操作 Kubernetes commands 返回的各种 JSON 对象。也有某种层度对 Node.js 知识的假设。
+假设已对 Kubernetes 有了初步了解。在这个项目中，有一组脚本，假定已预先安装了 Docker、Kubernetes CLI 以及JQ，用于操作 Kubernetes commands 返回的各种 JSON 对象。也有某种层度对 Node.js 知识的假设。
 
 **各种工具的连接如下：.**  
 **Docker 安装:** https://docs.docker.com/install/  
@@ -17,21 +17,21 @@ Istio 是一个 连接、管理以及保障微服务的开放平台。如需要�
 **Node.js 下载地址:** https://nodejs.org/en/download/     
 
 ## Kubernetes Private
-以下代码可以运行在任何符合 Kubernetes 的提供者上，并且已经在 Minikube 和 私有 IBM Cloud 上。根据选择的提供者的不同，指令会略有不同。
+以下代码可以运行在任何符合 Kubernetes 的提供者上，并且已经在 Minikube 和私有 IBM Cloud 上。根据选择的提供者的不同，指令会略有不同。
 
 ### Minikube
 Minikube 可用与下载和安装的地址：[点我](https://kubernetes.io/docs/tasks/tools/install-minikube/)。Minikube 为学习 Kubernetes 提供了一个简单易用的开发环境。
 
 ### IBM 私有云
-IBM 为开发者提供了其 Kubernetes 运行时的免费社区版，并包含了与企业版生产版本相同的大多数功能，高可用性例外。安装 IBM 私有云服务，请查看  [2.1.0安装向导](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0/installing/install_containers_CE.html)
+IBM 为开发者提供了其 Kubernetes 运行时的免费社区版，并包含了与企业版生产版本相同的大多数功能，高可用性例外。安装 IBM 私有云服务，请查看  [2.1.0安装向导](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0/installing/install_containers_CE.html)
 
 ## Istio Index Conference 2018 Application
-使用代码入手, 可克隆如下仓库 ```git clone git@github.com:todkap/istio-index-conf2018.git```
+从代码入手, 可克隆如下仓库 ```git clone git@github.com:todkap/istio-index-conf2018.git```
 
 ### Kubernetes 安装
 - **Minikube:** Prior to deploying to Minikube, Minikube first needs to be started.   In the root directory of this project, there is a script ```createMinikubeEnv.sh``` that tears down the previous Minikube environment and initializes a new environment with the appropriate Kubernetes context.
 
-- **Minikube：** 请优先部署并第一个启动 Minikube 。在这个项目的根目录下，有一个脚本 ```createMinikubeEnv.sh``` ，
+- **Minikube：** 请优先部署并第一个启动 Minikube 。在这个项目的根目录下，有一个脚本 ```createMinikubeEnv.sh``` ，
 
 - **IBM Cloud Private:** IBM Cloud Private has a [configure client](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0/manage_cluster/cfc_cli.html) step that will configure the Kubernetes CLI to point to a given IBM Cloud Private installation.  This context will be used each time the Kubectl CLI executes commands.
 
