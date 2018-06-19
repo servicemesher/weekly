@@ -1,7 +1,12 @@
-#
-[服务网格和Cookpad]()
+# 服务网格和Cookpad
 
-这个原文是 5 月初发表的[原文](http://techlife.cookpad.com/entry/2018/05/08/080000)的翻译。补充一下这篇文章的背景，Cookpad 是一家拥有 200 多种产品开发的中型科技公司，拥有 10 多支团队，每月平均用户数量达到 9000 万。[https://www.cookpadteam.com/](https://www.cookpadteam.com/)
+> 原文：<http://techlife.cookpad.com/entry/2018/06/11/100355>
+>
+> 作者：[Taiki](https://github.com/taiki45/kumonos)
+>
+> 译者：殷龙飞
+
+这个原文是 5 月初发表的[日文原文](http://techlife.cookpad.com/entry/2018/05/08/080000)的翻译。补充一下这篇文章的背景，Cookpad 是一家拥有 200 多种产品开发的中型科技公司，拥有 10 多支团队，每月平均用户数量达到 9000 万。[https://www.cookpadteam.com/](https://www.cookpadteam.com/)
 
 ---
 
@@ -25,7 +30,7 @@
 
 就第一个问题而言，随着规模的扩大，存在难以掌握哪个服务和哪个服务正在进行通信，某个服务的失败是哪里传播导致的问题。我认为这个问题应该通过综合管理服务在哪里和服务在哪里连接的相关信息来解决。
 
-对于第二个问题而言，我们进一步深究了第一个问题，我们发现我们不知道一个服务与另一个服务之间的通信状态。例如，RPS，响应时间，成功/失败状态的数量，超时，断路器的激活状态等。在两个或更多个服务引用某个后端服务的情况下，因为它们未被请求源服务标记，所以会导致后端服务的代理解析或负载均衡器的度量标准信息不足。
+对于第二个问题而言，我们进一步深究了第一个问题，我们发现我们不知道一个服务与另一个服务之间的通信状态。例如，RPS、响应时间、成功/失败状态的数量、超时、断路器的激活状态等。在两个或更多个服务引用某个后端服务的情况下，因为它们未被请求源服务标记，所以会导致后端服务的代理解析或负载均衡器的度量标准信息不足。
 
 对于第三个问题，“故障隔离尚未成功设置”。此时，在各应用程序中使用库，超时/重试·断路器的设置完成了。但是需要什么样的设置，必需单独查看应用程序代码。由于没有配置清单，会导致难以持续改进这些设置。另外，因为与故障隔离有关的设置应该不断改进，所以最好是可测试的，并且我们需要这样一个基础平台。
 
@@ -38,24 +43,22 @@ Cookpad 中的服务网格使用 Envoy 作为 data-plane，并创建了我们自
 此次实施的服务网格的 control-plane 分由几个组件组成。我将解释每个组件的角色和操作流程：
 
 * 集中管理服务网格配置的存储库。
-* 使用名为 [kumonos](https://github.com/taiki45/kumonos) 的gem从上面的设置文件生成 [Envoy xDS API](https://github.com/envoyproxy/data-plane-api/blob/5ea10b04a950260e1af0572aa244846b6599a38f/API_OVERVIEW.md) 响应 JSON
+* 使用名为 [kumonos](https://github.com/taiki45/kumonos) 的 gem 从上面的设置文件生成 [Envoy xDS API](https://github.com/envoyproxy/data-plane-api/blob/5ea10b04a950260e1af0572aa244846b6599a38f/API_OVERVIEW.md) 响应 JSON
 * 将生成的响应 JSON 放置在 Amazon S3 上，并将其用作 Envoy 的 xDS API
 
-该设置在中央存储库中进行管理的原因是，
+在中央存储库中管理该设置的原因是：
 
 * 我们希望随时跟踪更改历史记录并在稍后跟踪记录它
-* 我们希望能够通过跨组织团队（如SRE团队）来查看设置更改
+* 我们希望能够通过跨组织团队（如 SRE 团队）来查看设置更改
 
-这是两点。
-
-关于负载平衡，我最初是为 Internal ELB 设计的，但 gRPC 应用程序的基础架构也符合要求\(我们的 gRPC 应用程序已经在生产环境中使用此机制\)，我们使用 SDS（Service Discovery Service）API \(简单地使用内部 ELB（NLB或TCP模式CLB）的server-side load balancing 由于不平衡的平衡而在性能方面具有缺点，并且在可获得的度量方面也是不够的\) 准备了客户端负载平衡。我们在 ECS 任务中部署了一个 side-car 容器，用于对应用程序容器执行健康检查并在 SDS API 中注册连接目标信息。
+关于负载均衡，我最初是为 Internal ELB 设计的，但 gRPC 应用程序的基础架构也符合要求（我们的 gRPC 应用程序已经在生产环境中使用此机制），我们使用 SDS（Service Discovery Service）API（简单地使用内部 ELB（NLB 或 TCP 模式 CLB）的 服务端侧负载均衡不均衡而在性能方面具有缺陷，并且在可获得的度量方面也是不够的）准备了客户端负载均衡。我们在 ECS 任务中部署了一个 sidecar 容器，用于对应用程序容器执行健康检查并在 SDS API 中注册连接目标信息。
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fs7pzdtqd9j20n60dq40a.jpg "F：ID：aladhi：20180501141121p：平纹")
 
-度量标准的配置如下所示：
+度量指标（metric）的配置如下所示：
 
 * 将所有指标存储到 Prometheus
-* 使用 [dog\_statsd](https://www.envoyproxy.io/docs/envoy/v1.6.0/api-v2/config/metrics/v2/stats.proto#config-metrics-v2-dogstatsdsink) 将标记的度量标准发送到 ECS 容器主机实例上运行的 [statsd\_exporter](https://github.com/prometheus/statsd_exporter) （起初我将它作为我们自己的扩展实现，但后来我把这个修改作为[补丁](https://github.com/envoyproxy/envoy/pull/2158)提交了）
+* 使用 [dog_statsd](https://www.envoyproxy.io/docs/envoy/v1.6.0/api-v2/config/metrics/v2/stats.proto#config-metrics-v2-dogstatsdsink) 将标记的度量标准发送到 ECS 容器主机实例上运行的 [statsd\_exporter](https://github.com/prometheus/statsd_exporter) （起初我将它作为我们自己的扩展实现，但后来我把这个修改作为[补丁](https://github.com/envoyproxy/envoy/pull/2158)提交了）
 * 所有指标都包含通过 [固定字符串标签](https://www.envoyproxy.io/docs/envoy/v1.6.0/api-v2/config/metrics/v2/stats.proto#config-metrics-v2-statsconfig) 的应用程序 ID 来标识每个节点 \(这个是我们的另一个[补丁](https://github.com/envoyproxy/envoy/pull/2357)\)
 * Prometheus 使用 [EC2 SD](https://prometheus.io/docs/prometheus/latest/configuration/configuration/) 来提取 statsd\_exporter 指标
 * 要管理 Prometheus 的端口，我们在 statsd\_exporter 和 Prometheus 之间使用 [exporter\_proxy](https://github.com/rrreeeyyy/exporter_proxy)
@@ -79,9 +82,9 @@ Envoy 的仪表板：
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fs7pv4rqrij20sg0qa49n.jpg "F：ID：aladhi：20180501175222p：平纹")
 
-使用 Netflix 开发的 Vizceral 可视化服务配置。为了实现，我们开发了 [promviz](https://github.com/nghialv/promviz) 和 [promviz-front](https://github.com/mjhd-devlion/promviz-front)的 fork \(为了方便用NGINX交付并符合Cookpad中的服务组合\)。由于我们仅为某些服务介绍它，因此当前显示的节点数量很少，但我们提供了以下仪表板。
+使用 Netflix 开发的 Vizceral 可视化服务配置。为了实现，我们开发了 [promviz](https://github.com/nghialv/promviz) 和 [promviz-front](https://github.com/mjhd-devlion/promviz-front) 的 fork（为了方便用 nginx 交付并符合 Cookpad 中的服务组合）。由于我们仅在某些服务中引入，因此当前显示的节点数量很少，但我们提供了以下仪表板。
 
-每个地区的服务配置图，RPS，错误率：
+每个 region 的服务配置图、RPS、错误率：
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fs7pv47xzjj20sg0gxdjd.jpg "f：id：aladhi：20180501175213p：plain")
 
@@ -89,7 +92,7 @@ Envoy 的仪表板：
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fs7pv3xymcj20sg0i2acs.jpg "F：ID：aladhi：20180501175217p：平纹")
 
-另外，作为服务网格的一个子系统，你必须部署网关从开发商手中获得 staging 环境的 gRPC 服务器应用程序（假设使用客户端负载平衡进行访问，我们需要一个组件来解决它）。它是通过将 SDS API 和 Envoy 与管理称为 [hako-console](http://techlife.cookpad.com/entry/2018/04/02/140846) 的内部应用程序的软件相结合而构建的。
+另外，作为服务网格的一个子系统，你必须部署网关从开发商手中获得 staging 环境的 gRPC 服务器应用程序（假设使用客户端负载均衡进行访问，我们需要一个组件来解决它）。它是通过将 SDS API 和 Envoy 与管理称为 [hako-console](http://techlife.cookpad.com/entry/2018/04/02/140846) 的内部应用程序的软件相结合而构建的。
 
 * Gateway app（Envoy）向 gateway controller 发送 xDS API 请求
 * Gateway controller 从 hako-console 获取 staging 环境中的 gRPC 应用程序列表，并基于该响应返回Route Discovery Service/Cluster Discovery Service API 响应
@@ -108,23 +111,23 @@ Envoy 的仪表板：
 
 #### 迁移到 v2 API，转换到 Istio
 
-由于 xDS API 的初始设计情况和使用 S3 作为后端交付的要求，xDS API 一直在使用 v1，但由于 v1 API 已被弃用，因此我们计划将其移至 v2。与此同时，我们正在考虑将 control-plane 移至 Istio。另外，如果我们要制造我们自己的 control-plane ，我们将使用 [go-control-plane](https://github.com/envoyproxy/go-control-plane) 来制作 [LDS/RDS/CDS/EDS API](https：//github.com/envoyproxy/data-plane-api/blob/5ea10b04a950260e1af0572aa244846b6599a38f/API_OVERVIEW.md#apis)。
+由于 xDS API 的初始设计情况和使用 S3 作为后端交付的要求，xDS API 一直在使用 v1，但由于 v1 API 已被弃用，因此我们计划将其移至 v2。与此同时，我们正在考虑将 control-plane 移至 Istio。另外，如果我们要构建我们自己的 control-plane ，我们将使用 [go-control-plane](https://github.com/envoyproxy/go-control-plane) 来构建 [LDS/RDS/CDS/EDS API](https：//github.com/envoyproxy/data-plane-api/blob/5ea10b04a950260e1af0572aa244846b6599a38f/API_OVERVIEW.md#apis)。
 
 #### 替换反向代理
 
-到目前为止，Cookpad 使用 NGINX 作为反向代理，但是我们考虑到 NGINX 和 Envoy 在内部技术实现，gRPC 通信和采集度量方面的差异，我们将考虑用 Envoy 替换 NGINX 的反向代理和边缘代理。
+到目前为止，Cookpad 使用 nginx 作为反向代理，但是我们考虑到 nginx 和 Envoy 在内部技术实现、gRPC 通信和采集度量方面的差异，我们将考虑用 Envoy 替换 nginx 的反向代理和边缘代理。
 
 #### 流量控制
 
-随着我们转向客户端负载均衡并取代反向代理，我们将能够通过操作 Envoy 更方便的处理流量，所以我们将能够实现金丝雀部署，流量转移和请求镜像。
+随着我们转向客户端负载均衡并取代反向代理，我们将能够通过操作 Envoy 更方便的处理流量，所以我们将能够实现金丝雀部署、流量转移和请求镜像。
 
 #### 故障注入
 
-这是一个故意在正确管理的环境中注入延迟和故障的机制，并测试实际服务组是否正常工作。Envoy 有各种[功能](https://www.envoyproxy.io/docs/envoy/v1.6.0/configuration/http_filters/fault_filter.html)。
+这是一个故意在正确管理的环境中注入延迟和故障的机制，并测试实际服务组是否可以正常工作。Envoy 有各种[功能](https://www.envoyproxy.io/docs/envoy/v1.6.0/configuration/http_filters/fault_filter.html)。
 
 #### 在 data-plane 层上执行分布式跟踪
 
-在Cookpad中，AWS X-Ray 被用作[分布式追踪系统](http://techlife.cookpad.com/entry/2017/09/06/115710)。目前，我们将分布式跟踪功能作为一个库来实现，但我们计划将其移至 data-plane 并在服务网格层实现。
+在 Cookpad 里，AWS X-Ray 被用作[分布式追踪系统](http://techlife.cookpad.com/entry/2017/09/06/115710)。目前，我们将分布式跟踪功能作为一个库来实现，但我们计划将其移至 data-plane 并在服务网格层实现。
 
 #### 身份验证授权网关
 
