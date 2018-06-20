@@ -1,4 +1,4 @@
-# Istio（Envoy）+ Cert-Manager +Let's Encrypt for TLS
+# 利用Let's Encrypt 为Istio（Envoy）添加TLS 支持
 
 > 原文链接：https://medium.com/@prune998/istio-envoy-cert-manager-lets-encrypt-for-tls-14b6a098f289
 >
@@ -9,7 +9,7 @@
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fshj4p4pxtj20rs0iiq7r.jpg)
 
-更新
+**更新**
 
 感谢 Laurent Demailly 的评论，这里有一些更新。这篇文章已经得到了更新：
 
@@ -18,33 +18,33 @@
 
 ### Istio
 
-[Istio](https://istio.io/) 是管理微服务世界中数据流的新方式的一部分。事实上，这对我来说更是如此。   
-人们不停的谈论微服务与单体应用，谁的开发更好，易于维护，部署更快......   
-呃，他们是对的，但微服务不仅仅是让小应用程序彼此交谈。这也是一种思考你的基础设施的方式。这也是您的“简单”应用程序公开指标和日志的方式，您如何跟踪状态，如何控制服务之间的流程以及如何管理错误。
+[Istio](https://istio.io/) 是管理微服务世界中数据流的一种新方式。事实上，这对我来说更是如此。   
+人们不停的谈论微服务与单体应用，说微服务更好开发，易于维护，部署更快......   
+呃，他们是对的，但微服务不应该仅仅是小应用程序之间互相通信。应该思考把微服务作为你的基础设施的这种方式。考虑如何决定您的“简单”应用程序公开指标和日志的方式，考虑您如何跟踪状态，考虑如何控制服务之间的流程以及如何管理错误。
 
 那么 Istio 能够在这个微服务世界中增加什么？
 
 Istio 是一个服务网格的实现！
 
-> Whaaaaaat？服务网格？我们已经有了 Kubernetes API，我们不需要“网格”吗？
+> Whaaaaaat？服务网格？我们已经有了 Kubernetes API，我们需要“网格”吗？
 
-那么，是的，你这样做。   
-我不会解释使用它的所有好处，你会在网上找到足够的文档。但是用几句话来说，服务网格就是将所有服务的知识提供给所有服务的层。   
+那么，是的，你需要服务网格。   
+我不会解释使用它的所有好处，你会在网上找到足够的文档。但是用一句话来说，服务网格就是将您所有的服务提供给其他服务的技术。   
 事实上，它还强制执行所有“微服务”最佳实践，例如添加流量和错误指标，添加对 OpenTracing（ Zipkin 和Jaegger）的支持，允许控制重试，金丝雀部署......阅读 [Istio doc](https://istio.io/docs/concepts/) ！
 
-所以，回到话题...
+所以，回到本话题...
 
 ### Prerequisits
 
 *   建议运行 Kubernetes Cluster 1.7+版本
 *   一个或多个 DNS 域名
-*   Istio 通过一个工作的 Ingress Controler 安装在您的集群中
+*   让 Istio 利用Ingress Controler 在你的集群中工作
 *   将上面的 DNS 域名配置为指向 Istio Ingress IP
 
 ### SSL
 
 **SSL** 是安全的（很好），但它通常是软件中实现的最后一件事。为什么？之前它实现起来是“很困难的”，但我现在看不出任何理由。[Let's Encrypt](https://letsencrypt.org/how-it-works/) 创建一个新的范例，它的 DAMN 很容易使用 API 调用创建 Valide SSL 证书（协议被称为ACME ...）。它为您提供 3 种验证您是域名所有者的方法。使用 DNS，使用 HTTP 或第三种解决方案的“秘密令牌”不再可用，因为它证明是不安全的。  
-因此，您可以使用 Let's Encrypt 提供给您的特殊 TXT 记录设置您的 DNS，或者将其放入 Web 根路径（如 /.well-known/acme-challenge/xxx）中，然后让我们的加密验证它。这真的很简单，但几乎就是这样。
+因此，您可以使用 Let's Encrypt 提供给您的特殊 TXT 记录设置您的 DNS，或者将其放入 Web 根路径（如 /.well-known/acme-challenge/xxx）中，然后让我们的加密验证它。这真的很简单，但差不多只能这样。
 
 一些开发者决定直接在应用程序内部实现 ACME 协议。这是来自 [Traefik](https://traefik.io/) 的人的决定。[Caddy](https://caddyserver.com/) 也做了一些类似的“插件”。   
 这很酷，因为您只需定义虚拟主机，应用程序负责收集和更新证书。
@@ -55,9 +55,9 @@ Istio 是一个服务网格的实现！
 
 许多人认识到，如果不是所有软件都可以实现 ACME 协议，我们仍然需要一个工具来管理（如请求，更新，废弃）SSL 证书。这就是为什么 LEGO 成立的原因。然后 Kubernetes 的 Kube-LEGO ，然后......并且最终，他们几乎都同意将所有内容放入 [Cert-Manager](https://github.com/jetstack/cert-manager) ！
 
-Cert-Manager 附带helm chart，因此它很容易部署......只需按照文档，但它就像：
+Cert-Manager 附带 helm chart，所以很容易部署，只需按照文档执行命令即可，就像下面介绍的这样：
 
-**\[更新\]**  
+**更新**  
 现在有一个 [Cert-Manager](https://github.com/kubernetes/charts/tree/master/stable/cert-manager) 的[官方 Helm 图表](https://github.com/kubernetes/charts/tree/master/stable/cert-manager)，你不需要 `git clone` ，只需要做 `helm install` 。
 
 ```shell
@@ -78,7 +78,7 @@ contrib/charts/cert-manager
 
 该命令将启动 kube-system 命名空间中的 Cert-Manager pod。
 
-我使用配置行，`--default-issuer-kind=ClusterIssuer` 因此我只能创建我的发行人一次。
+我使用这一行配置`--default-issuer-kind=ClusterIssuer` 所以我只能创建一次我的发行人。
 
 > 发行人whaaaat？
 
