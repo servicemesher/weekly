@@ -1,5 +1,12 @@
 # Istio（Envoy）+ Cert-Manager +Let's Encrypt for TLS
 
+> 原文链接：https://medium.com/@prune998/istio-envoy-cert-manager-lets-encrypt-for-tls-14b6a098f289
+>
+> 作者：Prune   
+>
+> 译者：殷龙飞
+
+
 ![](https://ws1.sinaimg.cn/large/61411417ly1fshj4p4pxtj20rs0iiq7r.jpg)
 
 更新
