@@ -1,6 +1,6 @@
 # 容器、服务网格和 API 网关：从边缘开始
 
-[Docker](https://www.docker.com/) 和 [Kubernetes](https://kubernetes.io/) 为代表的容器技术炙手可热，熟知这一技术领域的用户，一定都知道下一个热点：Service Mesh，他承诺将微服务之间的内部网络通信均一化，并解决一系列监控、故障隔离等通用非功能性需求。底层的代理服务器技术是 Service Mesh 的立身之本，这种技术在 Service Mesh 之外，还能以 API 网关的形式在边缘为业务系统提供一系列的增强。
+[Docker](https://www.docker.com/) 和 [Kubernetes](https://kubernetes.io/) 为代表的容器技术炙手可热，熟知这一技术领域的用户，一定都知道下一个热点：Service Mesh，它承诺将微服务之间的内部网络通信均一化，并解决一系列监控、故障隔离等通用非功能性需求。底层的代理服务器技术是 Service Mesh 的立身之本，这种技术在 Service Mesh 之外，还能以 API 网关的形式在边缘为业务系统提供一系列的增强。
 
 虽说 Service Mesh 的爆发之势让人误以为罗马是一日建成的，事实上，在这一热点浮出水面之前，包括 [Verizon](https://getnelson.github.io/nelson/)、[eBday](https://fabiolb.net/) 以及 [Facebook](https://code.facebook.com/posts/1906146702752923/open-sourcing-katran-a-scalable-network-load-balancer/) 在内的很多组织已经在应用后来被我们称之为 Service Mesh 的技术了。这些早期应用 Service Mesh 的组织之一就是 [Lyft](https://www.microservices.com/talks/lyfts-envoy-monolith-service-mesh-matt-klein/)，这是一家年收入超过十亿美元的美国网约车巨头。Lyft 还是开源软件 [Envoy Proxy](https://www.envoyproxy.io/) 的诞生地，Envoy 在 Service Mesh 世界中举足轻重，Kubernetes 原生的 [Istio 控制面](https://istio.io/docs/concepts/what-is-istio/overview/) 和 [Ambassador API 网关](https://www.getambassador.io/) 也都建筑在 Lyft 的基础之上。
 
@@ -10,7 +10,7 @@ Matt Klein 是 Envoy Proxy 的作者之一，他去年的一次谈话中说到�
 
 他觉得：“这很痛苦，我认为多数公司都赞同 SOA（微服务）是个可见趋势，在这一趋势的践行过程中会收获很多，但是其中也满是痛苦。主要的痛苦来源就是 Debug”。
 
-对于大规模组织来说，分布式 Web 应用的可靠性和高可用支持是一个核心挑战。这种挑战的应对方式中，普遍包含包含重试、超时、频率控制和熔断等功能逻辑的各种实现。很多系统，不论开源与否，都会使用锁定特定语言（甚至锁定框架）的形式来实现这种方案，这就意味着开发人员也同时被进行锁定。Klei 和他在 Lyft 的团队认为，一定有更好的办法。最终 Envoy 项目诞生了。
+对于大规模组织来说，分布式 Web 应用的可靠性和高可用支持是一个核心挑战。这种挑战的应对方式中，普遍包含包含重试、超时、频率控制和熔断等功能逻辑的各种实现。很多系统，不论开源与否，都会使用锁定特定语言（甚至锁定框架）的形式来实现这种方案，这就意味着开发人员也同时被进行锁定。Klein 和他在 Lyft 的团队认为，一定有更好的办法。最终 Envoy 项目诞生了。
 
 ## 外部干预：边缘代理的优势
 
