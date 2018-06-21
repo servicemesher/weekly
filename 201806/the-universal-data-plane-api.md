@@ -30,7 +30,7 @@ Envoy 开源初期，我们收到了很多关于支持其他服务发现系统�
 
 - [集群发现服务（CDS）](https://lyft.github.io/envoy/docs/configuration/cluster_manager/cds.html)：使用此 API，Envoy 可以动态地添加/更新/删除所有上游集群（每个集群本身都有自己的服务/端点发现）。
 - [路由发现服务（RDS）](https://lyft.github.io/envoy/docs/configuration/http_conn_man/rds.html)：使用此API，Envoy 可以动态地添加/更新 HTTP 路由表。
-- [监听器发现服务（LDS）](https://lyft.github.io/envoy/docs/configuration/listeners/lds.html)：：使用此 API，Envoy 可以动态地添加/更新/删除全体监听器，包括其完整的 L4 和 L7 过滤器堆栈。
+- [监听器发现服务（LDS）](https://lyft.github.io/envoy/docs/configuration/listeners/lds.html)：使用此 API，Envoy 可以动态地添加/更新/删除全体监听器，包括其完整的 L4 和 L7 过滤器堆栈。
 
 当控制平面实现 SDS/CDS/RDS/LDS 时，几乎 Envoy 的所有方面都可以在运行时动态配置。[Istio](https://istio.io/) 和 [Nelson](https://verizon.github.io/nelson/) 都是控制平面的例子，他们在 V1 API 上构建，具备极其丰富的功能。通过使用相对简单的 REST API，Envoy 可以快速迭代性能和数据平面功能，同时仍支持各种不同的控制平面方案。此时，通用数据平面概念正成为现实。
 
@@ -86,5 +86,5 @@ v2 API 由以下部分组成：
 
 ---
 
-英文原文发布于2017年9月6日，待本稿发出后 Envoy 已经进入了 CNCF，成为了官方项目，Envoy 原来的代码都已经被重构和迁移，本文中提到的很多链接都已过时，大家请参考 Envoy 官网 <https://www.envoyproxy.io/>，也可以查看 Envoy 官方文档中文版 <https://servicemesher.github.io/envoy/>。
+英文原文发布于2017年9月6日，本文发出时 Envoy 已经进入了 CNCF，成为了官方项目，Envoy 原来的代码都已经被重构和迁移，本文中提到的很多链接都已过时，请大家参考 Envoy 官网 <https://www.envoyproxy.io/>，也可以查看 Envoy 官方文档中文版 <https://servicemesher.github.io/envoy/>。
 
