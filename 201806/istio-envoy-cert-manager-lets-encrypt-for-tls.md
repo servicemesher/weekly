@@ -20,7 +20,7 @@
 
 [Istio](https://istio.io/) 是管理微服务世界中数据流的一种新方式。事实上，这对我来说更是如此。   
 人们不停的谈论微服务与单体应用，说微服务更好开发，易于维护，部署更快......   
-呃，他们是对的，但微服务不应该仅仅是小应用程序之间互相通信。应该思考把微服务作为你的基础设施的这种方式。考虑如何决定您的“简单”应用程序公开指标和日志的方式，考虑您如何跟踪状态，考虑如何控制服务之间的流程以及如何管理错误。
+呃，他们是对的，但微服务不应该仅仅是小应用程序之间互相通信。微服务应该考虑沉淀为你的基础设施的这种方式。考虑如何决定您的“简单”应用程序公开指标和日志的方式，考虑您如何跟踪状态，考虑如何控制服务之间的流程以及如何管理错误，这些问题应该是做微服务应该考虑的。
 
 那么 Istio 能够在这个微服务世界中增加什么？
 
@@ -78,17 +78,17 @@ contrib/charts/cert-manager
 
 该命令将启动 kube-system 命名空间中的 Cert-Manager pod。
 
-我使用这一行配置`--default-issuer-kind=ClusterIssuer` 所以我只能创建一次我的发行人。
+我使用这一行配置`--default-issuer-kind=ClusterIssuer` 所以我只能创建一次我的 Issuer。
 
-> 发行人whaaaat？
+> Issuer whaaaat？
 
 以下是它的工作原理：
 
-*   你创建一个发行者配置，它将证明 Cert-Manager 如何使用 ACME API（你通常只有2个，staging 和 prod ）
+*   你创建一个 Issuer 配置，它将告诉 Cert-Manager 如何使用 ACME API（你通常只有2个，staging 和 prod ）
 *   您创建一个证书定义，告诉哪些域需要 SSL
 *   Cert-Manager 为您申请证书
 
-所以，我们来创建发行者。在创建 ClusterIssuers 时，我不关心特定的命名空间: 
+所以，我们来创建 Issuer。在创建 ClusterIssuers 时，我不关心特定的命名空间: 
 ```yaml
 apiVersion: certmanager.k8s.io/v1alpha1   
 kind: ClusterIssuer   
@@ -132,18 +132,18 @@ spec:
 
 ### Istio Ingress
 
-Ingress 是您公开服务的前端 Web 代理。这是你的优势......我说 WEB 代理，因为它现在只支持 HTTP/HTTPS。但让我们假设你知道关于 Ingress 的一切。
+Ingress 是您公开服务的前端 Web 代理（这是你的优势......我说 WEB 代理，因为它现在只支持 HTTP/HTTPS）。但让我们假设你知道关于 Ingress 的一切。
 
-**\[更新\]**  
-这不是一个真正的更新，而是一个精度，Ingress 还支持 GRPC，当然这是 HTTP/2。
+**更新**  
+这不是一个真正的更新，而是一个更精确的描述，Ingress 也支持 GRPC，当然这是 HTTP/2。
 
-Ingress 的神奇之处在于它在 Kubernetes API 中的实现。您创建一个 Ingress Manifest，并将您的所有流量引导至正确的 Pod！魔法 ！告诉过你了 ！
+Ingress 的神奇之处在于它在 Kubernetes API 中的实现。您创建一个 Ingress Manifest，并将您的所有流量引导至正确的 Pod！告诉你这种方式就是神奇的魔法（因为你并不知道它如何引导的流量） ！
 
-那么，在这种情况下，这是黑魔法！
+很好，在这种情况下，这就是令人神奇的黑魔法！
 
 例如，Traefik Ingress 绑定端口 80 和 443，管理证书，因此您为 [www.mydomain.com](http://www.mydomain.com) 创建入口，并且它正常工作，因为它正在做所有事情。
 
-对于 Istio，当您使用 Cert-Manager 时，还有一些步骤。要快点，在这里他们（截至 2018/01，它可能会变化很快）：
+对于 Istio，当您使用 Cert-Manager 时，还有一些步骤。要快点，在这里他们（截至 2018/01，它可能很快就会改变）：
 
 *   为域 [www.mydomain.com](http://www.mydomain.com) 创建证书请求
 *   Cert-Manager 将选择这个定义并创建一个 pod，它实际上是一个可以回答 ACME 问题的 Web 服务器（[Ingress-Shim](https://github.com/jetstack/cert-manager/blob/master/docs/user-guides/ingress-shim.md)）  
@@ -162,7 +162,7 @@ Ingress 的神奇之处在于它在 Kubernetes API 中的实现。您创建一�
 
 #### 证书
 
-把这个清单放在一个像 *certificate-istio.yml*这样的文件中 ：
+把这个清单放在一个像 *certificate-istio.yml* 这样的文件中 ：
 ```yaml
 apiVersion: certmanager.k8s.io/v1alpha1   
 kind: Certificate  
@@ -457,7 +457,7 @@ kubectl -n default apply -f helloworld.yml
 
 ### 结论
 
-尽管我现在觉得它非常丑陋，但它工作正常......   
-如果您需要更新证书或添加新的域名，则必须更新证书定义，以便整个过程可以重新开始。这实在是一种痛苦，当然比起与Traefik或Caddy完全整合更加困难。我相信这会很快改变。
+尽管我现在觉得它非常令人研发，但它最起码可以正常工作......   
+如果您需要更新证书或添加新的域名，则必须更新证书定义，整个过程将要重新再来一遍。这实在是一种痛苦，当然比起与Traefik或Caddy完全整合更加困难。不过我相信这将会很快改变。
 
 我想感 谢 [Laurent Demailly](https://github.com/ldemailly) 在这方面的工作。有关更多详情和讨论，请参阅 Istio 问题 [868](https://github.com/istio/istio.github.io/issues/868)。他正在使用 Istio + TLS 开发示例应用程序部署 Fortio，他是启发并帮助我完成所有工作的人。
