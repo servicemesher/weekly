@@ -190,13 +190,13 @@ spec:
 *   它将支持2个域名 *www.mydomain.com* 和 *mobile.mydomain.com*
 *   此证书请求与 Istio Ingress（istio-system）位于同一个命名空间中，
 *   它将使用 HTTP-01 回答 ACME 的问题
-*   该证书将被复制到一个名为 *istio-ingress-certs* 的 K8s Secret 中，这是 Istio Ingress（Envoy代理）期望的超级重要。
+*   Istio Ingress（Envoy代理）期望该证书将被复制到一个名为 *istio-ingress-certs* 的  K8s  Secret 中（这是超级重要，最好不要修改这个名字）。
 
 然后 ：
 
 `kubectl apply -f certificate-istio.yml`
 
-完成之后，您将开始看到日志通过 cert-manager pod以及 Istio Ingress 中的情况，例如：
+完成之后，您通过 cert-manager pod 将可以看到 Istio Ingress 的日志情况，例如：
 ```
 istio-ingress-7f8468bb7b-pxl94 istio-ingress [2018-01-23T21:01:53.341Z] "GET /.well-known/acme-challenge/xxxxxxx HTTP/1.1" 503 UH 0 19 0 - "10.20.5.1" "Go-http-client/1.1" "xxx" "www.domain.com" "-"
 istio-ingress-7f8468bb7b-pxl94 istio-ingress [2018-01-23T21:01:58.287Z] "GET /.well-known/acme-challenge/xxxxxx HTTP/1.1" 503 UH 0 19 0 - "10.20.5.1" "Go-http-client/1.1" "xxxx" "mobile.domain.com" "-"
