@@ -208,18 +208,18 @@ istio-ingress-7f8468bb7b-pxl94 istio-ingress [2018-01-23T21:01:58.287Z] "GET /.w
 ![](https://ws1.sinaimg.cn/large/61411417ly1fshj4soh0mj20m80j3mzg.jpg)
 
 现在是删除由 Cert-Manager 创建的不需要的东西的时候了。   
-使用您最擅长的 K8s 工具，如仪表板或 kubectl，并从 *istio-system* 命名空间中删除服务和入口。它们将被命名为**cm-istio-ingress-certs-xxxx**。  
+使用您最擅长的 K8s 工具，如仪表板或 kubectl，并从 *istio-system* 命名空间中删除 Service 和 Ingress。它们将被命名为 **cm-istio-ingress-certs-xxxx**。  
 如果您的证书申请中有许多域名，你应该删除多余的域名。
 
-另外，不要删 pods ！（如果有错误，它们将被重新创建）
+另外，不要删 pod ！（如果有错误，它们将被重新创建）
 
 （作为提醒：kubectl -n istio-system delete cm-istio-ingress-certs-xxxx）
 
 #### 服务
 
-既然您的设置很干净，您可以继续并重新创建所需的服务和入口。
+既然您的设置很干净，您可以继续并重新创建所需的 Service 和 ingress 。
 
-您需要尽可能多的服务，因为您拥有不同的域名。在我们的例子中，2.这是清单：
+您需要尽可能多的 Service ，因为您拥有不同的域名。在我们的例子中，2.这是清单：
 ```yaml
 apiVersion: v1
 kind: Service
@@ -253,9 +253,9 @@ spec:
 
 `kubectl apply -f certificate-services.yml`
 
-然后你可以检查你的服务。每个服务都应该有一个指定的目标 pod。
+然后你可以检查你的 Service。每个 Service 都应该有一个指定的目标 pod。
 
-请注意，服务名称无关紧要。这取决于你给出一个特定的名称，所以你不会混淆你所有的域名。
+请注意，Service 名称无关紧要。这取决于你给出一个特定的名称，所以你不会混淆你所有的域名。
 
 #### Ingress
 
@@ -289,10 +289,10 @@ spec:
 ```
 再次，我们在这里需要注意一些事情：
 
-*   入口与证书，服务和入口位于同一个命名空间
-*   入口级别是 *Istio*（显然）
-*   我们正在使用 *staging* 发行人（记住我们创建发行人的第一步）。  
-    根据您创建的`Issuer`或`ClusterIssuer`您必须使用正确的 annotation。文档位于 [Ingress-Shim](https://github.com/jetstack/cert-manager/blob/master/docs/user-guides/ingress-shim.md) 项目中
+*   证书， Service 和 Ingress 需要在同一个命名空间中
+*   ingress class  是 *Istio*（显然）
+*   我们正在使用 *staging* Issuer（记住我们第一步创建的 Issuer ）。  
+    您必须根据创建的`Issuer`或`ClusterIssuer`使用正确的 annotation。文档位于 [Ingress-Shim](https://github.com/jetstack/cert-manager/blob/master/docs/user-guides/ingress-shim.md) 项目中
 *   我们必须为每个域创建一个 HTTP 规则
 *   在 *backend/srvice* 必须我们在上一步中创建的服务，以及域名匹配，所以：  
     用 *www.mydomain.com* →serviceName cert-manager-ingress-www→pod cm-istio-ingress-certs-xxx，其中label *certmanager.k8s.io/domain =* *www.mydomain.com*
@@ -303,7 +303,7 @@ spec:
 
 就是这样！
 
-检查Istio-Ingress日志，您应该看到几个*“GET /.well-known/acme-challenge/xxx HTTP / 1.1”200*
+检查 Istio-Ingress 日志，您应该看到几个*“GET /.well-known/acme-challenge/xxx HTTP / 1.1”200*
 
 ### 示例应用程序
 
@@ -432,7 +432,7 @@ spec:
             - containerPort: 8080
               name: http
 ```
-我们必须再次感谢 Kelsy Hightower 为他的 HelloWorld 示例应用程序🙏
+我们必须再次感谢 Kelsey Hightower 是他提供的 HelloWorld 示例应用程序🙏
 
 然后：
 
@@ -444,7 +444,7 @@ kubectl -n default apply -f helloworld.yml
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fshj4vatnoj20m80j376n.jpg)
 
-验证完成后，Cert-Manager 应该删除 istio-system 命名空间中的令牌交换器窗格。是的，一旦 Cert-Manager 与Let's Encrypt 服务器达成一致，他们将交换用于续订的永久密钥。无需使用 pods ，甚至 Services 和 Ingress，至少如果你确定你不需要添加或改变证书中的某些东西。
+验证完成后，Cert-Manager 应该删除 istio-system 命名空间中的 Token-Exchange pod。是的，一旦 Cert-Manager 与Let's Encrypt 服务器达成一致，他们将交换用于续订的永久密钥。无需使用 pod ，甚至 Services 和 Ingress，至少如果你确定你不需要添加或改变证书中的某些东西。
 
 ### 更新证书
 
