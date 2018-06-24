@@ -29,28 +29,29 @@ IBM 为开发者提供了其 Kubernetes 运行时的免费社区版，并包含�
 从代码入手, 可克隆如下仓库 ```git clone git@github.com:todkap/istio-index-conf2018.git```
 
 ### Kubernetes 安装
-- **Minikube：** 请先部署并第一个启动 Minikube 。在这个项目的根目录下，有一个脚本 ```createMinikubeEnv.sh``` ，用于销毁之前创建的 Minikube 环境，并用适当的 Kubernetes 上下文初始化一个新的环境。
+- **Minikube：** 请先部署并第一个启动 Minikube 。在这个项目的根目录下，有一个脚本 ```createMinikubeEnv.sh``` ，用于销毁之前创建的 Minikube 环境，并用适当的 Kubernetes 上下文初始化一个新的环境。
 
 - **IBM 私有云:** IBM 私有云提供了 [configure client](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0/manage_cluster/cfc_cli.html)，将配置 Kubernetes CLI 指向一个给定的 IBM 私有云设备。
 
 ### 部署
 #### Kubernetes 安装 
-本项目提供了一个名叫```deploy.sh```的脚本部署 Istio 和应用到 Kubernetes 中。脚本给定了一些冗余的输出，输出各种执行步骤，等待整个系统在退出之前处于 ```Running``` 。
+本项目提供了一个名叫```deploy.sh```的脚本部署 Istio 和应用到 Kubernetes 中。脚本给定了一些冗余的输出，输出各种执行步骤，等待整个系统在退出之前处于 ```Running``` 。
 
 #### Helm 安装
-从 IBM 私有云版本 2.1.0.3 开始, Istio 控制面板可以通过 Helm chart 作为初始化安装的一部分或通过目录安装后安装。该项目包含一个名为 ```icp-helm-deploy``` 的附加脚本,利用 IBM 私有云 CLI，Helm CLI 和 Kubernetes CLI 进行组合来安装 Istio 的索引程序。未来简化部署过程，同时促进 Istio 的一些最新的特性，可以为应用程序自动注入 [[automatic sidecar injection](https://istio.io/docs/setup/kubernetes/sidecar-injection.html#automatic-sidecar-injection)].
+从 IBM 私有云版本 2.1.0.3 开始, Istio 控制面板可以通过 Helm chart 作为初始化安装的一部分或通过目录安装后安装。该项目包含一个名为 ```icp-helm-deploy``` 的附加脚本,利用 IBM 私有云 CLI，Helm CLI 和 Kubernetes CLI 进行组合来安装 Istio 的索引程序。未来简化部署过程，同时促进 Istio 的一些最新的特性，可以为应用程序自动注入 [[automatic sidecar injection](https://istio.io/docs/setup/kubernetes/sidecar-injection.html#automatic-sidecar-injection)].
 
 ### 测试
-该项目包含两个用于测试的脚本，这取决于所使用的 Kubernetes 提供者。两个脚本的不同之处在于 IBM 私有云入口地址的设置。根据你选择的提供者选择 ```testICPEnv.sh``` 或 ```testMinikubeEnv.sh```。
+该项目包含两个用于测试的脚本，这取决于所使用的 Kubernetes 提供者。两个脚本的不同之处在于 IBM 私有云入口地址的设置。根据你选择的提供者选择 ```testICPEnv.sh``` 或 ```testMinikubeEnv.sh```。
   
 除了脚本之外，还有一个轻量级的 web 界面，用于与其他api进行交互。
 
 ![alt text][ui]
 
 ### Verification 
-为了验证 Istio 的集成成功，脚本执行了一组测试。
+为了验证 Istio 的集成成功，脚本执行了一组测试。
 
-- 第一个测试验证一个简单的 put 测试到 ETCD 服务节点上，以验证 ETCD 的连接性。
+- 第一个测试验证一个简单的 put 测试到 ETCD 服务节点上，以验证 ETCD 的连接性。
+
 **例子输出**
 ```
 简单 etcd 测试
@@ -80,7 +81,8 @@ IBM 为开发者提供了其 Kubernetes 运行时的免费社区版，并包含�
 {"action":"set","node":{"key":"/message","value":"Hello world","modifiedIndex":14,"createdIndex":14}}
 * Connection #0 to host 192.168.64.20 left intact
 ``` 
-- 第二个测试验证节点应用程序可以使用节点应用程序的节点端口处理简单的 ping 请求以及对 ETCD 的代理请求。
+- 第二个测试验证节点应用程序可以使用节点应用程序的节点端口处理简单的 ping 请求以及对 ETCD 的代理请求。
+
 **例子输出**
 ```
 -------------------------------
@@ -149,7 +151,8 @@ nodeAppTesting(etcd-service) ->{"action":"get","node":{"key":"/istioTest","value
 -------------------------------
 ```
 - 下一级测试开始测试 Istio ，将流量路由到 Istio Ingress，再到节点应用程序的。
-**例子输出**
+
+**例子输出**
 ```
 simple hello test
 *   Trying 192.168.64.20...
@@ -213,6 +216,7 @@ nodeAppTesting(etcd-service) ->{"action":"get","node":{"key":"/istioTest","value
 -------------------------------
 ```
 - 最后一组测试对 istio-proxy 的日志进行检索，搜索客户端和服务端代理的访问日志，以验证是通过 Istio 路由的流量。
+
 **例子输出**
 ```
 client logs from istio-proxy
