@@ -250,7 +250,7 @@ kubectl -n istio-system port-forward $(kubectl -n istio-system get \
 ![alt text][grafana]
 
 #### Prometheus
-在你的 Kubernetes 环境中，执行如下命令:
+在你的 Kubernetes 环境中，执行如下命令:
 ```
 kubectl -n istio-system port-forward $(kubectl -n istio-system get \
     pod -l app=prometheus -o jsonpath='{.items[0].metadata.name}') 9090:9090 &   
@@ -285,7 +285,7 @@ Kiali 提供了类似于 Weave Scope 的服务图型用于展示历史的请求�
 
 ### 注释
 - 本项目是2017年基于一个中期文章 [Istio 不仅为微服务](https://medium.com/ibm-cloud/istio-is-not-just-for-microservices-4ed199322bf4) 编写和更新的，以支持最新版本的 Istio 和 Kubernetes 。由于大部分内容都嵌入在原始文章中，所以这个项目是为了鼓励开发人员克隆本项目并修改它，以了解更多关于 Kubernetes, Istio and etcd 的信息。
-- Node.js 应用程序的源码包含在项目的子目录中，还包括部署到 Docker registry 的 Dockerfile 和编译脚本。需要修改然后将镜像发布到你的 Docker registry 中，并部署 yaml 来引用新的镜像，如果有需要的话，应该相对更容易理解。
+- Node.js 应用程序的源码包含在项目的子目录中，还包括部署到 Docker registry 的 Dockerfile 和编译脚本。需要修改然后将镜像发布到你的 Docker registry 中，并部署 yaml 来引用新的镜像，如果有需要的话，应该相对更容易理解。
 
 [grafana]: https://github.com/todkap/istio-index-conf2018/blob/master/images/loadtest_grafana.png "Load Test Grafana"
 [prometheus]: https://github.com/todkap/istio-index-conf2018/blob/master/images/loadtest_prometheus.png "Load Test Prometheus"
