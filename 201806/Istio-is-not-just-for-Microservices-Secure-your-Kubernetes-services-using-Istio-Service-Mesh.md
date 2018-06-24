@@ -50,7 +50,7 @@ IBM 为开发者提供了其 Kubernetes 运行时的免费社区版，并包含�
 ### Verification 
 为了验证 Istio 的集成成功，脚本执行了一组测试。
 
-- 第一个测试验证一个简单的 put 测试到 ETCD 服务节点上，以验证 ETCD 的连接性。
+- 第一个测试验证一个简单的 put 测试到 ETCD 服务节点上，以验证 ETCD 的连接性。
 
 **例子输出**
 ```
@@ -150,7 +150,7 @@ nodeAppTesting created(etcd-service) ->{"key":"istioTest","value":"Testing Istio
 nodeAppTesting(etcd-service) ->{"action":"get","node":{"key":"/istioTest","value":"Testing Istio using NodePort","modifiedIndex":15,"createdIndex":15}}
 -------------------------------
 ```
-- 下一级测试开始测试 Istio ，将流量路由到 Istio Ingress，再到节点应用程序的。
+- 下一级测试开始测试 Istio ，将流量路由到 Istio Ingress，再到节点应用程序的。
 
 **例子输出**
 ```
@@ -215,7 +215,7 @@ nodeAppTesting created(etcd-service) ->{"key":"istioTest","value":"Testing Istio
 nodeAppTesting(etcd-service) ->{"action":"get","node":{"key":"/istioTest","value":"Testing Istio using Ingress","modifiedIndex":16,"createdIndex":16}}
 -------------------------------
 ```
-- 最后一组测试对 istio-proxy 的日志进行检索，搜索客户端和服务端代理的访问日志，以验证是通过 Istio 路由的流量。
+- 最后一组测试对 istio-proxy 的日志进行检索，搜索客户端和服务端代理的访问日志，以验证是通过 Istio 路由的流量。
 
 **例子输出**
 ```
@@ -228,7 +228,7 @@ server logs from istio-proxy
 ```
 
 ### Istio Metrics 
-Istio 为网络活动的跟踪度量提供了本地的支持。为驱动一些额外的度量，可以运行一个简单的类似下面的测试脚本来填充 Grafana 和 Promotheus 的图标。ipt can be run to populate the charts for both Grafana and Promotheus similar to the code below.
+Istio 为网络活动的跟踪度量提供了本地的支持。为驱动一些额外的度量，可以运行一个简单的类似下面的测试脚本来填充 Grafana 和 Promotheus 的图标。ipt can be run to populate the charts for both Grafana and Promotheus similar to the code below.
 **测试脚本**  
 ```
 ## 使用 loadtest (https://www.npmjs.com/package/loadtest) 加载测试
@@ -240,12 +240,12 @@ fi
 ```
 
 #### Grafana
-在你的 Kubernetes 环境中，执行如下命令:
+在你的 Kubernetes 环境中，执行如下命令:
 ```
 kubectl -n istio-system port-forward $(kubectl -n istio-system get \
    pod -l app=grafana -o jsonpath='{.items[0].metadata.name}') 3000:3000 &
 ```
-在你的浏览器中访问 http://localhost:3000/dashboard/db/istio-dashboard. Istio Dashboard 类似下图:
+在你的浏览器中访问 http://localhost:3000/dashboard/db/istio-dashboard. Istio Dashboard 类似下图:
 
 ![alt text][grafana]
 
@@ -260,20 +260,20 @@ kubectl -n istio-system port-forward $(kubectl -n istio-system get \
 ![alt text][prometheus]
 
 #### Weave Scope 
-在部署脚本期间，Weave Scope 也会被部署到环境中。在控制台中，Weave Scope 的端口已被记录，但也可以使用命令。
+在部署脚本期间，Weave Scope 也会被部署到环境中。在控制台中，Weave Scope 的端口已被记录，但也可以使用命令。
 ```
 kubectl get service weave-scope-app --namespace=weave -o 'jsonpath={.spec.ports[0].nodePort}'; echo ''  
 ```
-Weave Scope 提供了服务图，将用来展示测试过程中执行测试的请求流。Weave Scope Dashboard 类似下图:
+Weave Scope 提供了服务图，将用来展示测试过程中执行测试的请求流。Weave Scope Dashboard 类似下图:
 
 ![alt text][weavescope]
 
 #### Kiali 
-Kiali 是一个比较新的项目，专注于 Service Mesh 的可观察性，支持 Istio 0.7.1 或更高版本。这个项目的内部是一个单独的脚本 ```setupKiali.s```  ，它将构建和安装 Kiali，并应用在 IBM 私有云上运行所需的角色。在你的环境中查看控制台，你需要服务的节点端口。可以使用如下的命令检索 Kiali 的端口。
+Kiali 是一个比较新的项目，专注于 Service Mesh 的可观察性，支持 Istio 0.7.1 或更高版本。这个项目的内部是一个单独的脚本 ```setupKiali.s```  ，它将构建和安装 Kiali，并应用在 IBM 私有云上运行所需的角色。在你的环境中查看控制台，你需要服务的节点端口。可以使用如下的命令检索 Kiali 的端口。
 ```
 kubectl get service kiali --namespace=istio-system -o 'jsonpath={.spec.ports[0].nodePort}'; echo ''  
 ```
-Kiali 提供了类似于 Weave Scope 的服务图型用于展示历史的请求流以及 K8 环境中其他有趣的视图，例如服务和跟踪。如果要查看此操作的能力，可以在执行加载测试脚本后查看服务图。Kiali Dashboard 类似下图:
+Kiali 提供了类似于 Weave Scope 的服务图型用于展示历史的请求流以及 K8 环境中其他有趣的视图，例如服务和跟踪。如果要查看此操作的能力，可以在执行加载测试脚本后查看服务图。Kiali Dashboard 类似下图:
 
 ![alt text][kiali]
 
@@ -284,8 +284,8 @@ Kiali 提供了类似于 Weave Scope 的服务图型用于展示历史的请求�
 
 
 ### 注释
-- 本项目是2017年基于一个中期文章 [Istio 不仅为微服务](https://medium.com/ibm-cloud/istio-is-not-just-for-microservices-4ed199322bf4) 编写和更新的，以支持最新版本的 Istio 和 Kubernetes 。由于大部分内容都嵌入在原始文章中，所以这个项目是为了鼓励开发人员克隆本项目并修改它，以了解更多关于 Kubernetes, Istio and etcd 的信息。
-- Node.js 应用程序的源码包含在项目的子目录中，还包括部署到 Docker registry 的 Dockerfile 和编译脚本。需要修改然后将镜像发布到你的 Docker registry 中，并部署 yaml 来引用新的镜像，如果有需要的话，应该相对更容易理解。
+- 本项目是2017年基于一个中期文章 [Istio 不仅为微服务](https://medium.com/ibm-cloud/istio-is-not-just-for-microservices-4ed199322bf4) 编写和更新的，以支持最新版本的 Istio 和 Kubernetes 。由于大部分内容都嵌入在原始文章中，所以这个项目是为了鼓励开发人员克隆本项目并修改它，以了解更多关于 Kubernetes, Istio and etcd 的信息。
+- Node.js 应用程序的源码包含在项目的子目录中，还包括部署到 Docker registry 的 Dockerfile 和编译脚本。需要修改然后将镜像发布到你的 Docker registry 中，并部署 yaml 来引用新的镜像，如果有需要的话，应该相对更容易理解。
 
 [grafana]: https://github.com/todkap/istio-index-conf2018/blob/master/images/loadtest_grafana.png "Load Test Grafana"
 [prometheus]: https://github.com/todkap/istio-index-conf2018/blob/master/images/loadtest_prometheus.png "Load Test Prometheus"
