@@ -38,7 +38,7 @@ IBM 为开发者提供了其 Kubernetes 运行时的免费社区版，并包含�
 本项目提供了一个名叫```deploy.sh```的脚本部署 Istio 和应用到 Kubernetes 中。脚本给定了一些冗余的输出，输出各种执行步骤，等待整个系统在退出之前处于 ```Running``` 。
 
 #### Helm 安装
-从 IBM 私有云版本 2.1.0.3 开始, Istio 控制面板可以通过 Helm chart 作为初始化安装的一部分或通过目录安装后安装。该项目包含一个名为 ```icp-helm-deploy``` 的附加脚本,利用 IBM 私有云 CLI，Helm CLI 和 Kubernetes CLI 进行组合来安装 Istio 的索引程序。未来简化部署过程，同时促进 Istio 的一些最新的特性，可以为应用程序自动注入 [[automatic sidecar injection](https://istio.io/docs/setup/kubernetes/sidecar-injection.html#automatic-sidecar-injection)].
+从 IBM 私有云版本 2.1.0.3 开始, Istio 控制面板可以通过 Helm chart 作为初始化安装的一部分或通过目录安装后安装。该项目包含一个名为 ```icp-helm-deploy``` 的附加脚本,利用 IBM 私有云 CLI，Helm CLI 和 Kubernetes CLI 进行组合来安装 Istio 的索引程序。未来简化部署过程，同时促进 Istio 的一些最新的特性，可以为应用程序自动注入 sidecar [[automatic sidecar injection](https://istio.io/docs/setup/kubernetes/sidecar-injection.html#automatic-sidecar-injection)].
 
 ### 测试
 该项目包含两个用于测试的脚本，这取决于所使用的 Kubernetes 提供者。两个脚本的不同之处在于 IBM 私有云入口地址的设置。根据你选择的提供者选择 ```testICPEnv.sh``` 或 ```testMinikubeEnv.sh```。
@@ -255,7 +255,7 @@ kubectl -n istio-system port-forward $(kubectl -n istio-system get \
 kubectl -n istio-system port-forward $(kubectl -n istio-system get \
     pod -l app=prometheus -o jsonpath='{.items[0].metadata.name}') 9090:9090 &   
 ```
-在你的浏览器中访问 http://localhost:9090/graph in your web browser. Istio Dashboard 类似下图:
+在你的浏览器中访问 http://localhost:9090/graph in your web browser. Istio Dashboard 类似下图:
 
 ![alt text][prometheus]
 
