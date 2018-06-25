@@ -36,10 +36,10 @@ Stripe 博客有一篇关于“用限速器扩展你的 API”的精彩文章，
 
 经常遇到的其他挑战涉及提取用于确定速率限制的请求（元）数据的能力，还指定（或实现）用于确定是否应该拒绝特定请求的相关算法。理想情况下，你希望能够指定与各种客户端属性（例如请求HTTP方法，位置，设备等）相关的速率限制以及后端分解（例如服务端点，语义信息（例如用户发起的请求与应用程序）启动请求，有效负载期望）。
 
-### 通过外部服务进行速率限制
-Lyft工程团队去年提出了一个有趣的解决上一节讨论的许多挑战的解决方案，当时他们谈论了他们如何使用Envoy代理（我们现在称之为）服务网格通过调用实现速率限制为每个请求提供外部RateLimit服务。 Ratelimit服务符合这里定义的Ratelimit protobuf，这实际上是一个速率限制API。 Datawire团队已经在Envoy Proxy之上构建了开放源代码的Ambassador API网关，最近Alex Gervais已经为Ambassador提供了相同的速率限制支持。
+### 通过外部服务实施速率限制
+针对上一节讨论的许多挑战，[Lyft 工程团队](https://eng.lyft.com/announcing-ratelimit-c2e8f3182555)去年提出了一个有趣的解决方案，当时他们谈论了他们如何使用Envoy代理（我们现在叫的名字）服务网格通过调用实现速率限制为每个请求提供外部[速率限制](https://github.com/lyft/ratelimit)服务。 速率限制服务符合[这里](https://github.com/lyft/ratelimit/blob/master/proto/ratelimit/ratelimit.proto)定义的速率限制 Protobuf 协议，这实际上是一个速率限制 API。 Datawire 团队已经在 Envoy 代理之上构建了开源 Ambassador API 网关，同时最近 [Alex Gervais](https://twitter.com/alex_gervais) 已经为 Ambassador 提供了相同的[速率限制支持](https://blog.getambassador.io/ambassador-adds-rate-limiting-support-in-0-31-595cc8f91e49)。
 
-由于你现在可以访问protobuf速率限制服务API，因此你可以使用任何你喜欢的语言（或至少是任何带protobuf支持的语言，这是最现代化的语言）来实施速率限制服务。你现在还可以完全自由地在服务中实现你喜欢的任何速率限制算法，并且还可以将速率限制决策基于你想要传递给服务的任何元数据。 Lyft RateLimit服务中的示例提供了一些有趣的灵感！值得一提的是，由于Ambassador API网关在Kubernetes内部运行，你创建的任何速率限制服务都可以利用Kubernetes来处理扩展和容错。
+由于你现在可以访问 Protobuf 速率限制服务API，因此你可以使用任何你喜欢的语言（或至少是任何支持 Protobuf 的现代化语言）来实施速率限制服务。你现在还可以完全自由地在服务中实现任何你喜欢的速率限制算法，并且基于任何你想要传递给服务的元数据来制定速率限制策略。 Lyft RateLimit服务中的[示例](https://github.com/lyft/ratelimit#user-content-examples)提供了一些有趣的灵感！值得一提的是，由于 Ambassador API 网关在 Kubernetes 内部运行，你创建的任何速率限制服务都可以利用 Kubernetes 来处理扩展和容错。
 
 ### 关于系列文章的下一篇
 在我们的速率限制系列的第二篇文章中，阐述了在 API 网关实施速率限制和减负的动机，并且还探讨了实施过程中可能遇到的一些挑战。 在文章的最后一节中，我提出了一些在现代云平台（如Kubernetes，ECS等）中部署集成有速率限制 API 网关的想法，并讨论了如何使用外部服务来实现这一切，以达到在实施你对速率限制算法的要求的同时，还能提供很大灵活性。
