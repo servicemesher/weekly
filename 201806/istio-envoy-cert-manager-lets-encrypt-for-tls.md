@@ -2,9 +2,11 @@
 
 > 原文链接：https://medium.com/@prune998/istio-envoy-cert-manager-lets-encrypt-for-tls-14b6a098f289
 >
-> 作者：Prune   
+> 作者：Prune 
 >
 > 译者：殷龙飞
+>
+> 校对：宋净超
 
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fshj4p4pxtj20rs0iiq7r.jpg)
@@ -13,22 +15,20 @@
 
 感谢 Laurent Demailly 的评论，这里有一些更新。这篇文章已经得到了更新：
 
-*   现在有一个 [Cert-Manager 官方 Helm 图表](https://github.com/kubernetes/charts/tree/master/stable/cert-manager)
+*   现在有一个 [Cert-Manager 官方 Helm chart](https://github.com/kubernetes/charts/tree/master/stable/cert-manager)
 *   Istio Ingress 也支持基于 HTTP/2 的 GRPC
 
 ### Istio
 
-[Istio](https://istio.io/) 是管理微服务世界中数据流的一种新方式。事实上，这对我来说更是如此。  人们不停的谈论微服务与单体应用，说微服务更好开发，易于维护，部署更快......   呃，他们是对的，但微服务不应该仅仅是小应用程序之间互相通信。微服务应该考虑沉淀为你的基础设施的这种方式。考虑如何决定您的“简单”应用程序公开指标和日志的方式，考虑您如何跟踪状态，考虑如何控制服务之间的流程以及如何管理错误，这些问题应该是做微服务应该考虑的。
+[Istio](https://istio.io/) 是管理微服务世界中数据流的一种新方式。事实上，这对我来说更是如此。人们不停的谈论微服务与单体应用，说微服务更好开发，易于维护，部署更快。。。呃，他们是对的，但微服务不应该仅仅是小应用程序之间互相通信。微服务应该考虑沉淀为你的基础设施的这种方式。考虑如何决定您的“简单”应用程序公开指标和日志的方式，考虑您如何跟踪状态，考虑如何控制服务之间的流程以及如何管理错误，这些问题应该是做微服务应该考虑的。
 
 那么 Istio 能够在这个微服务世界中增加什么？
 
 Istio 是一个服务网格的实现！
 
-> Whaaaaaat？服务网格？我们已经有了 Kubernetes API，我们需要“网格”吗？
+> 什么？服务网格？我们已经有了 Kubernetes API，我们需要“网格”吗？
 
-那么，是的，你需要服务网格。   
-我不会解释使用它的所有好处，你会在网上找到足够的文档。但是用一句话来说，服务网格就是将您所有的服务提供给其他服务的技术。   
-事实上，它还强制执行所有“微服务”最佳实践，例如添加流量和错误指标，添加对 OpenTracing（ Zipkin 和Jaegger）的支持，允许控制重试，金丝雀部署......阅读 [Istio doc](https://istio.io/docs/concepts/) ！
+那么，是的，你需要服务网格。我不会解释使用它的所有好处，你会在网上找到足够的文档。但是用一句话来说，服务网格就是将您所有的服务提供给其他服务的技术。事实上，它还强制执行所有“微服务”最佳实践，例如添加流量和错误指标，添加对 OpenTracing（ Zipkin 和Jaegger）的支持，允许控制重试，金丝雀部署。。。阅读 [Istio doc](https://istio.io/docs/concepts/) ！
 
 所以，回到本话题...
 
@@ -41,11 +41,9 @@ Istio 是一个服务网格的实现！
 
 ### SSL
 
-**SSL** 是安全的（很好），但它通常是软件中实现的最后一件事。为什么？之前它实现起来是“很困难的”，但我现在看不出任何理由。[Let's Encrypt](https://letsencrypt.org/how-it-works/) 创建一个新的范例，它的 DAMN 很容易使用 API 调用创建 Valide SSL 证书（协议被称为ACME ...）。它为您提供 3 种验证您是域名所有者的方法。使用 DNS，使用 HTTP 或第三种解决方案的“秘密令牌”不再可用，因为它证明是不安全的。  
-因此，您可以使用 Let's Encrypt 提供给您的特殊 TXT 记录设置您的 DNS，或者将其放入 Web 根路径（如 /.well-known/acme-challenge/xxx）中，然后让我们的加密验证它。这真的很简单，但差不多只能这样。
+**SSL** 是安全的（很好），但它通常是软件中实现的最后一件事。为什么？之前它实现起来是“很困难的”，但我现在看不出任何理由。[Let's Encrypt](https://letsencrypt.org/how-it-works/) 创建一个新的范例，它的 DAMN 很容易使用 API 调用创建 Valide SSL 证书（协议被称为ACME ...）。它为您提供 3 种验证您是域名所有者的方法。使用 DNS，使用 HTTP 或第三种解决方案的“秘密令牌”不再可用，因为它证明是不安全的。  因此，您可以使用 Let's Encrypt 提供给您的特殊 TXT 记录设置您的 DNS，或者将其放入 Web 根路径（如 `/.well-known/acme-challenge/xxx`）中，然后让我们的加密验证它。这真的很简单，但差不多只能这样。
 
-一些开发者决定直接在应用程序内部实现 ACME 协议。这是来自 [Traefik](https://traefik.io/) 的人的决定。[Caddy](https://caddyserver.com/) 也做了一些类似的“插件”。   
-这很酷，因为您只需定义虚拟主机，应用程序负责收集和更新证书。
+一些开发者决定直接在应用程序内部实现 ACME 协议。这是来自 [Traefik](https://traefik.io/) 的人的决定。[Caddy](https://caddyserver.com/) 也做了一些类似的“插件”。这很酷，因为您只需定义虚拟主机，应用程序负责收集和更新证书。
 
 可悲的是，Istio（和底层的Envoy代理）没有。这就是这篇博文的要点！
 
@@ -56,6 +54,7 @@ Istio 是一个服务网格的实现！
 Cert-Manager 附带 helm chart，所以很容易部署，只需按照文档执行命令即可，就像下面介绍的这样：
 
 **更新**  
+
 现在有一个 [Cert-Manager](https://github.com/kubernetes/charts/tree/master/stable/cert-manager) 的[官方 Helm 图表](https://github.com/kubernetes/charts/tree/master/stable/cert-manager)，你不需要 `git clone` ，只需要做 `helm install` 。
 
 ```shell
@@ -78,7 +77,7 @@ contrib/charts/cert-manager
 
 我使用这一行配置`--default-issuer-kind=ClusterIssuer` 所以我只能创建一次我的 Issuer。
 
-> Issuer whaaaat？
+> 什么是 issuer？
 
 以下是它的工作原理：
 
@@ -133,6 +132,7 @@ spec:
 Ingress 是您公开服务的前端 Web 代理（这是你的优势......我说 WEB 代理，因为它现在只支持 HTTP/HTTPS）。但让我们假设你知道关于 Ingress 的一切。
 
 **更新**  
+
 这不是一个真正的更新，而是一个更精确的描述，Ingress 也支持 GRPC，当然这是 HTTP/2。
 
 Ingress 的神奇之处在于它在 Kubernetes API 中的实现。您创建一个 Ingress Manifest，并将您的所有流量引导至正确的 Pod！告诉你这种方式就是神奇的魔法（因为你并不知道它如何引导的流量） ！
@@ -144,17 +144,14 @@ Ingress 的神奇之处在于它在 Kubernetes API 中的实现。您创建一�
 对于 Istio，当您使用 Cert-Manager 时，还有一些步骤。要快点，在这里他们（截至 2018/01，它可能很快就会改变）：
 
 *   为域 [www.mydomain.com](http://www.mydomain.com) 创建证书请求
-*   Cert-Manager 将选择这个定义并创建一个 pod，它实际上是一个可以回答 ACME 问题的 Web 服务器（[Ingress-Shim](https://github.com/jetstack/cert-manager/blob/master/docs/user-guides/ingress-shim.md)）  
-    它还将创建一个服务和一个 HTTP Ingress，以便它可以通过 Lets Encrypt 服务器
+*   Cert-Manager 将选择这个定义并创建一个 pod，它实际上是一个可以回答 ACME 问题的 Web 服务器（[Ingress-Shim](https://github.com/jetstack/cert-manager/blob/master/docs/user-guides/ingress-shim.md)）  它还将创建一个服务和一个 HTTP Ingress，以便它可以通过 Lets Encrypt 服务器
 *   以前的观点不适用于您使用 Istio Ingress，因此您必须删除 `Service` 和`Ingress`
 *   创建指向 Pod 的自己的服务
 *   创建您自己的 Istio Ingress，以便可以访问 pod
 
-听起来很疯狂？  
-那么，现在呢。它甚至是恶梦：
+听起来很疯狂？  那么，现在呢。它甚至是恶梦：
 
-在 Istio 中使用 Cert-Manager 时，您只能拥有一个外部服务证书！   
-所以你必须添加所有公共 DNS 名称到这个证书！
+在 Istio 中使用 Cert-Manager 时，您只能拥有一个外部服务证书！所以你必须添加所有公共 DNS 名称到这个证书！
 
 所以我们来实现它...
 
@@ -197,7 +194,7 @@ spec:
 `kubectl apply -f certificate-istio.yml`
 
 完成之后，您通过 cert-manager pod 将可以看到 Istio Ingress 的日志情况，例如：
-```
+```bash
 istio-ingress-7f8468bb7b-pxl94 istio-ingress [2018-01-23T21:01:53.341Z] "GET /.well-known/acme-challenge/xxxxxxx HTTP/1.1" 503 UH 0 19 0 - "10.20.5.1" "Go-http-client/1.1" "xxx" "www.domain.com" "-"
 istio-ingress-7f8468bb7b-pxl94 istio-ingress [2018-01-23T21:01:58.287Z] "GET /.well-known/acme-challenge/xxxxxx HTTP/1.1" 503 UH 0 19 0 - "10.20.5.1" "Go-http-client/1.1" "xxxx" "mobile.domain.com" "-"
 ```
@@ -207,13 +204,11 @@ istio-ingress-7f8468bb7b-pxl94 istio-ingress [2018-01-23T21:01:58.287Z] "GET /.w
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fshj4soh0mj20m80j3mzg.jpg)
 
-现在是删除由 Cert-Manager 创建的不需要的东西的时候了。   
-使用您最擅长的 K8s 工具，如仪表板或 kubectl，并从 *istio-system* 命名空间中删除 Service 和 Ingress。它们将被命名为 **cm-istio-ingress-certs-xxxx**。  
-如果您的证书申请中有许多域名，你应该删除多余的域名。
+现在是删除由 Cert-Manager 创建的不需要的东西的时候了。使用您最擅长的 K8s 工具，如仪表板或 kubectl，并从 *istio-system* 命名空间中删除 Service 和 Ingress。它们将被命名为 **cm-istio-ingress-certs-xxxx**。  如果您的证书申请中有许多域名，你应该删除多余的域名。
 
 另外，不要删 pod ！（如果有错误，它们将被重新创建）
 
-（作为提醒：kubectl -n istio-system delete cm-istio-ingress-certs-xxxx）
+（作为提醒：`kubectl -n istio-system delete cm-istio-ingress-certs-xxxx`）
 
 #### 服务
 
@@ -289,12 +284,17 @@ spec:
 ```
 再次，我们在这里需要注意一些事情：
 
-*   证书， Service 和 Ingress 需要在同一个命名空间中
-*   ingress class  是 *Istio*（显然）
-*   我们正在使用 *staging* Issuer（记住我们第一步创建的 Issuer ）。  
+* 证书， Service 和 Ingress 需要在同一个命名空间中
+
+* ingress class  是 *Istio*（显然）
+
+* 我们正在使用 *staging* Issuer（记住我们第一步创建的 Issuer ）。 
     您必须根据创建的`Issuer`或`ClusterIssuer`使用正确的 annotation。文档位于 [Ingress-Shim](https://github.com/jetstack/cert-manager/blob/master/docs/user-guides/ingress-shim.md) 项目中
-*   我们必须为每个域创建一个 HTTP 规则
-*   在 *backend/srvice* 必须我们在上一步中创建的服务，以及域名匹配，所以：  
+
+* 我们必须为每个域创建一个 HTTP 规则
+
+* 在 *backend/srvice* 必须我们在上一步中创建的服务，以及域名匹配，所以：  
+
     用 *www.mydomain.com* →serviceName cert-manager-ingress-www→pod cm-istio-ingress-certs-xxx，其中label *certmanager.k8s.io/domain =* *www.mydomain.com*
 
 再次：
@@ -436,7 +436,7 @@ spec:
 
 然后：
 
-```
+```bash
 kubectl -n default apply -f helloworld.yml
 ```
 
@@ -448,14 +448,12 @@ kubectl -n default apply -f helloworld.yml
 
 ### 更新证书
 
-在更新证书时，我建议先为其创建正确的 `Service`。然后更新 `Ingress` 以将流量发送到正确的服务。  
-最后，更新您的 `Certificate` 定义并添加新的域名。
+在更新证书时，我建议先为其创建正确的 `Service`。然后更新 `Ingress` 以将流量发送到正确的服务。最后，更新您的 `Certificate` 定义并添加新的域名。
 
 证书管理器将创建一个新的 `ingress` 和 `service` 你将不得不删除。其他一切都将自行发生。等待几秒钟 `Istio-Ingress` 重新加载它的证书，你很好 `curl` ！
 
 ### 结论
 
-尽管我现在觉得它非常令人研发，但它最起码可以正常工作......   
-如果您需要更新证书或添加新的域名，则必须更新证书定义，整个过程将要重新再来一遍。这实在是一种痛苦，当然比起与Traefik或Caddy完全整合更加困难。不过我相信这将会很快改变。
+尽管我现在觉得它非常令人研发，但它最起码可以正常工作。如果您需要更新证书或添加新的域名，则必须更新证书定义，整个过程将要重新再来一遍。这实在是一种痛苦，当然比起与Traefik或Caddy完全整合更加困难。不过我相信这将会很快改变。
 
-我想感 谢 [Laurent Demailly](https://github.com/ldemailly) 在这方面的工作。有关更多详情和讨论，请参阅 Istio 问题 [868](https://github.com/istio/istio.github.io/issues/868)。他正在使用 Istio + TLS 开发示例应用程序部署 Fortio，他是启发并帮助我完成所有工作的人。
+我想感 谢 [Laurent Demailly](https://github.com/ldemailly) 在这方面的工作。有关更多详情和讨论，请参阅 Istio  [issue #868](https://github.com/istio/istio.github.io/issues/868)。他正在使用 Istio + TLS 开发示例应用程序部署 Fortio，他是启发并帮助我完成所有工作的人。
