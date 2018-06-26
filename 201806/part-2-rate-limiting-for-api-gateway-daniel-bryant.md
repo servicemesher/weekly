@@ -10,7 +10,9 @@
 
 ## 为什么 API 网关需要速率限制
 在第一篇文章中，我讨论了在何处实施速率限制的几个选项：发送端，接收端或中间层（字面意思可以理解为发送端和接收端中间的服务）。
+![发送端接收端](https://ws1.sinaimg.cn/large/855e972fly1fsof0emvx9j20oj04jgli.jpg)
 当通过公共 API 暴露你的应用程序时，通常你必须在接收端或中间层中实施速率限制。即使你控制了源代码（客户端）应用程序，通常你也希望防止会导致过多 API 请求的错误产生，同时应付可能试图破坏客户端应用程序的不良行为者。
+![](https://ws1.sinaimg.cn/large/855e972fly1fsof2hv9hgj20jk06tdgn.jpg)
 Stripe 博客有一篇关于“用限速器扩展你的 API”的精彩文章，我将在本文中引用这篇文章，开头部分将讨论速率限制会如何帮助你在以下情况下让你的 API 更加可靠：
 
 * 某位用户制造了流量洪峰，导致你的应用过载，而你的应用此时还需要为其他人提供服务。
@@ -24,8 +26,9 @@ Stripe 博客有一篇关于“用限速器扩展你的 API”的精彩文章，
 基本上，要理解速率限制的概念很简单。对于每个要限制的请求属性，只需保持每次查看属性的每个唯一实例的次数，并在每个时间单位超过指定的计数时拒绝关联的请求。 例如，如果你想限制每个客户端发出的请求数量，你将使用“客户端标识”属性（可能通过请求字符串键值“clientID”设置或包含在请求头部中），并为标识符保留一个计数器。
 
 你还可以指定每个时间单元的最大请求数，并且可能会定义计算如何递减的算法，而不是在每个单元开始时重置计数器（稍后会详细介绍）。 当请求到达 API 网关时，它会递增适当的请求计数并检查这个增加是否意味着每个时间单元的最大允许请求已被超过。 如果是这样，那么这个请求将被拒绝，最常见的情况是向调用客户端返回 [“Too Many Requests” HTTP 429 状态码](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429)。
-
+![](https://ws1.sinaimg.cn/large/855e972fly1fsof4rdz1qj20lg07jt8w.jpg)
 与速率限制密切相关的是“负载削减”。 这里的主要区别在于拒绝流量的决定不是基于单个请求的属性（例如 clientId），而是基于应用的总体状态（例如，处于高负载的数据库）。 如果系统仍处于部分运行状态，但是需要时间来恢复（或修复），则在入口点削减负载可以大量减少线上事故。
+![](https://ws1.sinaimg.cn/large/855e972fly1fsof5go9vvj20mq07dt8y.jpg)
 
 ## API 网关存在的挑战
 大多数开源和商业 API 网关都提供速率限制，但在众多实现中，存在的挑战之一就是可扩展性。在单个计算实例上运行 API 网关相对简单，这意味着你可以将速率限制的计数器保留在单机内存中。比如你是对 clientId 进行速率限制，则只需在内存映射中检查并设置（增加）关联 clientId 的整数计数器即可。但是，此方法不能扩展单个实例到网关实例集群。
@@ -40,6 +43,7 @@ Stripe 博客有一篇关于“用限速器扩展你的 API”的精彩文章，
 针对上一节讨论的许多挑战，[Lyft 工程团队](https://eng.lyft.com/announcing-ratelimit-c2e8f3182555)去年提出了一个有趣的解决方案，当时他们谈论了他们如何使用Envoy代理（我们现在叫的名字）服务网格通过调用实现速率限制为每个请求提供外部[速率限制](https://github.com/lyft/ratelimit)服务。 速率限制服务符合[这里](https://github.com/lyft/ratelimit/blob/master/proto/ratelimit/ratelimit.proto)定义的速率限制 Protobuf 协议，这实际上是一个速率限制 API。 Datawire 团队已经在 Envoy 代理之上构建了开源 Ambassador API 网关，同时最近 [Alex Gervais](https://twitter.com/alex_gervais) 已经为 Ambassador 提供了相同的[速率限制支持](https://blog.getambassador.io/ambassador-adds-rate-limiting-support-in-0-31-595cc8f91e49)。
 
 由于你现在可以访问 Protobuf 速率限制服务API，因此你可以使用任何你喜欢的语言（或至少是任何支持 Protobuf 的现代化语言）来实施速率限制服务。你现在还可以完全自由地在服务中实现任何你喜欢的速率限制算法，并且基于任何你想要传递给服务的元数据来制定速率限制策略。 Lyft RateLimit服务中的[示例](https://github.com/lyft/ratelimit#user-content-examples)提供了一些有趣的灵感！值得一提的是，由于 Ambassador API 网关在 Kubernetes 内部运行，你创建的任何速率限制服务都可以利用 Kubernetes 来处理扩展和容错。
+![](https://ws1.sinaimg.cn/large/855e972fly1fsof69xqimj20h80bemxj.jpg)
 
 ## 关于系列文章的下一篇
 在我们的速率限制系列的第二篇文章中，阐述了在 API 网关实施速率限制和负载削减的动机，并且还探讨了实施过程中可能遇到的一些挑战。 在文章的最后一节中，我提出了一些在现代云平台（如Kubernetes，ECS等）中部署集成有速率限制 API 网关的想法，并讨论了如何使用外部服务来实现这一切，以达到在实施你对速率限制算法的要求的同时，还能提供很大灵活性。
