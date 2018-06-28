@@ -2,13 +2,13 @@
 
 # Istio 不仅为微服务而生
 
-通过使用 Istio Service Mesh 来保障 Kubernetes 平台服务。通常可以运行实例代码有助于用户更清晰的理解并将概念应用到实际的案例中。该项目围绕一个基本的 Node.js 应用程序演示了以 Istio Service Mesh 为 ETCD 的持久化数据服务的能力。
+通过使用 Istio Service Mesh 来保障 Kubernetes 平台服务。通常可以运行示例代码有助于用户更清晰的理解并将概念应用到实际的案例中。该项目围绕一个简单的 Node.js 应用程序演示了以 Istio Service Mesh 为 ETCD 的持久化数据服务的能力。
 
 ## Istio 背景
 Istio 是一个 连接、管理以及保障微服务的开放平台。如需要了解更多 Istio 的信息，请访问 [Intro page]( https://istio.io/about/intro.html) 。
 
 ## 安装
-假设已对 Kubernetes 有了初步了解。在这个项目中，有一组脚本，假设已预先安装了 Docker、Kubernetes CLI 以及JQ，用于操作 Kubernetes commands 返回的各种 JSON 对象。也有某种层度对 Node.js 知识的假设。
+假设已对 Kubernetes 有了初步了解。在这个项目中，有一组脚本，假设已预先安装了 Docker、Kubernetes CLI 以及JQ，用于操作 Kubernetes commands 返回的各种 JSON 对象。且有一定层度的 Node.js 知识。
 
 **各种工具的连接如下：.**  
 **Docker 安装:** https://docs.docker.com/install/  
@@ -17,7 +17,7 @@ Istio 是一个 连接、管理以及保障微服务的开放平台。如需要�
 **Node.js 下载地址:** https://nodejs.org/en/download/     
 
 ## Kubernetes Private
-以下代码可以运行在任何符合 Kubernetes 的提供者上，并且已经在 Minikube 和私有 IBM Cloud上。根据选择的提供者的不同，指令会略有不同。
+下面的代码应该可以在任何兼容 Kubernetes 的提供者上运行，并且已经在 Minikube 和私有 IBM Cloud Private 上进行过测试。根据选择的提供者的不同，指令会略有不同。
 
 ### Minikube
 Minikube 可用与下载和安装的地址：[点我](https://kubernetes.io/docs/tasks/tools/install-minikube/)。Minikube 为学习 Kubernetes 提供了一个简单易用的开发环境。
