@@ -35,9 +35,9 @@ $ git clone git@github.com:danielbryantuk/oreilly-docker-java-shopping.git
 
 第一阶段的服务和部署架构如下图所示：
 
-![最初架构](https://ws1.sinaimg.cn/large/78a165e1gy1fsvwpjxbzuj20hi0gjdga.jpg)
+![第一阶段架构](https://ws1.sinaimg.cn/large/78a165e1gy1fsvwpjxbzuj20hi0gjdga.jpg)
 
-从图中看到，Docker Java Shopping应用程序主要由三个简单的服务组成。在先前的教程中，你已经添加Ambassador API网关作为系统的“入口”。需要注意的是，Ambassador API网关使用未认证的Web端口在80号端口上运行，因此你需要确保本地运行的其他应用没有使用该端口。
+从图中可以看到，Docker Java Shopping应用程序主要由三个服务组成。在先前的教程中，你已经添加Ambassador API网关作为系统的“入口”。需要注意的是，Ambassador API网关直接使用Web 80号端口，因此需要确保本地运行的其他应用没有占用该端口。
 
 ## Ambassador API网关速率限制入门
 
@@ -59,7 +59,7 @@ total 48
 
 ```
 
-你可以使用以下命令来应用这些Kubernetes配置：
+你可以使用以下命令来提交Kubernetes配置：
 
 ```bash
 
@@ -67,13 +67,13 @@ $ kubectl apply -f .
 
 ```
 
-这样做将部署下列服务，与之前架构区别在于添加了“限速”服务。 这项服务是用Java编写的，没有使用微服务框架，它发布了一个gRPC端点，可供Ambassador来实现限制速率。这种方案允许灵活定制你实现的速率限制算法（这点的好处，请查看我[以前的文章](https://blog.getambassador.io/rate-limiting-for-api-gateways-892310a2da02)！）。
+通过以上命令将进行部署，这与之前架构的区别在于添加了“限速”服务。 这个服务是用Java编写的，且没有使用微服务框架。它发布了一个gRPC端点，可供Ambassador来实现限制速率。这种方案允许灵活定制你实现的速率限制算法（这点的好处，请查看我[以前的文章](https://blog.getambassador.io/rate-limiting-for-api-gateways-892310a2da02)）。
 
 ![限速架构](https://ws1.sinaimg.cn/large/78a165e1gy1fsvwvs0d8kj20hi0gj74v.jpg)
 
 ## 探索部署于Kubernetes的限速器服务
 
-与任何其他服务一样，部署到Kubernetes的ratelimiter服务也可以根据需要进行水平扩展。 以下是Kubernetes配置文件ambassador-rate-limiter.yaml的内容：
+与任何其他服务一样，部署到Kubernetes的限速服务也可以根据需要进行水平扩展。 以下是Kubernetes配置文件ambassador-rate-limiter.yaml的内容：
 
 ```bash
 
