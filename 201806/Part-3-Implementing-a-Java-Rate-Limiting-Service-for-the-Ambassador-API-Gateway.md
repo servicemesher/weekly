@@ -1,4 +1,4 @@
-# 第3部分：为Ambassador API网关实现Java速率限制服务
+# 第3部分：基于Ambassador API网关实现Java速率限制服务
 
 > 原文链接：https://blog.getambassador.io/implementing-a-java-rate-limiting-service-for-the-ambassador-api-gateway-e09d542455da
 >
@@ -6,32 +6,34 @@
 >
 > 译者：戴佳顺
 
-Kubernetes原生的[Ambassador API](https://www.getambassador.io/)网关所提供的速率限制功能是完全可定制的，其允许任何实现gRPC端点的服务决定是否需要限制请求。本文在先前[第1](https://blog.getambassador.io/rate-limiting-a-useful-tool-with-distributed-systems-6be2b1a4f5f4)和[第2部分](https://blog.getambassador.io/rate-limiting-for-api-gateways-892310a2da02)的基础上，将阐述如何为Ambassador API网关创建和部署简单的基于Java的速率限制服务。
+基于Kubernetes云原生的[Ambassador API](https://www.getambassador.io/)网关所提供的速率限制功能是完全可定制的，其允许任何实现gRPC服务端点的服务自行决定是否需要对请求进行限制。本文在先前[第1](https://blog.getambassador.io/rate-limiting-a-useful-tool-with-distributed-systems-6be2b1a4f5f4)和[第2部分](https://blog.getambassador.io/rate-limiting-for-api-gateways-892310a2da02)的基础上，阐述如何为Ambassador API网关创建和部署简单的基于Java的速率限制服务。
 
-## 开始设置：Docker Java Shop
+## 设置：Docker Java Shop
 
-在我之前的教程“[使用Kubernetes和Ambassador API网关部署Java应用](https://blog.getambassador.io/deploying-java-apps-with-kubernetes-and-the-ambassador-api-gateway-c6e9d9618f1b)”中，我将开源的Ambassador API网关添加到现有的一个部署于Kubernetes的基于Java（Spring Boot和Dropwizard）的服务中。 如果你之前不了解这个，为了使你熟悉基础知识，我建议你先阅读下此教程及其他相关内容。
-本文假定你熟悉如何构建基于Java的微服务并将其部署到Kubernetes，同时已经安装了所有的必备组件（我在本文中使用[Docker for Mac Edge](https://docs.docker.com/docker-for-mac/edge-release-notes/)，并启用其内置的Kubernetes支持。原则上若使用minikube或远程其他群集也应类似）。
+在我之前的教程“[使用Kubernetes和Ambassador API网关部署Java应用](https://blog.getambassador.io/deploying-java-apps-with-kubernetes-and-the-ambassador-api-gateway-c6e9d9618f1b)”中，我将开源的Ambassador API网关添加到现有的一个部署于Kubernetes的Java（Spring Boot和Dropwizard）服务中。 如果你之前不了解这个，建议你先阅读下此教程及其他相关内容来熟悉基础知识。
+本文假定你熟悉如何构建基于Java的微服务并将其部署到Kubernetes，同时已经完成安装所有的必备组件（我在本文中使用[Docker for Mac Edge](https://docs.docker.com/docker-for-mac/edge-release-notes/)，并启用其内置的Kubernetes支持。若使用minikube或远程群集应该也类似）。
 
 ## 先决条件
 
 需要在本地安装：
 
-- Docker for Desktop：我使用edge community edition (18.04.0-ce)，内置了对本地Kubernetes集群的支持。由于Java服务对内存有一定要求，我还将Docker可用内存增加到8G。
+- Docker for Desktop：我使用edge community edition (18.04.0-ce)，内置了对本地Kubernetes集群的支持。由于Java应用对内存有一定要求，我还将Docker可用内存增加到8G。
 
-- 首选编辑器：Atom 或者 VS code, 当写Java代码时使用IntelliJ也可以。
+- 编辑器选择：Atom 或者 VS code；当写Java代码时也可以使用IntelliJ。
 
 你可以在这里获取最新版本的“Docker Java Shop”源代码：
 
 [https://github.com/danielbryantuk/oreilly-docker-java-shopping](https://github.com/danielbryantuk/oreilly-docker-java-shopping)
 
-你可以这样通过SSH克隆仓库：
+你可以通过如下命令使用SSH克隆仓库：
 
 ```bash
+
 $ git clone git@github.com:danielbryantuk/oreilly-docker-java-shopping.git
+
 ```
 
-最初的服务和部署架构如下图所示：
+第一阶段的服务和部署架构如下图所示：
 
 ![最初架构](https://ws1.sinaimg.cn/large/78a165e1gy1fsvwpjxbzuj20hi0gjdga.jpg)
 
