@@ -219,15 +219,15 @@ Tue 24 Apr 2018 14:16:35 BST
 
 ## 检验速率限制器服务
 
-Ambassador Java限速服务的源代码在我GitHub帐户的仓库[ambassador-java-rate-limiter](https://github.com/danielbryantuk/ambassador-java-rate-limiter)中。其中也包含用于构建我推送到DockerHub容器镜像的[Dockerfile](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/Dockerfile)。 以此Dockerfile作为模板，你可以对代码进行修改，然后构建并推送自己的镜像至DockerHub。你也可以修改在Docker Java Shopping仓库中的[ambassador-rate-limiter.yaml](https://github.com/danielbryantuk/oreilly-docker-java-shopping/blob/master/kubernetes-ambassador-ratelimit/ambassador-rate-limiter.yaml)文件来扩展使用你自己的速率限制服务。
+Ambassador Java限速服务的源代码在我GitHub帐户的仓库[ambassador-java-rate-limiter](https://github.com/danielbryantuk/ambassador-java-rate-limiter)中。其中也包含用于构建我推送到DockerHub容器镜像的[Dockerfile](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/Dockerfile)。 你可以以此Dockerfile作为模板进行修改，然后构建和推送自己的镜像至DockerHub。你也可以修改在Docker Java Shopping仓库中的[ambassador-rate-limiter.yaml](https://github.com/danielbryantuk/oreilly-docker-java-shopping/blob/master/kubernetes-ambassador-ratelimit/ambassador-rate-limiter.yaml)文件来扩展使用你自己的速率限制服务。
 
 ## 研究Java代码
 
-如果你深入研究Java代码，最需要关注的类应该是[RateLimiterServer](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/src/main/java/io/datawire/ambassador/ratelimiter/simpleimpl/RateLimitServer.java)，它实现了在Ambassador API中使用的[Envoy代理](https://www.datawire.io/envoyproxy/)所定义的速率限制gRPC接口。我创建了一个[ratelimit.proto](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/src/main/proto/ratelimit.proto)接口的一个副本，其通过Maven [pom.xml](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/pom.xml)中定义的gRPC Java构建工具来使用。代码主要涉及三点：实现gRPC接口，运行gRPC服务器，并实现速率限制。下面让我们来看看。
+如果你深入研究Java代码，最需要关注的类应该是[RateLimiterServer](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/src/main/java/io/datawire/ambassador/ratelimiter/simpleimpl/RateLimitServer.java)，它实现了在Ambassador API中使用的[Envoy代理](https://www.datawire.io/envoyproxy/)所定义的速率限制gRPC接口。我创建了一个[ratelimit.proto](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/src/main/proto/ratelimit.proto)接口的副本，其通过Maven [pom.xml](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/pom.xml)中定义的gRPC Java构建工具来构建使用。代码主要涉及三点：实现gRPC接口，运行gRPC服务器，并实现速率限制。下面让我们来进一步分析。
 
-## 实现速率限制gRPC接口
+### 实现速率限制gRPC接口
 
-查看RateLimitServer中的内部类“RateLimiterImpl”，其对RateLimitServiceGrpc.RateLimitServiceImplBase进行扩展，你可以看到我已经重写了此抽象类中的一个方法：
+查看RateLimitServer中的内部类“RateLimiterImpl”，其对RateLimitServiceGrpc.RateLimitServiceImplBase进行扩展，你可以看到此抽象类中的下列方法被重写：
 
 ```bash
 
@@ -235,18 +235,18 @@ public void shouldRateLimit(Ratelimit.RateLimitRequest rateLimitRequest, StreamO
 
 ```
 
-这里使用的很多命名约定来自于Java gRPC库，进一步信息请参阅[gRPC Java文档](https://grpc.io/docs/tutorials/basic/java.html)。 话虽如此，如果查看[ratelimit.proto](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/src/main/proto/ratelimit.proto)文件，你可以清楚地看到许多命名的根目录，该文件定义了在Ambassador中使用的Envoy代理所需要的速率限制接口。 例如，你可以看到此文件中定义的核心服务名为RateLimitService（第9行），并且在服务“rpc ShouldRateLimit (RateLimitRequest) returns (RateLimitResponse) {}”（第11行）中定义了一个RPC方法， 它通过上面所定义的“shouldRateLimit”方法在Java中实现。
+这里使用的很多命名规约来自于Java gRPC库，进一步信息请参阅[gRPC Java文档](https://grpc.io/docs/tutorials/basic/java.html)。 尽管这样，如果查看[ratelimit.proto](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/src/main/proto/ratelimit.proto)文件，你可以清楚看到很多命名根，这些命名根定义了在Ambassador中使用的Envoy代理所需要的速率限制接口。 例如，你可以看到此文件中定义的核心服务名为RateLimitService（第9行），并且在服务“rpc ShouldRateLimit (RateLimitRequest) returns (RateLimitResponse) {}”（第11行）中定义了一个RPC方法， 它通过上面所定义的“shouldRateLimit”方法在Java中实现。
 
-如果有兴趣，可以看看哪些大量的由“protobuf-maven-plugin”（[pom.xml](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/pom.xml)的第99行）生成的Java gRPC代码。
+如果有兴趣，可以看看那些由“protobuf-maven-plugin”（[pom.xml](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/pom.xml)的第99行）生成的Java gRPC代码。
 
-## 运行gRPC服务器
+### 运行gRPC服务器
 
-一旦你实现了用ratelimit.proto定义的gRPC接口，下一件事情就是创建一个gRPC服务器用来监听和回复请求。 可以根据main方法调用链来查看[RateLimitServer](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/src/main/java/io/datawire/ambassador/ratelimiter/simpleimpl/RateLimitServer.java)的内容。 简而言之，main方法创建一个RateLimitServer类的实例，调用start（）方法，再调用blockUntilShutdown（）方法。 这将启动一个实例，并在指定的服务端点上发布gRPC接口，同时侦听请求。
+一旦你实现了用ratelimit.proto定义的gRPC接口，下一件事情就是创建一个gRPC服务器用来监听和回复请求。 可以根据main方法调用链来查看[RateLimitServer](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/src/main/java/io/datawire/ambassador/ratelimiter/simpleimpl/RateLimitServer.java)的内容。 简而言之，main方法创建一个RateLimitServer类的实例，调用start()方法，再调用blockUntilShutdown()方法。 这将启动一个应用实例，并在指定的服务端点上发布gRPC接口，同时侦听请求。
 
-## 实现Java速率限制
+### 实现Java速率限制
 
 
-负责速率限制过程的实际Java代码包含在RateLimiterImpl内部类的shouldRateLimit（）方法（第75行）中。我没有自己实现算法，而是使用基于[令牌桶算法](https://en.wikipedia.org/wiki/Token_bucket)的Java速度限制开源库[bucket4j](https://github.com/vladimir-bukhtoyarov/bucket4j)。由于我限制了对每个服务的请求，因此每个存储桶与服务名称所绑定。对每个服务的请求都会从其所关联的存储桶中删除一个令牌。在本案例中，桶没有存储在外部数据库，而是存储在内存中的ConcurrentHashMap中。如果在生产环境中，通常会使用类似Redis的外部持久化存储方案来实现横向扩展。这里必须注意，如果在不更改每个服务桶限制的前提下水平扩展速率限制服务，那么将直接增加允许（非速率限制）请求的数量，而不是增加的服务数量。
+负责速率限制过程的实际Java代码包含在RateLimiterImpl内部类的shouldRateLimit()方法（第75行）中。我没有自己实现算法，而是使用基于[令牌桶算法](https://en.wikipedia.org/wiki/Token_bucket)的Java速度限制开源库[bucket4j](https://github.com/vladimir-bukhtoyarov/bucket4j)。由于我限制了对每个服务的请求，因此每个存储桶与服务名称所绑定。对每个服务的请求都会从其所关联的存储桶中删除一个令牌。在本案例中，桶没有存储在外部数据库，而是存储在内存中的ConcurrentHashMap中。如果在生产环境中，通常会使用类似Redis的外部持久化存储方案来实现横向扩展。这里必须注意，如果在不更改每个服务桶限制的前提下水平扩展速率限制服务，那么将直接导致（非速率限制）请求数量的增加，但实际服务可支持的请求数量没有增加。
 
 创建bucket4j存储桶的RateLimiterImpl大致代码如下：
 
@@ -285,10 +285,10 @@ Ratelimit.RateLimitResponse rateLimitResponse = generateRateLimitResponse(code);
 
 代码比较容易解释。如果当前请求不需要进行速率限制，则此方法返回Ratelimit.RateLimitResponse.Code.OK; 如果当前请求由于速度限制而被拒绝，则此方法返回Ratelimit.RateLimitResponse.Code.OVER_LIMIT。根据此gRPC服务的响应，Ambassador API网关将请求传递给后端服务，或者中断请求并返回HTTP状态码429“Too Many Requests” 而不再调用后端服务。
 
-这个简单案例可以防止一种服务过载，但也希望这能够阐明速率限制的核心概念，并且可以相对容易实现基于请求元数据（例如用户ID等）的速率限制。
+这个简单案例只可以防止一个服务的访问过载，但也希望这能够阐明速率限制的核心概念，进而可以相对容易实现基于请求元数据（例如用户ID等）的速率限制。
 
 ## 下一阶段
 
-本文演示了如何在Java中创建速率限制服务，并轻松与Ambassador网关所集成，同时也可以基于任何自定义的速率限制算法实现。 在本系列的最后一篇文章中，您将更深入地了解Envoy速率限制API，以便进一步学习如何设计速率限制服务。
+本文演示了如何在Java中创建速率限制服务，并轻易与Ambassador网关所集成。如果需要，你也可以基于任何自定义的速率限制算法实现。 在本系列的最后一篇文章中，您将更深入地了解Envoy速率限制API，以便进一步学习如何设计速率限制服务。
 
 如果有任何疑问，欢迎在Ambassador Gitter或通过[@danielbryantuk](https://twitter.com/danielbryantuk/)及[@datawireio](https://twitter.com/datawireio?lang=en)联系。
