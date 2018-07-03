@@ -67,7 +67,7 @@ $ kubectl apply -f .
 
 ```
 
-通过以上命令将进行部署，这与之前架构的区别在于添加了“限速”服务。 这个服务是用Java编写的，且没有使用微服务框架。它发布了一个gRPC端点，可供Ambassador来实现限制速率。这种方案允许灵活定制你实现的速率限制算法（这点的好处，请查看我[以前的文章](https://blog.getambassador.io/rate-limiting-for-api-gateways-892310a2da02)）。
+通过以上命令将进行部署，这与之前架构的区别在于添加了“限速”服务。 这个服务是用Java编写的，且没有使用微服务框架。它发布了一个gRPC端点，可供Ambassador来使用以实现速率限制。这种方案允许灵活定制你实现的速率限制算法（关于这点的好处请查看我[以前的文章](https://blog.getambassador.io/rate-limiting-for-api-gateways-892310a2da02)）。
 
 ![限速架构](https://ws1.sinaimg.cn/large/78a165e1gy1fsvwvs0d8kj20hi0gj74v.jpg)
 
@@ -119,9 +119,9 @@ spec:
         
 ```
 
-你可以会注意到最后Docker Image处的“danielbryantuk/ratelimiter:0.3” ，但我们先需要注意，此服务在群集中运行，发布TCP端口50051。
+这里不需要关注最后Docker Image处的“danielbryantuk/ratelimiter:0.3” ，而需要注意：此服务在群集中运行，发布TCP端口50051。
 
-在ambassador-service.yaml配置文件中，我还更新了Ambassador Kubernetes annotations配置，以确保通过包含“rate_limits”属性来限制对shopfront服务的请求。 我还添加了一些额外的元数据“- descriptor: Example descriptor”，这将在下一篇文章中更详细地解释。 目前我想说，这是将元数据传递到速率限制服务的好方法。
+在ambassador-service.yaml配置文件中，还更新了Ambassador Kubernetes annotations配置，以确保能通过包含“rate_limits”属性来限制对shopfront服务的请求。 我还添加了一些额外的元数据“- descriptor: Example descriptor”，这将在下一篇文章中更详细地解释。这里我们需要注意的是，如果要将元数据传递到速率限制服务，这种方法不错。
 
 ```bash
 
@@ -145,7 +145,7 @@ metadata:
 
 ```
 
-你可以使用kubectl命令检查部署是否成功：
+你可以使用kubectl命令来检查部署是否成功：
 
 ```bash
 (master *) kubernetes-ambassador-ratelimit $ kubectl get svc
@@ -159,9 +159,9 @@ shopfront          ClusterIP      10.98.207.100    <none>        8010/TCP       
 stockmanager       ClusterIP      10.107.208.180   <none>        8030/TCP         1d
 ```
 
-6个服务看起来都不错（加上Kubernetes服务）：包含3个Java服务，2个Ambassador服务和1个ratelimiter服务。
+6个业务服务看起来都不错（去除Kubernetes服务）：包含3个Java服务，2个Ambassador服务和1个ratelimiter服务。
 
-你可以通过对shopfront服务端口的curl命令来进行测试，其应绑定在localhost外部IP的80端口上（如上文所示）：
+你可以通过curl命令对shopfront的服务端点进行测试，其应绑定在外部IP localhost的80端口上（如上文所示）：
 
 ```bash
 
@@ -183,13 +183,13 @@ stockmanager       ClusterIP      10.107.208.180   <none>        8030/TCP       
 ```
 
 
-你会注意到这生成了一些HTML，但它只是Docker Java Shop的首页，并且可以通过浏览器在[http://localhost/shopfront/](http://localhost/shopfront/)访问。但对于我们的速率限制实验，最好还是使用curl命令。
+你会注意到这里显示了一些HTML，这只是Docker Java Shop的首页。虽然可以通过浏览器在[http://localhost/shopfront/](http://localhost/shopfront/)访问，对于我们的速率限制实验，最好还是使用curl命令。
 
 ## 速率限制测试
 
-对于这种演示性质的速率限​​制服务，我决定仅对服务本身进行限制。例如当速率限制服务计算是否需要限制请求时，唯一需要考虑的指标是在一段时间内针对特定后端的请求数量。在代码实现中使用[令牌桶算法](https://en.wikipedia.org/wiki/Token_bucket)，最多20个桶，并且每秒钟的补充10个令牌。由于速率限制与请求相关联，这意味着你可以每秒发出10次API请求且没有任何问题，并且由于存储桶最初包含20个令牌，你可以暂时超过此请求数量。但是，一旦最初额外的令牌使用完，并且仍尝试每秒发出超过10个请求，那么你将收到HTTP 429 “Too Many Requests” 状态码。这时，Ambassador API网关不再会将请求转发到后端服务。
+对于这种演示性质的速率限制服务，这里仅对服务本身进行限制。比如当速率限制服务需要计算是否需要限制请求时，唯一需要考虑的指标是在一段时间内针对特定后端的请求数量。在代码实现中使用[令牌桶算法](https://en.wikipedia.org/wiki/Token_bucket)。假设桶中令牌容量为20，并且每秒钟的补充10个令牌。由于速率限制与请求相关联，这意味着你可以每秒发出10次API请求，但没有任何问题，同时由于存储桶最初包含20个令牌，你可以暂时超过此并发数量。但是，一旦最初额外的令牌使用完，并且仍尝试每秒发出超过10个请求，那么你将收到HTTP 429 “Too Many Requests” 状态码。这时，Ambassador API网关不再会将请求转发到后端服务。
 
-让我看下如何通过curl发出大量请求来模拟这个操作。你需要避免显示的HTML页面（通过-output /dev/null参数）及curl请求（通过—silent参数），但需要显示不正确的HTTP响应状态（通过— show-error — fail参数）。你可以编写一个bash循环脚本并记录时间输出（以显示发出请求的时间）来创建一个非常粗颗粒度的负载发生器（可以通过CTRL-C来终止循环）：
+让我看下如何通过curl发出大量请求来模拟这个操作。你需要避免显示的HTML页面（通过-output /dev/null参数）及curl请求（通过—silent参数），但需要显示符合预期的HTTP响应状态（通过— show-error — fail参数）。下文通过一个bash循环脚本，并记录时间输出（以显示发出请求的时间），以此来创建一个非常粗颗粒度的负载发生器（可以通过CTRL-C来终止循环）：
 
 ```bash
 
@@ -214,8 +214,8 @@ Tue 24 Apr 2018 14:16:35 BST
 
 ```
 
-正你所见，从输出日志来看，前几个请求显示日期且没有错误，请求正常。过不了多久，当我的Mac上的请求循环超过每秒10次，HTTP 429错误便开始出现。
-顺便说一下，我通常使用[ Apache Benchmarking “ab”](https://httpd.apache.org/docs/2.4/programs/ab.html) 负载生成工具进行这种简单的实验，但这工具在调用本地localhost会有问题（或者Docker配置也给我带来了一些问题）。
+如你所见，从输出日志来看，前几个请求显示日期且没有错误，一切正常。过不了多久，当在我测试的Mac上的请求循环超过每秒10次，HTTP 429错误便开始出现。
+顺便说一下，我通常使用[ Apache Benchmarking “ab”](https://httpd.apache.org/docs/2.4/programs/ab.html) 负载生成工具来进行这种简单实验，但这工具在调用本地localhost会有问题（同时Docker配置也给我带来了额外问题）。
 
 ## 检验速率限制器服务
 
@@ -241,7 +241,7 @@ public void shouldRateLimit(Ratelimit.RateLimitRequest rateLimitRequest, StreamO
 
 ## 运行gRPC服务器
 
-一旦你实现了用ratelimit.proto定义的gRPC接口，下一件事情就是创建一个gRPC服务器用来监听和回复请求。 可以根据main方法调用链来查看[RateLimitServer](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/src/main/java/io/datawire/ambassador/ratelimiter/simpleimpl/RateLimitServer.java)的内容。 简而言之，main方法创建一个RateLimitServer类的实例，调用start（）方法，再调用blockUntilShutdown（）方法。 这将启动一个实例，并在指定的网络端口上发布gRPC接口，同时侦听请求。
+一旦你实现了用ratelimit.proto定义的gRPC接口，下一件事情就是创建一个gRPC服务器用来监听和回复请求。 可以根据main方法调用链来查看[RateLimitServer](https://github.com/danielbryantuk/ambassador-java-rate-limiter/blob/master/src/main/java/io/datawire/ambassador/ratelimiter/simpleimpl/RateLimitServer.java)的内容。 简而言之，main方法创建一个RateLimitServer类的实例，调用start（）方法，再调用blockUntilShutdown（）方法。 这将启动一个实例，并在指定的服务端点上发布gRPC接口，同时侦听请求。
 
 ## 实现Java速率限制
 
