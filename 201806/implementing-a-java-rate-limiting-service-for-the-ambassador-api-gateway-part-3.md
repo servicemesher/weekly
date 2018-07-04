@@ -1,4 +1,4 @@
-# 第3部分：基于Ambassador API网关实现Java速率限制服务
+# 速率限制第三部分——基于Ambassador API网关实现Java速率限制服务
 
 > 原文链接：https://blog.getambassador.io/implementing-a-java-rate-limiting-service-for-the-ambassador-api-gateway-e09d542455da
 >
@@ -10,7 +10,7 @@
 
 基于Kubernetes云原生的[Ambassador API](https://www.getambassador.io/)网关所提供的速率限制功能是完全可定制的，其允许任何实现gRPC服务端点的服务自行决定是否需要对请求进行限制。本文在先前[第1](https://blog.getambassador.io/rate-limiting-a-useful-tool-with-distributed-systems-6be2b1a4f5f4)和[第2部分](https://blog.getambassador.io/rate-limiting-for-api-gateways-892310a2da02)的基础上，阐述如何为Ambassador API网关创建和部署简单的基于Java的速率限制服务。
 
-## 设置：Docker Java Shop
+## 部署Docker Java Shop
 
 在我之前的教程“[使用Kubernetes和Ambassador API网关部署Java应用](https://blog.getambassador.io/deploying-java-apps-with-kubernetes-and-the-ambassador-api-gateway-c6e9d9618f1b)”中，我将开源的Ambassador API网关添加到现有的一个部署于Kubernetes的Java（Spring Boot和Dropwizard）服务中。 如果你之前不了解这个，建议你先阅读下此教程及其他相关内容来熟悉基础知识。
 本文假定你熟悉如何构建基于Java的微服务并将其部署到Kubernetes，同时已经完成安装所有的必备组件（我在本文中使用[Docker for Mac Edge](https://docs.docker.com/docker-for-mac/edge-release-notes/)，并启用其内置的Kubernetes支持。若使用minikube或远程群集应该也类似）。
