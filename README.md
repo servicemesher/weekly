@@ -1,14 +1,17 @@
 # Trans
 
-*Translations, trans-thinkings.*
+**打造Service Mesh领域最全的中文资料库。**
 
-Service Mesh最新资料汇总，通过 [提交 Issue](https://github.com/servicemesher/trans/issues/new)的方式提交最新资料地址，翻译完成的文档归档到本仓库中。文档翻译完成后会显示在[ServiceMesher社区门户网站](http://www.servicemesher.com)和微信公众号中。
+通过[提交Issue](https://github.com/servicemesher/trans/issues/new)的方式提交最新资料地址，翻译完成的文档归档到本仓库中。文档翻译完成后会显示在[ServiceMesher社区门户网站](http://www.servicemesher.com)和微信公众号中。
 
 ![](https://ws2.sinaimg.cn/large/006tNc79ly1fsyunj8ujoj309k09k748.jpg)
 
 ## 如何参与
 
-大家可以通过提交Issue和提交PR的方式参与。
+参与该项目包括两种方式：
+
+1. 通过[提交Issue](https://github.com/servicemesher/trans/issues/new)的方式提交文章线索
+2. 参与文章翻译提交PR
 
 ### 提交 Issue
 
@@ -27,15 +30,15 @@ Service Mesh最新资料汇总，通过 [提交 Issue](https://github.com/servic
 
 [提交PR](https://github.com/servicemesher/trans/pulls) 就需要提交对应Issue的译文文档，使用Markdown格式。
 
-### 文档要求
+## 文档要求
 
 文档格式为Markdown，尽量保留原文格式，可以根据中文阅读习惯适度调整，**中英文之间、中文和数字之间不用加空格**。
 
-**文件名**
+**命名规则**
 
 文件使用英文命名，单词之间使用 `-` 连接，所有字母均为小写，例如 `the-path-to-service-mesh.md`。
 
-**组织结构**
+**目录结构**
 
 新的文档根据提交 PR 的时间在对应的目录中创建。如2018年5月30日提交的PR需要在 `201805` 目录中创建新的文档，即所有文档是按照月来归档的。
 
@@ -92,4 +95,4 @@ Mac用户可以直接到App Store中搜索**iPic**就可以免费下载和使用
 
 ---
 
-ServiceMesher—Serivce Mesh爱好者社区
+ServiceMesher—Service Mesh爱好者社区
