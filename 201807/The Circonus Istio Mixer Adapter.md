@@ -19,9 +19,9 @@
 
 ![](https://ws4.sinaimg.cn/large/006tNc79gy1ft2kovaczfj319u0zftc9.jpg)
 
-Istio 还包含了 StatsD 和 Prometheus 的 metrics 适配器。然而，Circonus 适配器与其他适配器又存在一些区别。首先，Circonus 适配器允许我们将请求持续时间作为一个直方图来收集，而不仅仅是记录固定的百分位数。这使我们能够计算任何时间窗上的任意分位数，并对所收集的直方图进行统计分析。第二，数据可以基本上永久保留。第三，telemetry 数据被保存在持久的环境中，而独立于 Kubernetes 管理的任何短暂资产之外。
+Istio 还包含了 StatsD 和 Prometheus 的 metrics 适配器。然而，Circonus 适配器与其他适配器又存在一些区别。首先，Circonus 适配器允许我们将请求持续时间作为一个直方图来收集，而不仅仅是记录固定的百分位数。这使我们能够计算任何时间窗上的任意分位数，并对所收集的直方图进行统计分析。第二，数据可以基本上永久保留。第三，telemetry 数据被保存在持久的环境中，而独立于 Kubernetes 管理的任何短暂资产之外。
 
-让我们来看看，数据是如何从 Istio 到 Circonus中的。Istio 的适配器框架暴露了很多适合适配器开发者的方法。Istio 处理的每个请求都生成了一组度量实例用来调用 *HandleMetric()* 方法。在我们的运算配置中，我们可以指定我们要采用的度量，以及他们的类型：
+让我们来看看，数据是如何从 Istio 到 Circonus 中的。Istio 的适配器框架暴露了很多适合适配器开发者的方法。Istio 处理的每个请求都生成了一组度量实例用来调用 *HandleMetric()* 方法。在我们的运算配置中，我们可以指定我们要采用的度量，以及他们的类型：
 
 ```
 spec:
@@ -39,7 +39,7 @@ spec:
     type: GAUGE
 ```
 
-在这里，我们配置了一个服从 [HTTPTrap](https://login.circonus.com/resources/docs/user/Data/CheckTypes/HTTPTrap.html) 检查的 URL 同时间断发送度量的 Circonus 处理程序。在这个例子中，我们指定了四个度量的集合，以及他们的类型。请注意，我们将 *请求持续时间* 对量作为一个 *DISTRIBUTION* 类型来收集，将作为 Circonus 中的直方图进行处理。这将保持时间的保真度，而不是平均该度量，或者在记录之前计算百分位数（这两种技术都失去了信号的值）。
+在这里，我们配置了一个服从 [HTTPTrap](https://login.circonus.com/resources/docs/user/Data/CheckTypes/HTTPTrap.html) 检查的 URL 同时间断发送 metric 的 Circonus 处理程序。在这个例子中，我们指定了四个度量的集合，以及他们的类型。请注意，我们将 *请求持续时间* 对量作为一个 *DISTRIBUTION* 类型来收集，将作为 Circonus 中的直方图进行处理。这将保持时间的保真度，而不是平均该度量，或者在记录之前计算百分位数（这两种技术都失去了信号的值）。
 
 对每个请求，对每个指定的度量请求调用 *HandleMetric() * 方法。看如下代码：
 
@@ -66,7 +66,9 @@ func (h *handler) HandleMetric(ctx context.Context, insts []*metric.Instance) er
     return nil
 }
 ```
-在这里我们可以看到，使用一个混合器的上下文以及一组 metric 实例来调用 *HandleMetric()* 方法，我们遍历每个实例，确定它的类型，并调用适当的 *circonus-gometrics* 方法。在这个框架中，metric 处理器包含一个 *circonus-gometrics* 对象，并提交实际的度量值来实现。设置处理器还是比较复杂的，但并不是最复杂的事情：
+
+在这里我们可以看到，使用一个混合器的上下文以及一组 metric 实例来调用 *HandleMetric()* 方法，我们遍历每个实例，确定它的类型，并调用适当的 *circonus-gometrics* 方法。在这个框架中，metric 处理器包含一个 *circonus-gometrics* 对象，并提交实际的度量值来实现。设置处理器还是比较复杂的，但并不是最复杂的事情：
+
 ```
 // Build constructs a circonus-gometrics instance and sets up the handler
 func (b *builder) Build(ctx context.Context, env adapter.Env) (adapter.Handler, error) {
@@ -117,7 +119,7 @@ func (b *builder) Build(ctx context.Context, env adapter.Env) (adapter.Handler, 
     return &handler{cm: cm, env: env, metrics: metrics, cancel: adapterCancel}, nil
 }
 ```
-混合器提供了一个生成器类型，我们定义了构建方法。再次，混合器的上下文被传递，以及表示混合器配置的环境变量。我们创建了一个新的 *circonus-gometrics* 对象，并故意禁用了自动 metrics 刷新。我们这样做是因为混合器要求我们在使用 *env.ScheduleDaemon()* 方法时在 panic 处理器中包装所有的 goroutines 。你会注意到我们以及通过 *context.WithCancel* 创建了自己的 *adapterContext* 。这使得我们可以通过混合器提供的 *Close()* 方法中调用 *h.cancel()* 来关闭 metrics 刷新 goroutine 。我们还希望将任何日志事件从 CGM (*circonus-gometrics*) 发送到混合气的日志中。混合器提供了一个基于 glog 的  *env.Logger()* 接口，但 CGM 使用的是标准的 Golang 日志。我们如何解决这种不匹配的阻碍？通过一个 logger bridge，任何 CGM 生成的日志记录语句都可以传递给混合器。
+混合器提供了一个生成器类型，我们定义了构建方法。再次，混合器的上下文被传递，以及表示混合器配置的环境变量。我们创建了一个新的 *circonus-gometrics* 对象，并故意禁用了自动 metrics 刷新。我们这样做是因为混合器要求我们在使用 *env.ScheduleDaemon()* 方法时在 panic 处理器中包装所有的 goroutines 。你会注意到我们以及通过 *context.WithCancel* 创建了自己的 *adapterContext* 。这使得我们可以通过混合器提供的 *Close()* 方法中调用 *h.cancel()* 来关闭 metrics 刷新 goroutine 。我们还希望将任何日志事件从 CGM (*circonus-gometrics*) 发送到混合气的日志中。混合器提供了一个基于 glog 的  *env.Logger()* 接口，但 CGM 使用的是标准的 Golang 日志。我们如何解决这种不匹配的阻碍？通过一个 logger bridge，任何 CGM 生成的日志记录语句都可以传递给混合器。
 
 ```
 // logToEnvLogger converts CGM log package writes to env.Logger()
@@ -137,4 +139,4 @@ func (b logToEnvLogger) Write(msg []byte) (int, error) {
 
 全适配器的代码，可以查看 Istio github 库 [点我](https://github.com/istio/istio/tree/master/mixer/adapter/circonus)
 
-尽管如此，让我们看看在执行过中是什么样子的。我安装了 Google 的 Kubernetes 引擎部署，使用 Circonus 加载了 Istio 的开发版本，并部署了于 Istio 一起提供的示例 BookInfo 应用程序。下面的图像是从请求到应用程序的请求持续时间分布的热图。你会注意到高亮显示的时间片段的直方图覆盖。我添加了一个覆盖，添加了一个中位数、第九十和百分位的响应时间；
+尽管如此，让我们看看在执行过中是什么样子的。我安装了 Google 的 Kubernetes 引擎部署，使用 Circonus 加载了 Istio 的开发版本，并部署了于 Istio 一起提供的示例 BookInfo 应用程序。下面的图像是从请求到应用程序的请求持续时间分布的热图。你会注意到高亮显示的时间片段的直方图覆盖。我添加了一个覆盖，添加了一个中位数、第九十和百分位的响应时间；
