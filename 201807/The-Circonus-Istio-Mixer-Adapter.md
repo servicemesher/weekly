@@ -245,7 +245,7 @@ imagePullPolicy: IfNotPresent
 name: mixer
 ```
 
-好的，到现在。抓取一个 [operator 配置](https://istio.io/docs/setup/kubernetes/quick-start/#installation-steps) 的副本，并将你的 HTTPTrap submission URL 插入其中。你需要一个  [Circonus 账户](https://login.circonus.com/signup) 来获取它，如果你没有，可以创建一个免费的账户，同时添加一个 [HTTPTrap 检测](https://login.circonus.com/resources/docs/user/Data/CheckTypes/HTTPTrap.html)。
+好的，到现在。抓取一个 [operator 配置](https://istio.io/docs/setup/kubernetes/quick-start/#installation-steps) 的副本，并将你的 HTTPTrap submission URL 插入其中。你需要一个  [Circonus 账户](https://login.circonus.com/signup) 来获取它，如果你没有，可以创建一个免费的账户，同时添加一个 [HTTPTrap 检测](https://login.circonus.com/resources/docs/user/Data/CheckTypes/HTTPTrap.html)。
 
 现在可以应用你的 operator 配置：
 
