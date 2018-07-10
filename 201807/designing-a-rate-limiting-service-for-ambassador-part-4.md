@@ -1,4 +1,4 @@
-# 为Ambassador API网关设计速率限制服务
+# 速率限制第四部分——为Ambassador API网关设计速率限制服务
 
 > 原文链接：https://blog.getambassador.io/designing-a-rate-limiting-service-for-ambassador-f460e9fabedb
 >
