@@ -1,6 +1,6 @@
 使用Istio 0.8对Kubernetes进行A/B测试
 
-![](https://cdn-images-1.medium.com/max/800/1*SEDs0n1m8vhTPlxOhrudJA.png)
+![](https://ws1.sinaimg.cn/large/7134983fgy1ft55myd1kej20kb098dft.jpg)
 
 这是我们正在发布的系列文章中的第二篇，描述了我们在Kubernetes上采用Istio进行流量路由的经验。有关我们试图通过Vamp实现的更多详情以及我们选择Istio的原因，请参阅我们的[第一篇文章](https://medium.com/vamp-io/putting-istio-to-work-8513f5218c51)。
 
@@ -23,18 +23,18 @@ Vamp Lamia这个新版本的目标是将Istio从0.7.1迁移到0.8并使其使用
 现在，足以说网关是Istio对于Kubernetes Ingress的等价物，因此能让服务在对外暴露，而目标规则将部署上的标签映射到子集，提供了一层抽象用于更好地将不同版本的服务分组。
 正如您在下面的屏幕截图中所看到的，只需一些易于理解的参数即可轻松设置这些资源。
 
-![](https://cdn-images-1.medium.com/max/800/1*PP5sAruEiaScSLOAfPB5ag.png)
+![](https://ws1.sinaimg.cn/large/7134983fgy1ft55odj8ffj20m80f1aas.jpg)
 *服务设置*
 
-![](https://cdn-images-1.medium.com/max/800/1*9WAKB46rHvN-9qDtFvNOtQ.png)
+![](https://ws1.sinaimg.cn/large/7134983fgy1ft55p32bxmj20m80jwaay.jpg)
 *网关设置*
 
-![](https://cdn-images-1.medium.com/max/800/1*LkGPB6j0HmOYTS5Mpk4MAA.png)
+![](https://ws1.sinaimg.cn/large/7134983fgy1ft55pf1l3dj20m80sedgz.jpg)
 *目标规则设置*
 
 完成此操作后，您可以开始设置实验本身，例如使用下面显示的配置。
 
-![](https://cdn-images-1.medium.com/max/800/1*SlV79_8kbprKbbutXp7Spg.png)
+![](https://ws1.sinaimg.cn/large/7134983fgy1ft55purozaj20m80ukq47.jpg)
 *实验设置*
 
 大多数字段都是不言自明的，但是为了清楚起见，让我们逐一说明：
@@ -55,7 +55,7 @@ Vamp Lamia这个新版本的目标是将Istio从0.7.1迁移到0.8并使其使用
 虚拟服务（Virtual Service）是Istio 0.8中路径规则的替代品，用于定义指定服务的流量路由。
 您可以在以下屏幕截图中查看其配置。
 
-![](https://cdn-images-1.medium.com/max/800/1*2VxrlhZT4_ReuZBzaasNVg.png)
+![](https://ws1.sinaimg.cn/large/7134983fgy1ft55qfs20zj20m80ob0ug.jpg)
 *虚拟服务配置*
 
 我们意识到这种配置可能会让人觉得相当含糊，所以让我们一起来看一下。
@@ -70,10 +70,10 @@ Vamp Lamia这个新版本的目标是将Istio从0.7.1迁移到0.8并使其使用
 
 可以通过指标页面监控此行为，如下所示。
 
-![](https://cdn-images-1.medium.com/max/800/1*VbWOYP-7vpSoyjsYmVZ8aQ.png)
+![](https://ws1.sinaimg.cn/large/7134983fgy1ft55re75e9j20m80egmy0.jpg)
 *虚拟服务指标*
 
-这里介绍的情景当然仍然过于简单。在接下来的几周内，我们将离开子集和版本的概念，以便更多地关注用户想要测试的功能，我们将切换到[Welch的t-test](https://en.wikipedia.org/ wiki / Welch％27s_t-test)算法，用于识别表现最佳的版本。同时，我们还计划自动创建网关和目标规则，以便在用户不需要特定配置时隐藏所有复杂性。
+这里介绍的情景当然仍然过于简单。在接下来的几周内，我们将离开子集和版本的概念，以便更多地关注用户想要测试的功能，我们将切换到[Welch的t-test](https://en.wikipedia.org/wiki/Welch％27s_t-test)算法，用于识别表现最佳的版本。同时，我们还计划自动创建网关和目标规则，以便在用户不需要特定配置时隐藏所有复杂性。
 
 以上就是这次的分享！请随时向我们提供有关此新功能以及Vamp Lamia发展方向的反馈，请不要忘记，如果您想更深入地了解Vamp Lamia功能，请查看我们[github](https://github.com/magneticio/vamp2setup)上的repo。
 
