@@ -24,7 +24,7 @@ Vamp Lamia这个新版本的目标是将Istio从0.7.1迁移到0.8并使其使用
 正如您在下面的屏幕截图中所看到的，只需一些易于理解的参数即可轻松设置这些资源。
 
 ![](https://cdn-images-1.medium.com/max/800/1*PP5sAruEiaScSLOAfPB5ag.png)
-服务设置
+<center>*服务设置*</center>
 
 ![](https://cdn-images-1.medium.com/max/800/1*9WAKB46rHvN-9qDtFvNOtQ.png)
 网关设置
@@ -43,7 +43,7 @@ Vamp Lamia这个新版本的目标是将Istio从0.7.1迁移到0.8并使其使用
  -  **服务端口（Service Port）**是要使用的服务端口。
  -  **网关名称（Gateway Name）**是暴露服务的网关。
  -  **以分钟为单位的时间段（Period in minutes）**是以分钟为单位的时间间隔，用于定期更新配置。
--  **步长（Step）**是每次更新时权重的变化量。
+ -  **步长（Step）**是每次更新时权重的变化量。
  -  **标签（Tags）** 是与特定服务版本相关的描述性值。
  -  **子集**（Subset）是服务的子集。
  -  **目标（Target）**检查的URL用于评估特定子集的成功率。
