@@ -24,18 +24,18 @@ Vamp Lamia这个新版本的目标是将Istio从0.7.1迁移到0.8并使其使用
 正如您在下面的屏幕截图中所看到的，只需一些易于理解的参数即可轻松设置这些资源。
 
 ![](https://cdn-images-1.medium.com/max/800/1*PP5sAruEiaScSLOAfPB5ag.png)
-<center>*服务设置*</center>
+*服务设置*
 
 ![](https://cdn-images-1.medium.com/max/800/1*9WAKB46rHvN-9qDtFvNOtQ.png)
-网关设置
+*网关设置*
 
 ![](https://cdn-images-1.medium.com/max/800/1*LkGPB6j0HmOYTS5Mpk4MAA.png)
-目标规则设置
+*目标规则设置*
 
 完成此操作后，您可以开始设置实验本身，例如使用下面显示的配置。
 
 ![](https://cdn-images-1.medium.com/max/800/1*SlV79_8kbprKbbutXp7Spg.png)
-实验设置
+*实验设置*
 
 大多数字段都是不言自明的，但是为了清楚起见，让我们逐一说明：
 
@@ -56,7 +56,7 @@ Vamp Lamia这个新版本的目标是将Istio从0.7.1迁移到0.8并使其使用
 您可以在以下屏幕截图中查看其配置。
 
 ![](https://cdn-images-1.medium.com/max/800/1*2VxrlhZT4_ReuZBzaasNVg.png)
-虚拟服务配置
+*虚拟服务配置*
 
 我们意识到这种配置可能会让人觉得相当含糊，所以让我们一起来看一下。
 
@@ -71,7 +71,7 @@ Vamp Lamia这个新版本的目标是将Istio从0.7.1迁移到0.8并使其使用
 可以通过指标页面监控此行为，如下所示。
 
 ![](https://cdn-images-1.medium.com/max/800/1*VbWOYP-7vpSoyjsYmVZ8aQ.png)
-虚拟服务指标
+*虚拟服务指标*
 
 这里介绍的情景当然仍然过于简单。在接下来的几周内，我们将离开子集和版本的概念，以便更多地关注用户想要测试的功能，我们将切换到[Welch的t-test](https://en.wikipedia.org/ wiki / Welch％27s_t-test)算法，用于识别表现最佳的版本。同时，我们还计划自动创建网关和目标规则，以便在用户不需要特定配置时隐藏所有复杂性。
 
