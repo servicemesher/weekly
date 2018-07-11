@@ -2,6 +2,8 @@
 
 **打造Service Mesh领域最全的中文资料库。**
 
+本仓库接受英文翻译与中文原创文章。
+
 通过[提交Issue](https://github.com/servicemesher/trans/issues/new)的方式提交最新资料地址，翻译完成的文档归档到本仓库中。文档翻译完成后会显示在[ServiceMesher社区门户网站](http://www.servicemesher.com)和微信公众号中。
 
 ![](https://ws2.sinaimg.cn/large/006tNc79ly1fsyunj8ujoj309k09k748.jpg)
