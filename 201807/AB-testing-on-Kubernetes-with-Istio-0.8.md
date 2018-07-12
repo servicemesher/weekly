@@ -24,29 +24,33 @@ Vamp Lamia这个新版本的目标是将Istio从0.7.1迁移到0.8并使其使用
 正如您在下面的屏幕截图中所看到的，只需一些易于理解的参数即可轻松设置这些资源。
 
 ![](https://ws1.sinaimg.cn/large/7134983fgy1ft55odj8ffj20m80f1aas.jpg)
+
 *服务设置*
 
 ![](https://ws1.sinaimg.cn/large/7134983fgy1ft55p32bxmj20m80jwaay.jpg)
+
 *网关设置*
 
 ![](https://ws1.sinaimg.cn/large/7134983fgy1ft55pf1l3dj20m80sedgz.jpg)
+
 *目标规则设置*
 
 完成此操作后，您可以开始设置实验本身，例如使用下面显示的配置。
 
 ![](https://ws1.sinaimg.cn/large/7134983fgy1ft55purozaj20m80ukq47.jpg)
+
 *实验设置*
 
 大多数字段都是不言自明的，但是为了清楚起见，让我们逐一说明：
 
- -  **服务名称（Service Name）**是您要在其上运行A/B测试的服务的名称。
- -  **服务端口（Service Port）**是要使用的服务端口。
- -  **网关名称（Gateway Name）**是暴露服务的网关。
- -  **以分钟为单位的时间段（Period in minutes）**是以分钟为单位的时间间隔，用于定期更新配置。
- -  **步长（Step）**是每次更新时权重的变化量。
+ -  **服务名称（Service Name）** 是您要在其上运行A/B测试的服务的名称。
+ -  **服务端口（Service Port）** 是要使用的服务端口。
+ -  **网关名称（Gateway Name）** 是暴露服务的网关。
+ -  **以分钟为单位的时间段（Period in minutes）** 是以分钟为单位的时间间隔，用于定期更新配置。
+ -  **步长（Step）** 是每次更新时权重的变化量。
  -  **标签（Tags）** 是与特定服务版本相关的描述性值。
- -  **子集**（Subset）是服务的子集。
- -  **目标（Target）**检查的URL用于评估特定子集的成功率。
+ -  **子集（Subset）** 是服务的子集。
+ -  **目标（Target）** 检查的URL用于评估特定子集的成功率。
 
 实验将通过检查在到达登陆页面后打开目标页面的用户数来测试功能的性能。
 为了跟踪这一点，Vamp Lamia为访问登陆页的每个用户设置了一个cookie，然后检查同一用户是否访问了目标页面。
@@ -71,6 +75,7 @@ Vamp Lamia这个新版本的目标是将Istio从0.7.1迁移到0.8并使其使用
 可以通过指标页面监控此行为，如下所示。
 
 ![](https://ws1.sinaimg.cn/large/7134983fgy1ft55re75e9j20m80egmy0.jpg)
+
 *虚拟服务指标*
 
 这里介绍的情景当然仍然过于简单。在接下来的几周内，我们将离开子集和版本的概念，以便更多地关注用户想要测试的功能，我们将切换到[Welch的t-test](https://en.wikipedia.org/wiki/Welch％27s_t-test)算法，用于识别表现最佳的版本。同时，我们还计划自动创建网关和目标规则，以便在用户不需要特定配置时隐藏所有复杂性。
