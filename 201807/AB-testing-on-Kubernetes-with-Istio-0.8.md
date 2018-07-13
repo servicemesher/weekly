@@ -1,4 +1,10 @@
-使用 Istio 0.8 对 Kubernetes 进行 A/B 测试
+# 使用 Istio 0.8 对 Kubernetes 进行 A/B 测试
+
+> 原文地址：<https://medium.com/vamp-io/a-b-testing-on-kubernetes-with-istio-0-8-6323efa2b4e2>
+>
+> 译者：[张琦翔](https://github.com/zhangqx2010)
+>
+> 校对：[宋净超](http://jimmysong.io)
 
 ![](https://ws1.sinaimg.cn/large/7134983fgy1ft55myd1kej20kb098dft.jpg)
 
@@ -78,7 +84,6 @@ Virtual Service 定义了三条路由。前两个很容易理解：它们各自�
 
 *虚拟服务指标*
 
-这里介绍的情景当然仍然过于简单。在接下来的几周内，我们将不再涉及 subset 和版本的概念，以便更多地关注用户想要测试的功能，我们将转向 [Welch's t-test](https://en.wikipedia.org/wiki/Welch％27s_t-test)算法，用于识别表现最佳的版本。同时，我们还计划自动创建 Gateway 和 Destination Rule，以便在用户不需要特定配置时隐藏所有复杂性。
+这里介绍的情景当然仍然过于简单。在接下来的几周内，我们将不再涉及 subset 和版本的概念，以便更多地关注用户想要测试的功能，我们将转向 [Welch’s t-test](https://en.wikipedia.org/wiki/Welch％27s_t-test) 算法，用于识别表现最佳的版本。同时，我们还计划自动创建 Gateway 和 Destination Rule，以便在用户不需要特定配置时隐藏所有复杂性。
 
-以上就是这次的分享！请随时向我们提供有关此新功能以及Vamp Lamia发展方向的反馈，请不要忘记，如果您想更深入地了解 Vamp Lamia 功能，请查看我们[github](https://github.com/magneticio/vamp2setup)上的 repo。
-
+以上就是这次的分享！请随时向我们提供有关此新功能以及Vamp Lamia发展方向的反馈，请不要忘记，如果您想更深入地了解 Vamp Lamia 功能，请查看我们 [github](https://github.com/magneticio/vamp2setup) 上的 repo。
