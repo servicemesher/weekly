@@ -2,6 +2,8 @@
 
 > 原文地址：<https://medium.com/vamp-io/a-b-testing-on-kubernetes-with-istio-0-8-6323efa2b4e2>
 >
+> 作者：[Alessandro Valcepina](https://medium.com/@alessandrovalcepina)
+>
 > 译者：[张琦翔](https://github.com/zhangqx2010)
 >
 > 校对：[宋净超](http://jimmysong.io)
