@@ -2,7 +2,7 @@
 
 > 原文地址：<https://www.circonus.com/2017/12/circonus-istio-mixer-adapter/>
 >
-> 作者：Fred Moyer
+> 作者：[Fred Moyer](https://twitter.com/phredmoyer)
 >
 > 译者：[陈冬](https://github.com/shaobai)
 >
