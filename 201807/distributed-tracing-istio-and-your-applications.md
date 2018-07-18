@@ -113,7 +113,7 @@ import (
 	"net/http"
 	"golang.org/x/net/context"
 	"golang.org/x/net/context/ctxhttp"
-	"ot "github.com/opentracing/opentracing-go"
+	ot "github.com/opentracing/opentracing-go"
 )
 
 func injectTracingHeaders(incomingReq *http.Request, addr string) {
