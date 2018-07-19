@@ -1,4 +1,4 @@
-# 服务网状结构激化了集装箱网络
+# 服务网状结构激化了容器网络
 
 > 原文链接：https://searchitoperations.techtarget.com/feature/Service-mesh-architecture-radicalizes-container-networking
 >
@@ -8,7 +8,7 @@
 
 ## 容器化是IT行业最喜欢的超级英雄，因此容器在服务网格中具有强大的伙伴关系是唯一的选择。他们一起对抗网络管理混乱。
 
-这篇文章也可以在高级版中找到。 [现代堆栈：Kubernetes边车会带来容器的快乐吗？](https://searchitoperations.techtarget.com/ezine/Modern-Stack/Will-the-Kubernetes-sidecar-deliver-container-happiness)
+这篇文章也可以在高级版中找到。 [现代堆栈：Kubernetes sidecar 会带来容器的快乐吗？](https://searchitoperations.techtarget.com/ezine/Modern-Stack/Will-the-Kubernetes-sidecar-deliver-container-happiness)
 
 
 
@@ -34,7 +34,7 @@ IT系统中的服务网格体系结构还处于初期阶段，但与集装箱一
 
 “服务网格可以帮助发现服务，互连这些服务，断路由，负载均衡，......安全和身份验证” , Sigelman说，他是前谷歌工程师，OpenTracing 的创建者，OpenTracing 是开源的，提供不依赖供应商的 API。 
 
-### 服务网格的简要历史记录
+### 服务网格简史
 
 最早版本的 sidecar 代理技术在 2016 年初开始出现在网络规模的商店，如谷歌和推特，微服务管理需要对网络进行新的思考。与传统的单体应用程序不同，[微服务](https://searchmicroservices.techtarget.com/definition/microservices)依靠外部网络来沟通和协调应用程序功能。这些微服务通信需要密切监控，有时需要大规模重新配置。
 
@@ -42,9 +42,9 @@ IT系统中的服务网格体系结构还处于初期阶段，但与集装箱一
 
 > 大多数认为自己正在做微服务的组织并没有真正做到真正的微服务。   **安妮托马斯**分析师，Gartner
 
-在 2016 年初，在 Twitter 上实施了第一批微服务的工程师成立了 Buoyant 公司，该公司采用 sidecar 代理方法替代应用程序库。Buoyant 在 2016 年年中创造了术语*服务网格*，其最初的服务网格产品 Linkerd 使用 Java 虚拟机（JVM）作为 sidecar，这种设计将网络管理负担从应用程序开发人员转移出来，并支持对多语言的集中管理应用网络。到目前为止，Linkerd 是主流企业 IT 商店中唯一上生产环境的服务网格体系结构。使用的客户包括 Salesforce，PayPal，Credit Karma，Expedia 和 AOL。
+在 2016 年初，在 Twitter 上实施了第一批微服务的工程师成立了 Buoyant 公司，该公司采用 sidecar 代理方法替代应用程序库。Buoyant 在 2016 年年中创造了术语*服务网格*，其最初的服务网格产品 Linkerd 使用 Java 虚拟机（JVM）作为 sidecar，这种设计将网络管理负担从应用程序开发人员转移出来，并支持对多语言的集中管理应用网络。到目前为止，Linkerd 是主流企业 IT 商店中唯一上生产环境的服务网格体系结构。使用的客户包括 Salesforce、PayPal、Credit Karma、Expedia 和 AOL。
 
-当 Linkerd 刚刚站稳了脚跟时，[Docker 容器](https://searchitoperations.techtarget.com/definition/Docker)和 [Kubernetes 协调员](https://searchitoperations.techtarget.com/definition/Google-Kubernetes)将 [Buoyant](https://searchitoperations.techtarget.com/definition/Google-Kubernetes) 工程师送会起点。终于在2017 年 12 月，该公司发布了 Conduit，一种基于轻量级容器代理的服务网格体系结构，而不是 Linkerd 的资源沉重的 JVM。它专门用于与 [Go](https://searchitoperations.techtarget.com/tip/Googles-Go-language-seeks-DevOps-middle-ground) 和 [Rust](https://research.mozilla.org/rust/) 应用程序语言组合使用的 Kubernetes 。
+当 Linkerd 刚刚站稳了脚跟时，[Docker 容器](https://searchitoperations.techtarget.com/definition/Docker)和 [Kubernetes 容器编排](https://searchitoperations.techtarget.com/definition/Google-Kubernetes)将 [Buoyant](https://searchitoperations.techtarget.com/definition/Google-Kubernetes) 工程师送会起点。终于在2017 年 12 月，该公司发布了 Conduit，一种基于轻量级容器代理的服务网格体系结构，而不是 Linkerd 的资源沉重的 JVM。它专门用于与 [Go](https://searchitoperations.techtarget.com/tip/Googles-Go-language-seeks-DevOps-middle-ground) 和 [Rust](https://research.mozilla.org/rust/) 应用程序语言组合使用的 Kubernetes 。
 
 Kubernetes 社区正在为 Go 编写轻量级服务，可能需要 20 MB 或 50 MB 的内存才能运行，而 Linkerd 的 JVM可能会占用 200 MB 的内存，对于 Kubernetes 爱好者来说这是一个矛盾点，William Morgan说 ，他是 Buoyant 的联合创始人兼首席执行官。
 
