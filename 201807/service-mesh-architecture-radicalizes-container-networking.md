@@ -8,7 +8,7 @@
 
 ## 容器化是IT行业最喜欢的超级英雄，因此容器在服务网格中具有强大的伙伴关系是唯一的选择。他们一起对抗网络管理混乱。
 
-这篇文章也可以在高级版中找到。 [现代堆栈：Kubernetes sidecar 会带来容器的快乐吗？](https://searchitoperations.techtarget.com/ezine/Modern-Stack/Will-the-Kubernetes-sidecar-deliver-container-happiness)
+这篇文章也可以在高级版中找到。 [现代堆栈：Kubernetes sidecar 是否能提供容器般的快乐？](https://searchitoperations.techtarget.com/ezine/Modern-Stack/Will-the-Kubernetes-sidecar-deliver-container-happiness)
 
 
 
@@ -88,7 +88,7 @@ Linkerd 的负载均衡模式使用了一种称为*指数加权移动平均*的�
 
 “如果在服务发现中发生了某些事情，向 Linkerd 节点提供陈旧的数据或其他内容，并且负载均衡池中存在错误的主机，则即使服务发现信息不正确，Linkerd 失败算法也会将其从池中取出，这真是太好了“，Angelo 说。
 
-其他公司计划在 Istio 服务网格上使用轮胎，部分原因在于其集中式网络监控功 。
+其他公司在计划使用 Istio 服务网格，部分原因在于其集中式网络监控功 。
 
 “我们仍然有 PHP，Node 和 Go 中的\[应用程序代码\]，以及三种不同的方式来收集日志，监控服务和正常运行时间 ”，Harrison Harnisch说道，他是一名位于芝加哥的Buffer工作人员，一个分布式社交媒体管理平台美国各地的员工 。”但如果我们能够通过服务网络获得所有内容，我们就可以使用相同的模式进行日志记录，并构建模板仪表板以便跨团队共享，这在现在很难做到" 。 
 
