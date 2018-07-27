@@ -1,4 +1,4 @@
-# Service Mesh 如何解决3个主要的微服务挑战
+# Service Mesh 如何解决微服务中的3个主要挑战
 > 原文链接：https://dzone.com/articles/how-service-mesh-addresses-3-major-microservices-c
 >
 > 作者：[Zach Jory](https://twitter.com/zjory)
