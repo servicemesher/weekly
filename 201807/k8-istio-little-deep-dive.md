@@ -6,17 +6,17 @@
 
 我一直在使用Istio的egress，但是今天我想讨论的是ingresses。
 
-基本上，Istio的ingresses是使用一些可以互相通信的代理(例如envoy)，来处理应用中的访问，限制和路由等。
+Istio的ingress是使用一些可以互相通信的代理（例如envoy），来处理应用中的访问，限制和路由等。
 
 真正有趣的是Istio使用sidecar注入的方式。想象一下你运行了一个监听在80端口上的nginx容器，Istio会在相同的pod中注入一个sidecar容器，这个容器使用特权模式和NET\_ADMIN功能来共享内核网络命名空间。
 
-通过以上方式，Istio保证全链路追踪或者交互tls等能力。
+通过以上方式，Istio保证全链路追踪或者交互TLS等能力。
 
 简单来说，Istio的工作流程看起来像这样：
 
 ![Istio工作流程](http://ww1.sinaimg.cn/large/7cebfec5gy1fu027jprkxj20r70a3dg4.jpg)
 
-这和传统的nginx ingress有很大的不同，传统的nginx ingress使用iptables将流量转发到对应的pod，如下图：
+这和传统的nginx ingress有很大的不同，传统的nginx ingress使用iptables将流量转发到对应的pod上，如下图：
 
 ![nginx ingress workflow](http://ww1.sinaimg.cn/large/7cebfec5gy1fu028ondrgj20pe08vwen.jpg)
 
@@ -26,11 +26,11 @@
 
 ![](http://ww1.sinaimg.cn/large/7cebfec5gy1fu0291fi0xj20rs05d0tb.jpg)
 
-这意味着在内核网络命名空间中，这个容器需要使用特权模式和设置 NET\_ADMIN 属性，这是非常重要的内容。当你使用了 IP\_TRANSPARENT 这个 SOCK 选项或者管理iptables规则时，它不会作用于kube主机而是作用于这个pod。
+这意味着在内核网络命名空间中，这个容器需要使用特权模式和设置 NET\_ADMIN 属性，这个非常重要。当你使用了`IP_TRANSPARENT` 这个 SOCK 选项或者管理iptables规则时，它不会作用于pod所在的主机而是作用于这个pod。
 
-因此，当你在pod中使用nginx监听到80端口上，并使用istioctl注入一个sidecar容器时，在pod中的iptables规则将会是如下这样的(注意，你需要启用特权模式：docker exec --privileged -it 75375f8d4c98 bash)：
+因此，当你在pod中使用nginx监听到80端口上，并使用istioctl注入一个sidecar容器时，在pod中的iptables规则将会是如下这样的(注意，你需要启用特权模式：`docker exec --privileged -it 75375f8d4c98 bash`：
 
-```
+```bash
 root@nginx-847679bd76-mj4sw:~# iptables -t nat -S
 -P PREROUTING ACCEPT
 -P INPUT ACCEPT
@@ -39,7 +39,7 @@ root@nginx-847679bd76-mj4sw:~# iptables -t nat -S
 -N ISTIO_INBOUND
 -N ISTIO_OUTPUT
 -N ISTIO_REDIRECT
--A PREROUTING -p tcp -j ISTIO_INBOUND
+-A PREROUTING -p tcpx -j ISTIO_INBOUND
 -A OUTPUT -p tcp -j ISTIO_OUTPUT
 -A ISTIO_INBOUND -p tcp -m tcp --dport 80 -j ISTIO_REDIRECT
 -A ISTIO_OUTPUT ! -d 127.0.0.1/32 -o lo -j ISTIO_REDIRECT
