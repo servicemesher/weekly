@@ -65,7 +65,8 @@ level 2 安全级别通过使用socket感知BPF程序在socket级别提供分段
 ![](https://cilium.io/static/cilium_istio_process_security-818ec4eba5647fb40c254510f41f2ea2-84ad3.png)
 - 强制所有应用流量流经sidecar: 通过使用socket感知BPF策略，Cilium可以确保应用程序的所有通信都必须通过sidecar进行入站和出站连接。保证应用程序容器本身不能从pod外部接收连接，或者在不通过sidecar代理的情况下向pod外部发出请求。
 - pod中的最小安全权限：通过使用socket感知BPF程序锁定容器内部和进程级别的通信，其中一个容器中的安全漏洞不再导致整个容器被泄露。这尤其重要，因为sidecar容器可以直接访问容器中的任何其他容器，并且可以访问潜在的敏感信息。
-#### 有趣的事实：支持socket的BPF程序不仅限于基于IP的socket。安全策略也可以扩展到涵盖UNIX域socket。
+#### 有趣的事实：
+支持socket的BPF程序不仅限于基于IP的socket。安全策略也可以扩展到涵盖UNIX域socket。
 #### 外部服务的TLS可见性(正在开发中)
 stio依赖于对应用程序协议层（如HTTP）的可见性，以提供诸如基于URI的路由，基于HTTP头的授权和API请求级别遥测和跟踪等功能。通过将相互TLS与Istio Citadel管理的证书相互应用，可以在未加密的服务之间保持应用程序流量并在源服务器和目标服务的sidecar代理之间执行TLS加密来实现此可见性。
 ![](https://cilium.io/static/mtls-d8183e893814e9992111354c65aa1881-84ad3.png)
