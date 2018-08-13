@@ -10,7 +10,7 @@
 ![](https://storage.googleapis.com/cdn.thenewstack.io/media/2018/07/c7eb09dd-network-3286024_1280-1024x573.jpg)
 服务网络之战正在激烈进行中，自从该模式成为一种在基于微服务之间可靠路由流量的方式以来。它已经扩展成更加广泛的生态系统，虽然该术语起源于[HAProxy](http://www.haproxy.org/)等工具，包含如[Lyft](https://www.lyft.com/)、[Envoy](https://www.envoyproxy.io/)和可以实际路由和平衡任何涉及数据包[NGINX](https://www.nginx.com/)的web服务。
 
-[Armon Dadgar](https://www.linkedin.com/in/armon-dadgar/)，HashiCorp的CTO，提供更的解决方案：为什么不全部使用它们？在[HashiDays](https://www.hashidays.com/)该公司上周在阿姆斯特丹召开的开发者大会上，Dadgar和HashiCorp的技术团队公布了其Consul注册和服务发现产品的最新更新。
+[Armon Dadgar](https://www.linkedin.com/in/armon-dadgar/)，HashiCorp的CTO，提供更友好的解决方案：为什么不全部使用它们？在[HashiDays](https://www.hashidays.com/)该公司上周在阿姆斯特丹召开的开发者大会上，Dadgar和HashiCorp的技术团队公布了其Consul注册和服务发现产品的最新更新。
 
 Consul现在能够理解云环境中的服务网格层，同时在它所跟踪的服务之间维护一个安全的网络。[Consul Connect](https://www.consul.io/intro/getting-started/connect.html)的新功能允许对各个服务进行分段，以实现对它们的访问控制。这意味着可以锁定服务，只能访问其他特定的经过验证的服务。
 
