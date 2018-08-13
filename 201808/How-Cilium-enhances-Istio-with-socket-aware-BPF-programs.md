@@ -7,11 +7,11 @@
 > 校对：[宋净超](http://jimmysong.io)
 # Istio 1.0: Cilium通过Socket感知BPF程序增强Istio
 
-上周Istio 1.0 发布，Cilium社区祝贺所有Istio贡献者为此付出的巨大努力。我们很幸运能够参与社区活动，为Istio做出贡献，并帮助一些用户通过Istio和Cilium进行生产部署。如果您有兴趣在深入了解技术细节之前了解Istio + Cilium的用户故事,请考虑阅读HP FitStation团队(最大的Cilium + Istio用户之一)发布的以下Istio博客: [Istio是惠普FitStation平台的游戏规则的改变者](https://istio.io/blog/2018/hp/).
+上周Istio 1.0 发布，Cilium社区祝贺所有Istio贡献者为此付出的巨大努力。我们很幸运能够参与社区活动，为Istio做出贡献，并帮助一些用户通过Istio和Cilium进行生产部署。如果您有兴趣在深入了解技术细节之前了解Istio + Cilium的用户故事，请考虑阅读HP FitStation团队（最大的Cilium + Istio用户之一）发布的以下Istio博客: [Istio是惠普FitStation平台的游戏规则的改变者](https://istio.io/blog/2018/hp/)。
 
 本博客将介绍BPF和Cilium如何增强Istio的一些细节：
 - 增强安全
-    - 使用socket感知BPF程序为多容器pods提供最小权限
+    - 使用socket感知BPF程序为多容器pod提供最小权限
     - 防止受损的sidecar代理和绕过sidecar协议
     - 使用BPF强制所有应用程序流量经过sidecar代理
 - 开启Istio对外部服务的支持
@@ -21,27 +21,27 @@
 
 #### Cilium是什么？
 
-Cilium是一个开源软件，用于透明保护在使用Kubernetes，Docker和Mesos等Linux容器管理平台部署的应用程序服务之间的网络和API连接。
+Cilium是一个开源软件，用于透明保护在使用Kubernetes、Docker和Mesos等Linux容器管理平台部署的应用程序服务之间的网络和API连接。
 Cilium的基础是一种名为BPF的新Linux内核技术，这使得能够在Linux自身内动态植入强大的安全性，可见性和网络控制逻辑。除了提供传统的网络级安全性之外，BPF的灵活性还可以在API和进程级别上实现安全性，以保护容器或容器内的通信。由于BPF在Linux内核中运行，因此无需对应用程序代码或容器配置进行任何更改便可以应用和更新Cilium安全策略。
 
-有关Cilium的更详细的一般性介绍，请参阅[Cilium简介](http://docs.cilium.io/en/v1.1/intro/)部分。
+有关Cilium的更详细的介绍，请参阅[Cilium简介](http://docs.cilium.io/en/v1.1/intro/)部分。
 
 #### Istio是什么？
 
-Istio提供了一种通过负载均衡、服务到服务身份验证、监控等且没有侵入性创建部署服务网络的简便方法。可以通过在整个环境中部署特殊的sidecar代理来添加对服务的支持，该代理拦截微服务之间的所有网络通信，使用Istio的控制平面功能进行配置和管理。
+Istio提供了一种通过负载均衡、服务间身份验证、监控等且没有侵入性创建部署服务网络的简便方法。可以通过在整个环境中部署特殊的sidecar代理来添加对服务的支持，该代理拦截微服务之间的所有网络通信，使用Istio的控制平面功能进行配置和管理。
 ![](https://cilium.io/arch-bb79ec268e3cd946a6c5284bad8eb215.svg)
-您可以在[Istio文档](https://istio.io/docs/)中阅读有关Istio概念和架构的更多信息。
+您可以在[Istio文档](https://istio.io/zh/docs)中阅读有关Istio概念和架构的更多信息。
 
 #### Istio高效网络
 Istio和Cilium之间最基本的协作形式是Cilium CNI插件通过将所有sidecar代理连接在一起并通过提供代理和Istio控制平面之间的连接，为Istio提供网络连接。Cilium还确保Istio托管服务可以与不受Istio管理的pod进行通信。
 
-下图说明了Istio控制平面，sidecar代理和CNI插件如何相互叠加：
+下图说明了Istio控制平面、sidecar代理和CNI插件如何相互叠加：
 ![](https://cilium.io/static/cilium_istio_networking-68a7e3c5272d030e8ca3a717cc348631-84ad3.png)
 在这种模式下，所有Istio系统组件都受益于Cilium在Linux内核中基于BPF的高效网络功能。BPF是网络和数据包过滤技术(如iptables等)的替代方案。您可以在以下博客文章中找到有关BPF推动这一转变的原因的更多信息：[为什么内核社区用BPF替换iptables？](https://cilium.io/blog/2018/04/17/why-is-the-kernel-community-replacing-iptables/)
 
 #### Socket级别重定向加速Istio和Envoy
 
-Istio服务网格体系结构要求将参与服务网格的所有pod的出站和入站请求的所有网络流量都要重定向到sidecar代理。sidecar代理将终止所有TCP连接并执行诸如遥测，重试，路由，相互TLS之类的服务,和代表服务的授权，并使用辅助所谓的上游TCP连接来到达目的地服务,这正是服务之间支持双向TLS,没有代码侵入性原因所在。然而，当使用标准的基于IP的工具（如iptables）实现重定向时，这种重定向可能会很费事，因为必须多次遍历整个TCP/IP堆栈。
+Istio服务网格架构要求将参与服务网格的所有pod的出站和入站请求的所有网络流量都要重定向到sidecar代理。sidecar代理将终止所有TCP连接并执行诸如遥测、重试、路由、双向TLS之类的服务和代表服务的授权，并使用辅助所谓的上游TCP连接来到达目的地服务,这正是服务之间支持双向TLS,没有代码侵入性原因所在。然而，当使用标准的基于IP的工具（如iptables）实现重定向时，这种重定向可能会很费事，因为必须多次遍历整个TCP/IP堆栈。
 ![](https://cilium.io/static/sockmap-throughput2-8dcc14e44357a3768088d594e6cfbc97-e34ad.png)
 
 Cilium充分使用了一个叫sockmap的令人兴奋的BPF功能。它允许过滤和重定向，基于套接字级别，使Cilium可以socket感知。此socket是应用程序用于发送和接收网络流量的接口。这允许在相同节点上实质上短路TCP socket，从而以完全透明的方式大幅加速应用程序和服务网格的sidecar代理的通信速度。应用程序和sidecar代理都不需要以任何方式进行修改。如果您有兴趣了解有关此用例的更多信息，请参阅位于奥斯汀的KubeCon 2018上的演示文稿**“使用CIlium加速Envoy、Istio和Linux内核（[录制](https://t.co/cx6CQhn1xl)，[幻灯片](https://www.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel)）”。
