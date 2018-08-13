@@ -37,7 +37,7 @@ Istio和Cilium之间最基本的协作形式是Cilium CNI插件通过将所有si
 
 下图说明了Istio控制平面、sidecar代理和CNI插件如何相互叠加：
 ![](https://cilium.io/static/cilium_istio_networking-68a7e3c5272d030e8ca3a717cc348631-84ad3.png)
-在这种模式下，所有Istio系统组件都受益于Cilium在Linux内核中基于BPF的高效网络功能。BPF是网络和数据包过滤技术(如iptables等)的替代方案。您可以在以下博客文章中找到有关BPF推动这一转变的原因的更多信息：[为什么内核社区用BPF替换iptables？](https://cilium.io/blog/2018/04/17/why-is-the-kernel-community-replacing-iptables/)
+在这种模式下，所有Istio系统组件都受益于Cilium在Linux内核中基于BPF的高效网络功能。BPF是网络和数据包过滤技术（如iptables等）的替代方案。您可以在以下博客文章中找到有关BPF推动这一转变的原因的更多信息：[为什么内核社区用BPF替换iptables？](https://cilium.io/blog/2018/04/17/why-is-the-kernel-community-replacing-iptables/)
 
 #### Socket级别重定向加速Istio和Envoy
 
