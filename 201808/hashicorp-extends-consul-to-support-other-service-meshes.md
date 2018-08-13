@@ -2,7 +2,7 @@
 >
 > 作者：[Alex Handy](https://thenewstack.io/author/alex-handy/)
 >
-> 译者：[navy](https://github.com/meua)
+> 译者：[甄中元](https://github.com/meua)
 >
 > 校对：[宋净超](http://jimmysong.io)
 # HashiCorp扩展Consul以支持其他服务网格
