@@ -33,12 +33,12 @@ Istio 建立在容器和 Kubernetes 的一些目标之上：提供有价值的�
 因此，设置一些上下文：Istio 提供了应用程序网络的“可靠性”能力，例如：
 
 * 自动重试（automatic retry）
-* 重试 定额/预算（retry quota/budget）
+* 重试指标/预算（retry quota/budget）
 * 连接超时（connection timeout）
 * 请求超时（request timeout）
 * 客户端负载均衡（client-side load balancing）
 * 断路器（circuit breaking）
-* 隔离（bulkheading）
+* 隔离层（bulkheading）
 
 在处理分布式系统时，这些功能是必不可少的。网络并不是可靠的，并且破坏了我们在一个整体中所拥有的很多好的安全假设/抽象。我们要么迫切的解决这些问题，要么遭受系统范围内不可预测的停机。
 
@@ -79,16 +79,16 @@ Istio 建立在容器和 Kubernetes 的一些目标之上：提供有价值的�
 ### 应用程序集成
 这些模式以如下这样的形式出现：
 
-* 调用排序、多播和编排
-* 聚合响应、转换消息语义、拆分消息等
-* 原子性，一致性问题，传奇模式
-* 反腐败层、适配器、边界转换
-* 消息重试,重复数据删除/幂等性
-* 消息重新排序
-* 缓存
-* 消息级路由
-* 重试、超时
-* 后端/遗留系统集成
+* 调用排序、多播和编排 （Call sequencing, multicasting, and orchestration）
+* 聚合响应、转换消息语义、拆分消息等 （Aggregate responses, transforming message semantics, splitting messages, etc）
+* 原子性，一致性问题，传奇模式 （Atomicity, consistency issues, saga pattern）
+* 反腐败层、适配器、边界转换 （Anti-corruption layers, adapters, boundary transformations）
+* 消息重试,重复数据删除/幂等性 （Message retries, de-duplication/idempotency）
+* 消息重新排序 （Message re-ordering）
+* 缓存 （Caching）
+* 消息级路由 （Message-level routing）
+* 重试、超时 （Retries, timeouts）
+* 后端/遗留系统集成 （Backend/legacy systems integration）
 
 可以使用一个简单的例子，”在购物车中添加一个项目“，我们可以来说明这个概念：
 
@@ -99,25 +99,25 @@ Istio 建立在容器和 Kubernetes 的一些目标之上：提供有价值的�
 ### 应用网络
 这些模式以如下这样的形式出现：
 
-* 自动重试
-* 重试指标/预算
-* 连接超时
-* 请求超时
-* 客户端负载均衡
-* 熔断器
-* 舱壁
+* 自动重试 （automatic retry）
+* 重试指标/预算 （retry quota/budget）
+* 连接超时 （connection timeout）
+* 请求超时 （request timeout）
+* 客户端负载均衡（client-side load balancing）
+* 熔断器 （circuit breaking）
+* 隔离层 （bulkheading）
 
 但在通过网络进行通信的应用程序时，还存在其他复杂的问题：
 
-* 金丝雀展示
-* 流量路由
-* 指标集合
-* 分布式跟踪
-* 影子流量
-* 故障注入
-* 健康检查
-* 安全
-* 组织策略
+* 金丝雀展示 （Canary rollout）
+* 流量路由 （Traffic routing）
+* 指标集合 （Metrics collection）
+* 分布式跟踪 （Distributed tracing）
+* 影子流量 （Traffic shadowing）
+* 故障注入 （Fault injection）
+* 健康检查 （Health checking）
+* 安全 （Security）
+* 组织策略 （Organizational policy）
 
 ## 如何使用这么模式？
 
