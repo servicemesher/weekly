@@ -8,7 +8,7 @@
 
 ![](https://cilium.io/static/new-hero-scheme.4db2ce15.svg)
 
-我们很高兴地宣布推出Cilium 1.2。该版本引入了几个新功能实现了Cilium用户和社区成员的最迫切想要的功能。其中最吸引人的功能之一是引入基于DNS 名称的安全策略，目的是保护对群集外服务的访问。另一个最受关注的问题是介绍连接和保护多个Kubernetes集群的能力。我们将ClusterMesh功能以Alpha level引入。它允许连接和保护在不同Kubernetes集群中运行的pods。Kube-router与Cilium的集成同等重要。DigitalOcean团队的努力使kube-router提供BGP网络与Cilium提供的基于BPF的安全性和负载平衡相结合。整个Cilium开发者社区贡献者总数已增加到85个，在1.1到1.2之间的时间内贡献了579个PR。
+我们很高兴地宣布推出Cilium 1.2。该版本引入了几个新功能实现了Cilium用户和社区成员的最迫切想要的功能。其中最吸引人的功能之一是引入基于DNS 名称的安全策略，目的是保护对集群外服务的访问。另一个最受关注的问题是介绍连接和保护多个Kubernetes集群的能力。我们将ClusterMesh功能以Alpha level引入。它允许连接和保护在不同Kubernetes集群中运行的pods。Kube-router与Cilium的集成同等重要。DigitalOcean团队的努力使kube-router提供BGP网络与Cilium提供的基于BPF的安全性和负载平衡相结合。整个Cilium开发者社区贡献者总数已增加到85个，在1.1到1.2之间的时间内贡献了579个PR。
 
 #### Cilium是什么？
 
@@ -25,9 +25,9 @@ Cilium是基于一种叫BPF的新内核技术，它使得能够在Linux自身内
     - 基于FQDN/DNS命名定义网络安全规则，表示允许连接到外部服务。例如，允许访问foo.com。（处于Beta版）
 - 支持AWS EKS
     - 为管理Kubernetes集成量身定制的etcd operate，消除了对需要外部kvstore的依赖。（处于Beta版）
-- Clustermesh（群集间连接）
+- Clustermesh（集群间连接）
     - 跨多个Kubernetes集群的pod间网络连接。（处于Alpha版）
-    - 跨群集的基于label的网络安全策略实施，例如允许cluster1中的pod foo与cluster2中的pod bar通信。
+    - 跨集群的基于label的网络安全策略实施，例如允许cluster1中的pod foo与cluster2中的pod bar通信。
 - 为支持BPF集成Kube-route
     - 与kube-router一起协作运行以启用BGP网络。
 - 基于节点发现的KV存储
@@ -83,18 +83,18 @@ Cilium将自动维护相应的基于CIDR的规则，以允许所有pod与所有�
 
 #### ClusterMesh：跨多个Kubernetes集群的网络连通和安全性
 
-运行多个Kubernetes集群变得越来越普遍。运行在不同可用区或Regions服务的高可用实例；在多个群集中运行的point-of-presence，服务于不同的地理位置；组织原因如分离PCI与非PCI兼容服务；或者简单地分离dev，test和prod工作负载。
+运行多个Kubernetes集群变得越来越普遍。运行在不同可用区或Regions服务的高可用实例；在多个集群中运行的point-of-presence，服务于不同的地理位置；组织原因如分离PCI与非PCI兼容服务；或者简单地分离dev，test和prod工作负载。
 
 运行多个Kubernetes集群的基本要求之一是如何连接服务以及如何为跨集群交互保证东西流量安全。在Cilium 1.2中，我们将引入多集群中不请求ingress controllers 或者负载均衡实现不同集群pods之间的连接能力。由于pod间可以直接交互，因此Cilium能够保留其身份认证并对东西向流量实施完整的L3/L4和L7访问控制。
 ![](https://cilium.io/static/clustermesh-d00c2ccd3d82b4f450da66e47667672b-84ad3.png)
 
-Cilium使用去中心化的方式创建cluster-mesh并建立pod身份认证，而不是为所有集群使用单个集中式etcd。用这种方式，每个集群都能独立管理它们的pods身份。每个集群都被赋予一个独立的标识作为身份命名空间。因此pod身份成为集群身份+ pod身份的组合。这种方法易于管理和扩展，而不用协调所有集群中的身份。这种方式与多集群高可用目标保持一致，每个集群的生命周期独立于其他集群的生命周期。查看[多群集安装指南](https://cilium.readthedocs.io/en/stable/install/guides/clustermesh/)试着体验Cilium cluster-mesh。
+Cilium使用去中心化的方式创建cluster-mesh并建立pod身份认证，而不是为所有集群使用单个集中式etcd。用这种方式，每个集群都能独立管理它们的pods身份。每个集群都被赋予一个独立的标识作为身份命名空间。因此pod身份成为集群身份+ pod身份的组合。这种方法易于管理和扩展，而不用协调所有集群中的身份。这种方式与多集群高可用目标保持一致，每个集群的生命周期独立于其他集群的生命周期。查看[多集群安装指南](https://cilium.readthedocs.io/en/stable/install/guides/clustermesh/)试着体验Cilium cluster-mesh。
 
 
 #### 基于Kube-router + Cilium支持BGP。
 ![](https://cilium.io/static/kube-router-37e3d642c21b7ccf21b87f3903ebc5aa-f1a65.png)
 
-Kube-router是一个cloudnativelabs倡议，旨在满足各种Kubernetes网络需求并提供统一的解决方案。从数据转发的角度来看，Kube-router使用BGP来广播和管理集群中所有pod的路由。通过与外部路由器进行BGP配对，Kube-router可以轻松地在Kubernetes pod与集群外部运行的服务之间建立连接。此外，Kube-router创建服务时告知cluster IP，这意味着可以使用单个cluster IP和标准端口从群集外部访问服务。
+Kube-router是一个cloudnativelabs倡议，旨在满足各种Kubernetes网络需求并提供统一的解决方案。从数据转发的角度来看，Kube-router使用BGP来广播和管理集群中所有pod的路由。通过与外部路由器进行BGP配对，Kube-router可以轻松地在Kubernetes pod与集群外部运行的服务之间建立连接。此外，Kube-router创建服务时告知cluster IP，这意味着可以使用单个cluster IP和标准端口从集群外部访问服务。
 
 由DigitalOcean团队领导的社区工作，Cilium现已集成Kube-router，整合了BPF和基于BGP路由。查看[使用kube-router运行BGP指南](http://docs.cilium.io/en/v1.2/kubernetes/install/kube-router/)去了解如何并行运行kube-router和Cilium以运行拥有Cilium L3-L7策略和负载平衡的BGP网络。
 
