@@ -12,5 +12,4 @@
 
 - 8月25日（周六）2018年第三届Service Mesh Meetup深圳站回顾 - http://www.servicemesher.com/blog/service-mesh-meetup-shenzhen-20180825/
 
-- Istio官网中文同步活动已接近尾声，将随Istio 1.1同时发布，了解如何参与请访问https://github.com/servicemesher/istio-official-translation，欢迎大家更多的提交文章线索和原创文章请访问https://github.com/servicemesher/trans
-
+- Istio官网中文同步活动已接近尾声，将随Istio 1.1同时发布，了解如何参与请访问<https://github.com/servicemesher/istio-official-translation>，欢迎大家更多的提交文章线索和原创文章请访问https://github.com/servicemesher/trans
