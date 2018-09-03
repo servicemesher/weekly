@@ -32,6 +32,10 @@
 
 [提交PR](https://github.com/servicemesher/trans/pulls) 就需要提交对应Issue的译文文档，使用Markdown格式。
 
+## 周报
+
+[weekly](weekly)目录保存Service Mesh周报。
+
 ## 文档要求
 
 文档格式为Markdown，尽量保留原文格式，可以根据中文阅读习惯适度调整，**中英文之间、中文和数字之间不用加空格**。
@@ -43,8 +47,6 @@
 **目录结构**
 
 新的文档根据提交 PR 的时间在对应的目录中创建。如2018年5月30日提交的PR需要在 `201805` 目录中创建新的文档，即所有文档是按照月来归档的。
-
-[weekly](weekly)目录保存Service Mesh周刊。
 
 **关于图片**
 
