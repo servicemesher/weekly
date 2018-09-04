@@ -15,7 +15,7 @@
 *   在云原生平台上，服务的可观察性是不够的。 更基本的先决条件是通过实施健康检查，对信号做出反应，声明资源消耗等，使微服务自动化。
 *   在后 Kubernetes 时代，服务网格技术将完全取代使用库来实现操作网络问题（例如 Hystrix 断路器）。
 *   微服务现在必须通过从多个维度实现幂等性来设计用于“恢复”。
-*   现代开发人员必须精通编程语言以实现业务功能，并且同样精通云本机技术以满足非功能性基础架构级别要求。
+*   现代开发人员必须精通编程语言以实现业务功能，并且同样精通云原生技术以满足非功能性基础架构级别要求。
 
 微服务炒作开始于一堆关于组织结构，团队规模，服务规模，重写和抛出服务而不是修复，避免单元测试等的极端想法。根据我的经验，大多数这些想法被证明是错误的，而不是实用的，或者至少一般不适用。 如今，大多数剩余的原则和实践都是如此通用和松散地定义，以至于它们在未来许多年都会成立，而在实践中却没有多大意义。
 
@@ -33,7 +33,7 @@
 
 在从 SOA 转向微服务世界的过程中， [“智能端点和哑管”](https://martinfowler.com/articles/microservices.html#SmartEndpointsAndDumbPipes)的概念是服务交互的另一个根本转变。 在微服务领域，服务不依赖于集中式智能路由层的存在，而是依赖于拥有某些平台级功能的智能端点。 这是通过在每个微服务中嵌入传统 ESB 的一些功能并转换到没有业务逻辑元素的轻量级协议来实现的。
 
-虽然这仍然是在不可靠的网络层（使用 [Hystrix](https://github.com/Netflix/Hystrix) 等库 ） 实现服务交互的流行方式 ，但现在，在后 Kubernetes 时代，它已经完全被[服务](https://www.cncf.io/blog/2017/04/26/service-mesh-critical-component-cloud-native-stack/)网格技术所取代 。 有趣的是，服务网格甚至比传统的 ESB 更智能。 网格可以执行动态路由，服务发现，基于延迟的负载平衡，响应类型，指标和分布式跟踪，重试，超时，你能想到的这里都有。
+虽然这仍然是在不可靠的网络层（使用 [Hystrix](https://github.com/Netflix/Hystrix) 等库 ） 实现服务交互的流行方式 ，但现在，在后 Kubernetes 时代，它已经完全被[服务](https://www.cncf.io/blog/2017/04/26/service-mesh-critical-component-cloud-native-stack/)网格技术所取代 。 有趣的是，服务网格甚至比传统的 ESB 更智能。 网格可以执行动态路由、服务发现、基于延迟的负载平衡、响应类型、指标和分布式跟踪、重试、超时，你能想到的这里都有。
 
 与 ESB 的不同之处在于，与服务网格不同的是，只有一个集中路由层，每个微服务通常都有自己的路由器 \- 一个带有附加中央管理层的代理逻辑的 sidecar 容器。 更重要的是，管道（平台和服务网格）没有任何业务逻辑; 他们完全专注于基础架构问题，使服务专注于业务逻辑。 如图所示，这代表了 ESB 和微服务学习的演变，以适应云环境的动态和不可靠特性。
 
@@ -64,13 +64,13 @@
 
 ## 混合开发职责
 
-越来越多的微服务原则被 Kubernetes 及其补充项目实施和提供。 因此，开发人员必须精通编程语言以实现业务功能，并且同样精通云本机技术以满足非功能性基础架构级别要求，同时完全实现功能。
+越来越多的微服务原则被 Kubernetes 及其补充项目实施和提供。 因此，开发人员必须精通编程语言以实现业务功能，并且同样精通云原生技术以满足非功能性基础架构级别要求，同时完全实现功能。
 
 业务需求和基础架构（操作或跨功能需求或系统质量属性）之间的界限总是模糊不清，并且不可能采取一个方面并期望其他人做另一个方面。 例如，如果在服务网格层中实现重试逻辑，则必须使服务中的业务逻辑或数据库层使用的服务具有幂等性。 如果在服务网格级别使用超时，则必须同步服务中的服务使用者超时。 如果必须实现服务的重复执行，则必须配置 Kubernetes 作业以执行时间执行。
 
 展望未来，一些服务功能将作为业务逻辑在服务中实现，而其他服务功能则作为平台功能提供。 虽然使用正确的工具来完成正确的任务是一个很好的责任分离，但技术的激增极大地增加了整体的复杂性。 在业务逻辑方面实现简单的服务需要很好地理解分布式技术堆栈，因为责任分散在每一层。
 
-据 [证实](https://kubernetes.io/blog/2016/03/1000-nodes-and-beyond-updates-to-kubernetes-performance-and-scalability-in-12/) 是 Kubernetes 可以扩展到数千个节点，每秒事务荚数以百万计的数万人。 但它可以缩小吗？ 您的应用程序大小，复杂性或关键性的阈值证明了引入“云原生”复杂性的原因尚不清楚。
+据 [证实](https://kubernetes.io/blog/2016/03/1000-nodes-and-beyond-updates-to-kubernetes-performance-and-scalability-in-12/) Kubernetes 是可以扩展到数千个节点、数万个 pod 和数百万的 TPS。您的应用程序大小、复杂性，或者说是引入“云原生”复杂性的关键性因素，我还不清楚。
 
 ## 结论
 
@@ -82,4 +82,4 @@ Kubernetes 拥有 ESB 和微服务的许多知识，因此，它是最终的分�
 
 ## 关于作者
 
-**![](https://ws1.sinaimg.cn/large/006tSBxtly1fuwq6p5tm2j302d02sq2y.jpg)Bilgin Ibryam**  （@bibryam）是 Red Hat 的首席架构师，提交者和 ASF 成员。 他是一名开源传播者，博客作者，Camel Design Patterns和Kubernetes Patterns书籍的作者。 在他的日常工作中，Bilgin 喜欢指导，编码和领导开发人员成功构建云原生解决方案。 他目前的工作重点是应用程序集成，分布式系统，消息传递，微服务，devops 和一般的云原生挑战。 你可以在  [Twitter](https://twitter.com/bibryam)  ，  [Linkedin](https://uk.linkedin.com/in/bibryam)  或他的  [博客](http://www.ofbizian.com/) 上找到他 。
+**![](https://ws1.sinaimg.cn/large/006tSBxtly1fuwq6p5tm2j302d02sq2y.jpg)Bilgin Ibryam**  （@bibryam）是 Red Hat 的首席架构师，提交者和 ASF 成员。 他是一名开源传播者，博客作者，《Camel Design Patterns》 和 《Kubernetes Patterns》 书籍的作者。 在他的日常工作中，Bilgin 喜欢指导编码和领导开发人员成功构建云原生解决方案。 他目前的工作重点是应用程序集成、分布式系统、消息传递、微服务、devops 和一般的云原生挑战。 你可以在  [Twitter](https://twitter.com/bibryam)  ，  [Linkedin](https://uk.linkedin.com/in/bibryam)  或他的  [博客](http://www.ofbizian.com/) 上找到他 。
