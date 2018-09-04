@@ -3,7 +3,7 @@
 > 原文链接：https://www.infoq.com/articles/microservices-post-kubernetes
 >
 > 作者：[Bilgin Ibryam](https://www.infoq.com/profile/Bilgin-Ibryam)
-> 英文校准：[Daniel Bryant](https://www.infoq.com/profile/Daniel-Bryant)
+> 英文审校：[Daniel Bryant](https://www.infoq.com/profile/Daniel-Bryant)
 >
 > 译者：殷龙飞
 
