@@ -1,16 +1,10 @@
 > 原文链接：https://www.knowledgehut.com/blog/cloud-computing/test-drive-your-first-istio-deployment-using-play-with-kubernetes-platform-cloud-computing
-
 > 发布时间：2018年8月30日
-
-> 译文链接：https://github.com/servicemesher/trans/blob/master/201809/Test-Drive-Your-First-Istio-Deployment-using-Play-with-Kubernetes-Platform-Cloud-Computing.md
-
 > 作者：Ajeet Raina
-
 > 译者：blackpiglet
-
 > 类型：教程
 
-# 测试驱动 Play with Kubernetes 上的第一个 Istio 部署
+# 在Play with Kubernetes平台上以测试驱动的方式部署Istio
 ![Kubernetes and Istio](http://ww1.sinaimg.cn/large/6286a305ly1fux7dq9d14j20jg08cju2.jpg)
 
 作为一名全栈开发，假如最近花了不少时间开发应用，肯定已经理解了微服务架构下要面临的一系列全新挑战。尽管应用已经从庞大的单体应用转变成了开发更快、弹性更好、更小也更聚焦的微服务，但现实是，开发者需要开始操心将这些服务集成到分布式系统中的问题了，包括服务发现、负载均衡、注册、容错、监控、路由、兼容和安全等。
@@ -33,6 +27,7 @@
 简而言之，虽然你可以在应用和网络中间件中开启服务发现和重试机制，但实际上，想让服务发现正常工作是非常困难的。
 
 **初试 Istio Service Mesh**
+
 Service Mesh 是 2018 年度最火热的流行词之一，它是微服务的可配置基础架构层，负责微服务应用间的交互，service mesh 让微服务实例间的交互更灵活、可靠和快速。Mesh 层提供了服务发现、负载均衡、加密、鉴权和验证，支持熔断机制等其他能力。
 
 Istio 是完全开源的，可透明的部署在已有的分布式应用上。Istio 1.0 版本在上个月发布，已经生产环境可用。Istio 完全由 Go 语言编写，提供成熟的 API 接口可以接入到任何日志平台、遥测和策略系统中。Istio 在 GitHub 上发布，对系统的性能影响很小，丰富的特性让你可以顺利、高效的运行分布式微服务架构，并提供统一的保护、连接和监控方法。
@@ -53,14 +48,13 @@ Istio 能带来什么好处呢？
 * 支持插件化的策略控制层和配置 API，支持访问控制、流量限制和配额。
 * Istio 为集群内的全部流量提供自动的度量、日志、追踪，包括进群的入口和出口。
 * 以强身份验证和鉴权的方式，提供了集群内安全的服务间通信。
-* 如何想深入 Istio 架构，我强烈推荐 Istio 官方网站。
+* 如何想深入 Istio 架构，我强烈推荐 Istio 官方网站（https://istio.io/zh）。
 
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwajuotmj20jg0dy0uz.jpg)
 
-
 **开始演示！！！**
 
-在这篇文章中，我将展示如何在 Play with Kubernetes（PWK）中免费部署 Istio，假如你没请说过 Play with Kubernetes，也就是 PWK，是由 Docker 提供的实验网站，是让用户在几秒钟内跑起来 Kubernetes 集群的试验场。PWK 提供了在浏览器中使用免费 CentOS Linux 虚拟机的体验，实际上，是 Docker-in-Docker（DinD）技术模拟了多虚拟机/PC 的效果。
+在这篇文章中，我将展示如何在 Play with Kubernetes（PWK）中免费部署 Istio，这是个由 Docker 提供的实验网站，是让用户在几秒钟内跑起来 Kubernetes 集群的试验环境。PWK 提供了在浏览器中使用免费 CentOS Linux 虚拟机的体验，实际上是 Docker-in-Docker（DinD）技术模拟了多虚拟机/PC 的效果。
 
 打开 https://labs.play-with-k8s.com/，访问 Kubernetes Playground。
 
@@ -102,11 +96,15 @@ Istio 能带来什么好处呢？
 **验证运行的 Pods**
 
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1scslj20to0bfmyo.jpg)
-** 安装 Istio 1.0.0 **
+
+**安装 Istio 1.0.0**
 
 Istio 部署在单独的 Kubernetes 命名空间里：istio-system，我们过后再来验证。现在，复制如下内容到文件，命名为 install_istio.sh，并保存。添加可执行权限，运行以安装 Istio 和相关工具。
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1oor0j20jg05mgn0.jpg)
+
 屏幕上应显示如下内容：
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1ue42j20k70fb75x.jpg)
 
 如上所示，默认会安装 Prometheus、ServiceGraph、Jaeger、Grafana 和 Zipkin。
@@ -129,17 +127,25 @@ unable to recognize "install/kubernetes/istio-demo.yaml": no matches for admissi
 **暴露服务**
 
 要暴露 Prometheus、Grafana 和 服务图标服务，需要先删除已有的服务，用 NodePort 替换 ClusterIP，用实例页顶端展示的端口访问服务（如下所示）。
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1oduej210g07ywfj.jpg)
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1x12ej20z80eogn8.jpg)
 
 点击 "30004" 访问 Grafana 页，点击 "30003" 访问 Prometheus 页。
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1ysfbj21350ofjsy.jpg)
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1oe4rj213z0ivq3r.jpg)
 
 可以如下图所示，选择必要配置查看 Prometheus 度量：
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1olhxj20rp0fl3yr.jpg)
+
 在 Grafana 页，添加 Prometheus 数据源，并确认 Dashboard 已经运行。
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1pomvj20hs0ixdgh.jpg)
+
 恭喜！你已经将 Istio 部署在 Kubernetes 集群上了，K8S playgroud 上已经安装的服务包括：
 
 * Istio Controllers，以及相关 RBAC 规则
@@ -151,23 +157,33 @@ unable to recognize "install/kubernetes/istio-demo.yaml": no matches for admissi
 **安装 Istioctl**
 
 Istioctl 是 Istio 的命令行配置工具，可以用来创建、查询、修改和删除 Istio 系统的配置资源。
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1qvitj213v06it97.jpg)
+
 **部署 BookInfo 应用示例**
 
 Istio 已经安装并验证过了，可以在上面部署示例应用 BookInfo 了，这是一个简单的书店模拟应用，由四个服务组成：网站首页、书籍信息、评论（几个特定的版本有评论服务）和评分，全部由 Isito 管理。
 
 **部署 BookInfo 服务**
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj247c0j20jg07gdhv.jpg)
+
 **定义入口网关**
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1rru2j20jg03xdgu.jpg)
+
 **验证 BookInfo 应用**
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj280kwj20jg0d8aew.jpg)
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj27k0kj20jg0k57b9.jpg)
+
 **通过 URL 访问**
+
 ![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj28b2bj20jg07rwhd.jpg)
 
 现在应该可以看到 BookInfo 示例了：
-![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1ycp2j20jg07rjtf.jpg)
 
+![](https://ws1.sinaimg.cn/large/6286a305ly1fuxwj1ycp2j20jg07rjtf.jpg)
 
 希望本部程能帮你顺利的在 Kubernetes 上部署 Istio。下一篇博客，我将深入 Isito 的内部架构、流量控制、权限和遥测等细节。
