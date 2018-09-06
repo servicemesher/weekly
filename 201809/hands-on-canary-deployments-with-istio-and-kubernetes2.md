@@ -9,23 +9,24 @@
 # 在kubernetes环境中使用istio实现金丝雀部署
 
 ##### Service Mesh之istio教程2
-作为Istio教程第二片文章本教程将一步步带领你熟悉指令并解释指令的作用。我们的[钱一篇文章](https://kublr.com/blog/implementing-a-service-mesh-with-istio-to-simplify-microservices-communication/)解析了istio原理、示例，以及使用它给开发和运维带来的好处。我们也已经演示在如何在kubernetes集群中Service Mesh的安装过程。
 
-再看这篇文章之前，如果你还没有istio的开发或测试集群，你可以使用我们自主开发的“Kublr in a box”工具，在aws、azure云环境或VirtualBox上运行的物理机上创建自己的kubernetes集群。
+作为Istio教程第二片文章本教程将一步步带领你熟悉指令并解释指令的作用。我们的[前一篇文章](https://kublr.com/blog/implementing-a-service-mesh-with-istio-to-simplify-microservices-communication/)解析了istio原理、示例，以及使用它给开发和运维带来的好处。我们也已经演示在如何在kubernetes集群中Service Mesh的安装过程。
+
+在看这篇文章之前，如果你还没有istio的开发或测试集群，你可以使用我们自主开发的“Kublr in a box”工具，在aws、azure云环境或VirtualBox上运行的物理机上创建自己的kubernetes集群。
 
 启动至少两个节点的集群。可以按照“快速入门”指南在你的集群上安装service mesh。
 
 安装完成后，你能在你的kubernetes dashboard的左侧边栏pods中查看已部署的istio组件。如下图所示：
-![](https://kublr.com/wp-content/uploads/2018/08/Picture1.png)
+ ![](https://kublr.com/wp-content/uploads/2018/08/Picture1.png) 
 
 我们将会一个自动化sidecar注入器，避免手动将Istio sidecar配置添加到每个部署的本地YAML文件中。“istio kube-inject”命令我们在前面的教程中已经介绍过。如果你的kubernetes的版本小于1.9，应该使用手动的方式执行“kubectl create *.yaml”在我们的开始后续教程之前。
 
 #### 智能路由、金丝雀部署
 
 对于教程的这部分我们的场景需要针对已经创建好的集群实现金丝雀部署。
-*可以想象一下你的组织有成百上千微服务，像Hadoop一样依赖几个大的数据仓库。或者，应用程序还有其他特定要求，这些要求将导致您复制大量数据并使用大量资源和预算来保留独立的“脚手架”群集以测试应用程序。保留这种脚手架环境是代价昂贵的。你能基于kubernetes上的Service Mesh实现金丝雀发布。*
+*可以想象一下你的组织有成百上千微服务，像Hadoop一样依赖几个大的数据仓库。或者，应用程序还有其他特定要求，这些要求将导致您复制大量数据并使用大量资源和预算来保留独立的“脚手架”集群以测试应用程序。保留这种脚手架环境是代价昂贵的。你能基于kubernetes上的Service Mesh实现金丝雀发布。*
 
-前一片文章中，我们的实例程序有三个版本的pods,这只是我们演示的复杂实例的一部分。我们需要在现有生产群集上测试新版本，而不会影响任何真实客户和用户，然而，我们希望利用完全相同的数据集群和其他依赖的微服务，这是一个真正的生产版本。这就是为什么我们不在单独的脚手架环境中测试它，而是进行金丝雀部署的原因。
+前一篇文章中，我们的实例程序有三个版本的pods,这只是我们演示的复杂实例的一部分。我们需要在现有生产集群上测试新版本，而不会影响任何真实客户和用户，然而，我们希望利用完全相同的数据集群和其他依赖的微服务，这是一个真正的生产版本。这就是为什么我们不在单独的脚手架环境中测试它，而是进行金丝雀部署的原因。
 
 首先创建“service”路由流量到pod上并创建四个Deployment副本，以模仿生产部署。yaml文件如下：
 
@@ -72,7 +73,7 @@ kubectl create -f my-application.yaml
 如果您已经在以前的Istio教程中的执行过，只需通过对用于部署的旧文件运行kubectl delete来清理老的资源。因为本教程我们将使用不同的路由规则，旧的路由规则将干扰新的设置。
 
 检查是否在仪表板中创建了deployment和service：
-![](https://kublr.com/wp-content/uploads/2018/08/deployment-and-service-dashboard-768x516.png)
+ ![](https://kublr.com/wp-content/uploads/2018/08/deployment-and-service-dashboard-768x516.png) 
 
 在发布下一个版本之前，我们希望准备Istio Service Mesh以将大多数请求路由到版本1，并且只将特定的请求发送到版本2。我们可以通过创建仅指向版本1的默认路由并基于HTTP头创建其他规则来实现。Envoy代理将会把请求流量路由到应用程序的不同版本。
 
@@ -116,10 +117,10 @@ kubectl create -f istio-access.yaml
 如果你看过上一篇文章，你应该知道我们还没有在VirtualService下定义“subset”，因为我们只部署了一个版本。仍然没有创建路由规则。
 
 通过Istio ingress gateway节点测试访问。你能在这个节点的“istio-system”的namespace下发现服务列表。
-![](https://kublr.com/wp-content/uploads/2018/08/Istio-endpoint-ingress-gateway-1024x440.png)
+ ![](https://kublr.com/wp-content/uploads/2018/08/Istio-endpoint-ingress-gateway-1024x440.png) 
 
 单导航到这个节点时，你应该看到实例程序的v1版本，因为它是唯一部署和在VirtualService中唯一可路由的版本。
-![](https://kublr.com/wp-content/uploads/2018/08/virtual-service-768x210.png)
+ ![](https://kublr.com/wp-content/uploads/2018/08/virtual-service-768x210.png) 
 
 让我们分解您的请求在到达“version-1”pod之前经过的步骤：
 1. 外部负载均衡器将请求传递给istio-ingressgateway服务。我们的“website-gateway”被配置为拦截任何请求（hosts:“*”）并路由它们。
@@ -243,7 +244,7 @@ spec:
 ```
 保存并退出文件编辑模式以应用修改后的资源。测试一下。在这个阶段，我们仍然可以加载网站，并刷新几次。现在，使用“kubectl create -f version-2-deployment.yaml”部署“version-2”并在仪表板中检查结果：
 
-![](https://kublr.com/wp-content/uploads/2018/08/Istio-canary-deployment-Dashbaord-1024x660.png)
+ ![](https://kublr.com/wp-content/uploads/2018/08/Istio-canary-deployment-Dashbaord-1024x660.png) 
 
 在此刻我们有四个“version-1”pods和一个“version-2”的金丝雀pod。刷新几次ingress endpoint确信你被路由到“version-2”。现在我们准备去修改路由规则，并发送HTTP头中“qa”包含“canary-test”值的任何HTTP请求到“version-2”。
 
@@ -278,9 +279,9 @@ spec:
       version: website-version-2
 ```
 现在可以使用任何支持轻松修改发送到服务器的HTTP请求的工具来访问“version-2”。你可以使用postman,或者它的chorme插件，它是非常有名的api和http测试工具，但是它的返回结果页却是文本类型的。所以我们将会使用另外一个chrome插件“[Modify Headers for Google Chrome](https://chrome.google.com/webstore/search/modify%20headers%20extension?hl=en)”。通过单击其图标安装并打开设置后，您可以添加将添加到任何页面请求的自定义标题（并轻松打开和关闭）：
-![](https://kublr.com/wp-content/uploads/2018/08/Modify-Headers-for-Google-Chrome-768x146.png)
+ ![](https://kublr.com/wp-content/uploads/2018/08/Modify-Headers-for-Google-Chrome-768x146.png) 
 单击右上角的“加号”添加标题，填写名称和值，选择“添加”操作，然后单击“保存”。单击左上角的“开始播放”按钮（在我们的屏幕截图上显示“停止”的那个，因为它已经处于活动状态）。然后单击右侧规则“操作”部分中的“激活”按钮。使用此设置，再次加载入口页面以查看“version-2”蓝页！
-![](https://kublr.com/wp-content/uploads/2018/08/Envoy-proxy-routed-to-blue-version-768x217.png)
+ ![](https://kublr.com/wp-content/uploads/2018/08/Envoy-proxy-routed-to-blue-version-768x217.png) 
 
 使用这个金丝雀部署，我们有一个带有新版应用程序的活跃pod，与所有其他pod一样驻留在相同的负载均衡器下，在相同的环境（生产）中，我们可以在不影响真实用户的情况下执行所需的测试。
 
