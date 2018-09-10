@@ -1,4 +1,4 @@
-# Service Mesh Weekly 2018.07.30 - 2018.08.05
+# Service Mesh Weekly #9 2018.07.30 - 2018.08.05
 
 ## 博客
 
