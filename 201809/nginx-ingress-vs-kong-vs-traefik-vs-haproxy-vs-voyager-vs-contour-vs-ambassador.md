@@ -8,7 +8,7 @@
 
 # nginx-ingress/kong/traefik/haproxy/voyager/contour/ambassador/istio ingress
 
-据我所知，这是kubernetes可用的网关的完整列表。技术上来讲，ambassador不是网关，但是它用户网关所具备的功能。你可能已经看到了我制作的大表。
+据我所知，这是kubernetes可用的网关的完整列表。技术上来讲，ambassador不是ingress，但是它表现地已经非常好了。你可能已经看到了我制作的大表。
 
 下面有个连接可以打开并清晰的看到一个excel表哥，包含了图表的详细内容，如果发现不正确的地方，请在文章末尾留言，我讲及时修改。
 
