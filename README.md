@@ -13,7 +13,12 @@
 参与该项目包括两种方式：
 
 1. 通过[提交Issue](https://github.com/servicemesher/trans/issues/new)的方式提交文章线索
-2. 参与文章翻译提交PR
+2. 通过PR参与文章翻译或提交原创文章
+3. 原则上所有认领的文章要在5个工作日内完成翻译或创作
+
+## 发布
+
+所有通过本仓库提交的译文和原创文章将署名译者或作者姓名发布到[ServiceMesher社区](http://www.servicemesher.com)和ServiceMesher微信公众号，原作者保留文章修改的权利。
 
 ### 提交 Issue
 
