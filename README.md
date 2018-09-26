@@ -13,7 +13,12 @@
 参与该项目包括两种方式：
 
 1. 通过[提交Issue](https://github.com/servicemesher/trans/issues/new)的方式提交文章线索
-2. 参与文章翻译提交PR
+2. 通过PR参与文章翻译或提交原创文章
+3. 原则上所有认领的文章要在5个工作日内完成翻译或创作
+
+## 发布
+
+所有通过本仓库提交的译文和原创文章将署名译者或作者姓名发布到[ServiceMesher社区](http://www.servicemesher.com)和ServiceMesher微信公众号，原作者保留文章修改的权利。
 
 ### 提交 Issue
 
@@ -32,6 +37,10 @@
 
 [提交PR](https://github.com/servicemesher/trans/pulls) 就需要提交对应Issue的译文文档，使用Markdown格式。
 
+## 周报
+
+[weekly](weekly)目录保存Service Mesh周报。
+
 ## 文档要求
 
 文档格式为Markdown，尽量保留原文格式，可以根据中文阅读习惯适度调整，**中英文之间、中文和数字之间不用加空格**。
@@ -43,8 +52,6 @@
 **目录结构**
 
 新的文档根据提交 PR 的时间在对应的目录中创建。如2018年5月30日提交的PR需要在 `201805` 目录中创建新的文档，即所有文档是按照月来归档的。
-
-[weekly](weekly)目录保存Service Mesh周刊。
 
 **关于图片**
 
@@ -99,4 +106,4 @@ Mac用户可以直接到App Store中搜索**iPic**就可以免费下载和使用
 
 ---
 
-ServiceMesher—Service Mesh爱好者社区
+[ServiceMesher](http:/www.servicemesher.com)
