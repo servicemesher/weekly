@@ -2,8 +2,8 @@
 original: https://github.com/envoyproxy/data-plane-api/blob/master/XDS_PROTOCOL.md
 translator: DavidDi
 reviewer: rootsongjc
-title: "xDS REST 和 gRPC 协议"
-description: "本文详解了Envoy的xDS REST和gPRC协议。”
+title: "Envoy 的 xDS REST 和 gRPC 协议详解"
+description: "本文通过示例详解了 Envoy 的 xDS REST 和 gPRC 协议。”
 categories: "translation"
 tags: ["envoy","xds","grpc"]
 date: 2018-09-28

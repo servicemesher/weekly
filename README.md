@@ -35,7 +35,22 @@
 
 ### 提交PR
 
-[提交PR](https://github.com/servicemesher/trans/pulls) 就需要提交对应Issue的译文文档，使用Markdown格式。
+[提交PR](https://github.com/servicemesher/trans/pulls) 就需要提交对应Issue的译文文档或者原创文章，使用Markdown格式，并在文章头部添加元信息，格式如下：
+
+```yaml
+---
+original: 原文链接或者原创作者的GitHub账号
+translator: 译者的GitHub账号
+reviewer: 审阅者的GitHub账号
+title: "标题"
+description: "文章摘要"
+categories: "译文或原创"
+tags: ["taga","tagb","tagc"]
+date: 2018-09-28
+---
+```
+
+注：若提交原创文章可以直接在 `original` 中添加作者的GitHub ID。
 
 ## 周报
 
