@@ -1,13 +1,16 @@
-# API Management和Service Mesh
-## 为什么Service Mesh不能替代API Management
+---
+original: https://itnext.io/api-management-and-service-mesh-e7f0e686090e
+translator: roganw
+reviewer: 
+title: "API Management和Service Mesh"
+description: "本文分别介绍了API Management和Service Mesh，并简单分析了它们的共同点。"
+categories: "译文"
+tags: ["API Management","API Gateway","Service Mesh"]
+date: 2018-09-28
+---
 
->原文链接：https://itnext.io/api-management-and-service-mesh-e7f0e686090e
->
->发布时间：2018年9月14日
-> 
->作者：Joaquim Moreno
->
->译者：Rogan
+# API Management和Service Mesh
+——为什么Service Mesh不能替代API Management
 
 首先声明，我在RedHat工作，确切来说，是在3scale团队开发3scale API管理解决方案。最近，在跟我们的客户讨论时，一个问题被越来越多的提及：`使用了Istio之后，为什么还需要API Management？`
 
