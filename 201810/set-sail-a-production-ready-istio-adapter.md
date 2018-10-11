@@ -3,7 +3,7 @@ original: https://venilnoronha.io/set-sail-a-production-ready-istio-adapter
 translator: malphi
 reviewer: rootsongjc
 title: "构建生产就绪的Istio Adapter"
-description: "本文通过示例讲解了如何创建并部署一个生产环境就绪的Istio Adapter"
+description: "本文通过示例讲解了如何创建并部署一个生产环境就绪的Istio Adapter。"
 categories: "译文"
 tags: ["Istio","Kubernetes"]
 date: 2018-10-11
@@ -11,7 +11,7 @@ date: 2018-10-11
 
 # 构建生产就绪的Istio Adapter
 
-你已经浏览了Istio Mixer Adapter的 [指南](https://github.com/istio/istio/wiki/Mixer-Out-Of-Process-Adapter-Dev-Guide) ，现在想要发布自己的Adapter？这篇文章将教你创建自己的Adapter，在生产环境的海洋中扬帆起航。
+你已经浏览了Istio Mixer Adapter的[指南](https://github.com/istio/istio/wiki/Mixer-Out-Of-Process-Adapter-Dev-Guide) ，现在想要发布自己的Adapter？这篇文章将教你创建自己的Adapter，在生产环境的海洋中扬帆起航。
 
 ![Istio](https://ws4.sinaimg.cn/large/006tNbRwly1fw3hlzj8krj304o06m3ya.jpg)
 
