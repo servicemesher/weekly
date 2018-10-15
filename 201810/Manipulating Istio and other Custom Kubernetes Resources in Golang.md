@@ -29,7 +29,7 @@ date: 2018-10-9
 
 [Istio](https://istio.io/)是一个非常受欢迎的服务网格平台，它允许工程师快速地为基于服务的应用程序添加遥测技术、先进的流量管理等功能。
 
-Istio工作原理的一个有趣的地方是，当部署到Kubernetes集群中时，许多关键配置对象被作为[自定义资源](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)处理。自定义资源是一个非常强大的Kubernetes特性，它允许您创建自己的一等”资源(就像pod、副本、部署等)，然后使用`kubectl`或Kubernetes api与它们进行交互。
+Istio工作原理的一个有趣的地方是，当部署到Kubernetes集群中时，许多关键配置对象被作为[自定义资源](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)处理。自定义资源是一个非常强大的Kubernetes特性，它允许您创建自己的"一等"资源(就像pod、副本、部署等)，然后使用`kubectl`或Kubernetes api与它们进行交互。
 
 在本文中，我将展示如何使用Golang Kubernetes client与这些自定义资源交互。
 
