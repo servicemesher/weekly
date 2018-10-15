@@ -17,9 +17,9 @@ date: 2018-10-11
 
 ## 介绍
 
-根据你对[Go](https://golang.org/)、[Protobufs](https://developers.google.com/protocol-buffers/)、[gRPC](https://grpc.io/)、[Istio](https://istio.io/)、[Docker](https://www.docker.com/)和[Kubernetes](https://kubernetes.io/)知识的了解，你可能会发现发布一个Istio Mixer Adapter的过程很容易。本文假设你对这些技术有一些经验，并且根据Istio的Wiki已经能够完成至少一个演练。
+根据你对[Go](https://golang.org/)、[Protobufs](https://developers.google.com/protocol-buffers/)、[gRPC](https://grpc.io/)、[Istio](https://istio.io/)、[Docker](https://www.docker.com/)和[Kubernetes](https://kubernetes.io/)知识的了解，你可能会发现发布Istio Mixer Adapter的过程很容易。本文假设你对这些技术有一些经验，并且根据Istio的Wiki已经能够完成至少一个演练。
 
-就本文的目的而言，我将讨论构建一个消费[Metrics](https://preliminary.istio.io/docs/reference/config/policy-and-telemetry/templates/metric/)的Istio Mixer Adapter。下面是一个简要的步骤：
+就本文的目的而言，我将讨论如何构建一个消费[Metrics](https://preliminary.istio.io/docs/reference/config/policy-and-telemetry/templates/metric/)的Istio Mixer Adapter。下面是简要步骤：
 
 1. Istio Mixer - Adapter接口架构
 2. 创建一个简单的Mixer Adapter
@@ -31,7 +31,7 @@ date: 2018-10-11
 
 ## Istio Mixer - Adapter接口架构
 
-让我们首先看看Adapter如何与Istio Mixer接合。Kubernetes在一定程度上抽象了接口；至少要有一点细节来理解这一点对我们来说很重要。
+让我们首先看看Adapter如何与Istio Mixer结合。Kubernetes在一定程度上抽象了接口；至少要有一点细节来理解这一点对我们来说很重要。
 
 ![The Architecture](https://venilnoronha.io/assets/images/2018-10-07-set-sail-a-production-ready-istio-adapter/architecture.svg)
 
@@ -47,13 +47,13 @@ date: 2018-10-11
 
 ## 创建一个简单的Mixer Adapter
 
-简便起见,我依据 [Mixer Out of Tree Adapter Walkthrough](https://github.com/istio/istio/wiki/Mixer-Out-of-Tree-Adapter-Walkthrough)这篇文章建立一个简单的Mixer Adapter。下面是概要，列出了创建消费Metrics的Istio Mixer Adapter要遵循的步骤：
+简便起见，我依据 [Mixer Out of Tree Adapter Walkthrough](https://github.com/istio/istio/wiki/Mixer-Out-of-Tree-Adapter-Walkthrough)这篇文章建立一个简单的Mixer Adapter。下面是概要，列出了创建消费Metrics的Istio Mixer Adapter要遵循的步骤：
 
 1. 创建Adapter的配置文件`config.proto`
 2. 创建`mygrpcadapter.go`文件，实现`HandleMetric(context.Context, *metric.HandleMetricRequest) (*v1beta11.ReportResult, error)`这个gRPC API的调用
 3. 通过 `go generate ./...`生成配置文件
 4. 创建`main.go`文件作为gRPC的服务端，并监听API调用
-5. 为Adapter编写配置文件 `sample_operator_config.yaml` 
+5. 为Adapter编写配置文件 `sample_operator_config.yaml`
 6. 启动本地Mixer进程来测试和验证Adapter
 7. 配置项目
 8. 添加必要的依赖包(使用[Go Modules](https://github.com/golang/go/wiki/Modules)， [Glide](https://glide.sh/)， [Dep](https://golang.github.io/dep/)等)
@@ -64,7 +64,7 @@ date: 2018-10-11
 在本地安装和测试了`myootadapter`项目后，就可以构建并发布Adapter到[Docker Hub](https://hub.docker.com/)库了。在继续前请执行以下步骤：
 
 1. 移动`mygrpcadapter/testdata/`目录下的内容到`operatorconfig`
-2. 创建`Dockerfile`文件来保存创建Docker映像的步骤
+2. 创建`Dockerfile`文件来保存创建Docker镜像的步骤
 3. 最后，在`operatorconfig/`目录下创建一个名为`mygrpcadapter-k8s`的文件，稍后将使用它部署到Kubernetes
 
 一旦你完成了这些步骤，你的项目结构会像如下所示。
@@ -73,7 +73,7 @@ date: 2018-10-11
 ── myootadapter
    ├── Dockerfile
    ├── glide.lock # 你会有一些这样的文件，这取决于你使用的依赖包管理工具
-   ├── glide.yaml 
+   ├── glide.yaml
    ├── mygrpcadapter
    │   ├── cmd
    │   │   └── main.go
@@ -96,7 +96,7 @@ date: 2018-10-11
 
 ### 构建Docker镜像
 
-[multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/)模式可以被用来构建Docker映像。将以下内容复制到`Dockerfile`中：
+[multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/)模式可以被用来构建Docker镜像。将以下内容复制到`Dockerfile`中：
 
 ```dockerfile
 FROM golang:1.11 as builder
@@ -230,7 +230,7 @@ annotations:
 
 ## 通过Istio部署和测试Adapter
 
-为了简洁起见，我将依赖于项目文档 [deploy Istio](https://istio.io/docs/setup/kubernetes/quick-start/), [run the Bookinfo sample application](https://istio.io/docs/examples/bookinfo/) 和 [determine the ingress IP and port](https://istio.io/docs/tasks/traffic-management/ingress/#determining-the-ingress-ip-and-ports)进行演示。
+为了简洁起见，我将依赖于项目文档 [deploy Istio](https://istio.io/docs/setup/kubernetes/quick-start/)， [run the Bookinfo sample application](https://istio.io/docs/examples/bookinfo/) 和 [determine the ingress IP and port](https://istio.io/docs/tasks/traffic-management/ingress/#determining-the-ingress-ip-and-ports)进行演示。
 
 ### 部署Adapter
 
