@@ -295,7 +295,7 @@ HandleMetric invoked with:
   }
 ```
 
-## Conclusion 结论
+## 结论
 
 Istio提供了一种标准机制来管理和观测云环境下的微服务。Mixer让开发人员能够轻松地将Istio扩展到自定义平台。我希望这篇指南让你对Istio Mixer - Adapter结合有一个初步了解，以及如何自己构建一个生产就绪的Adapter！
 
