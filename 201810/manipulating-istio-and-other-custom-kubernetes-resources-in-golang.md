@@ -1,7 +1,7 @@
 ---
 original: https://dwmkerr.com/manipulating-istio-and-other-custom-kubernetes-resources-in-golang
 translator: jianzi123
-reviewer: 
+reviewer: rootsongjc
 title: "在Golang中操作Istio和其他自定义Kubernetes资源"
 description: "主要介绍了在Golang中操作Istio和其他自定义Kubernetes资源，主要讲解了除go-client之外的另一种方法。"
 categories: "译文"
@@ -11,17 +11,17 @@ date: 2018-10-9
 
 # 在Golang中操作Istio和其他自定义Kubernetes资源
 
-在本文中，我将演示如何使用Golang来操作Kubernetes Custom Resources，以Istio为例。 不需要了解Istio，我只是用它来展示概念！
+在本文中，我将演示如何使用Golang来操作Kubernetes Custom Resources，以Istio为例。 不需要您了解Istio，我只是用它来展示概念！
 
 ![](https://ws2.sinaimg.cn/large/006tNbRwly1fw6t0va3vij30xc0es0ve.jpg)
 
 [Istio](https://istio.io/)是一个非常受欢迎的服务网格平台，它允许工程师快速地为基于服务的应用程序添加遥测技术、先进的流量管理等功能。
 
-Istio工作原理的一个有趣的地方是，当部署到Kubernetes集群中时，许多关键配置对象被作为[自定义资源](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)处理。自定义资源是一个非常强大的Kubernetes特性，它允许您创建自己的”一等“资源(就像pod、副本、部署等)，然后使用`kubectl`或Kubernetes api与它们进行交互。
+Istio工作原理的一个有趣的地方是，当部署到Kubernetes集群中时，许多关键配置对象被作为[自定义资源](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)处理。自定义资源是一个非常强大的Kubernetes特性，它允许您创建自己的”一等“资源（就像pod、副本、部署等），然后使用`kubectl`或Kubernetes API与它们进行交互。
 
 在本文中，我将展示如何使用Golang Kubernetes client与这些自定义资源交互。
 
-## CRD: 快速概述
+## CRD：快速概述
 
 在为集群设置Istio时，您可能要做的一件常见的事情是指定如何路由通信。这可能相当复杂，如下所示:
 
@@ -31,7 +31,7 @@ Istio工作原理的一个有趣的地方是，当部署到Kubernetes集群中�
 
 对于这样的系统，有一种配置方法就是使用一个ConfigMap，其中包含如何路由服务的定义。
 
-然而，Istio实际上注册了新的资源类型(自定义资源定义)，来表示网关或服务之类的对象。我们可以创建/更新/删除/操作这些资源类型，就像任何其他Kubernetes对象一样。
+然而，Istio实际上注册了新的资源类型（自定义资源定义），来表示网关或服务之类的对象。我们可以创建/更新/删除/操作这些资源类型，就像任何其他Kubernetes对象一样。
 
 例如，我可以为上面的示例创建一个虚拟服务，如下所示:
 
@@ -80,7 +80,7 @@ $ kubectl delete virtualservices.networking.istio.io/service2
 
 ## 使用go语言操作CRD
 
-使用[Golang Kubernetes Client](https://github.com/kubernetes/client-go)可以创建强定义的类型，然后就可以使用这些类型与CRDs交互。红帽博客文章[Kubernetes Deep Dive: Code Generation for Custom Resources](https://blog.openshift.com/kubernetes-deep-dive-code-generation-customresources/)就是一个例子。
+使用[Golang Kubernetes Client](https://github.com/kubernetes/client-go)可以创建强定义的类型，然后就可以使用这些类型与CRD交互。红帽博客文章[Kubernetes Deep Dive: Code Generation for Custom Resources](https://blog.openshift.com/kubernetes-deep-dive-code-generation-customresources/)就是一个例子。
 
 这是一种非常好的方法，但是如果您想快速访问一些数据，而又不想生成大量代码，那么这种方法会让您感到非常吃力。
 
@@ -113,7 +113,7 @@ for _, virtualService := range virtualServices.Items {
 
 为了清晰起见，这段代码省略了设置和错误处理，完整的示例在[k8s-list-virtualservices.go](https://gist.github.com/dwmkerr/09ac0fd98595460456e17d5ef0c77667)。
 
-## 使用go语言修改CRDs
+## 使用go语言修改CRD
 
 您可能已经注意到，代码`.Resource().Namespace().List()`与Kubernetes `Clientset`进行API调用时使用的结构非常相似。实际上，本质上是一样的。看看[接口](https://github.com/kubernetes/client-go/blob/master/dynamic/interface.go)，你可以看到所有你想要的操作:
 
