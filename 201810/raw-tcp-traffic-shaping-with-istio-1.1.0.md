@@ -2,16 +2,16 @@
 original: https://venilnoronha.io/raw-tcp-traffic-shaping-with-istio-1.1.0
 translator: malphi
 reviewer: rootsongjc
-title: "用Istio进行TCP流量加工"
-description: "用Istio进行TCP流量加工"
+title: "Istio1.1.0下的TCP流量控制"
+description: "本文通过构建一个简单的echo服务演示了如何在Istio1.1.0下进行TCP流量控制"
 categories: "译文"
 tags: ["Istio","tutorial"]
 date: 2018-10-22
 ---
 
-# 用Istio进行TCP流量加工
+# Istio1.1.0下的TCP流量控制
 
-[Istio](https://istio.io/)通过[虚拟服务](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#VirtualService), [目标规则](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule), [Gateway](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#Gateway)等概念提供了复杂的路由机制。Istio 1.0通过[加权路由定义](https://istio.io/docs/tasks/traffic-management/traffic-shifting/#apply-weight-based-routing).启用了HTTP流量转移。我通过我的pull request[on Envoy](https://github.com/envoyproxy/envoy/pull/4430) 和 [on Istio](https://github.com/istio/istio/pull/9112)为TCP/TLS服务提供类似的特性。这一特性已经在Envoy [1.8.0](https://www.envoyproxy.io/docs/envoy/latest/intro/version_history#oct-4-2018)中发布了。Istio中的特性也会在即将发布的[1.1.0](https://github.com/istio/istio/releases/)版本中提供使用。
+[Istio](https://istio.io/)通过[虚拟服务](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#VirtualService), [目标规则](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule), [Gateway](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#Gateway)等概念提供了复杂的路由机制。Istio 1.0通过[加权路由定义](https://istio.io/docs/tasks/traffic-management/traffic-shifting/#apply-weight-based-routing)启用了HTTP流量转移。我提交的[Envoy](https://github.com/envoyproxy/envoy/pull/4430) 和[Istio](https://github.com/istio/istio/pull/9112)的pull request为TCP/TLS服务提供了类似的特性。这一特性已经在Envoy [1.8.0](https://www.envoyproxy.io/docs/envoy/latest/intro/version_history#oct-4-2018)中发布了。Istio中的这一特性也会在即将发布的[1.1.0](https://github.com/istio/istio/releases/)版本中提供使用。
 
 ![Istio](https://ws4.sinaimg.cn/large/006tNbRwly1fw3hlzj8krj304o06m3ya.jpg)
 
@@ -19,7 +19,7 @@ date: 2018-10-22
 
 ## TCP Echo服务
 
-在本文中，我们将创建一个简单的监听连接的TCP服务，并在客户端请求数据前加上一个简单的前缀，将其作为响应返回。图示如下：
+在本文中，我们将创建一个简单的监听连接的TCP服务，并在客户端的请求数据加上一个简单的前缀，将其作为响应返回。图示如下：
 
 ![TCP Client - Server Architecture](https://ws1.sinaimg.cn/large/006tNbRwly1fwgz3b6bpoj30r607qgm6.jpg)
 
@@ -86,25 +86,25 @@ func handleConnection(conn net.Conn, prefix string) {
 }
 ```
 
-测试这个程序，复制上面代码到`main.go`文件，并执行命令如下：
+要测试这个程序，复制上面代码并命名为`main.go`，执行命令如下：
 
 ```bash
 $ go run -v main.go 9000 hello
 listening on [::]:9000, prefix: hello
 ```
 
-我们可以通过 `nc` ([Netcat](https://en.wikipedia.org/wiki/Netcat))在TCP层面上和这段程序交互。要发送请求，我们可以使用BusyBox容器，如下所示：
+我们可以通过 `nc` ([Netcat](https://en.wikipedia.org/wiki/Netcat))在TCP层面上和这段程序交互。要发送请求，可以使用BusyBox容器，如下所示：
 
 ```bash
 $ docker run -it --rm busybox sh -c 'echo world | nc docker.for.mac.localhost 9000'
 hello world
 ```
 
-就像你看到的，在请求“world”前面加上了“hello”，“hello world”作为response。注意，我正在执行的BusyBox容器基于 [Docker for Mac](https://docs.docker.com/docker-for-mac/)，这就是为什么我访问Echo服务用`docker.for.mac.localhost`代替了`localhost`。
+就像你看到的，在请求“world”前面加上了“hello”，“hello world”作为响应。注意，正在执行的BusyBox容器基于 [Docker for Mac](https://docs.docker.com/docker-for-mac/)，这就是为什么我访问Echo服务端时用`docker.for.mac.localhost`代替了`localhost`。
 
-## 容器化TCP Echo服务器
+## 容器化TCP Echo服务
 
-因为我们最终想要在Kubernetes集群上运行TCP Echo服务器，现在让我们将它放到容器中，并发布镜像到 [Docker Hub](https://hub.docker.com/).
+因为我们最终想要在Kubernetes集群上运行TCP Echo服务，现在让我们将它容器化并发布镜像到 [Docker Hub](https://hub.docker.com/)。
 
 首先，用下面的内容创建`Dockerfile`：
 
@@ -125,7 +125,7 @@ CMD [ "9000", "hello" ]
 EXPOSE 9000
 ```
 
-现在构建容器并发布镜像到Docker Hub：
+构建容器并发布镜像到Docker Hub：
 
 ```bash
 $ docker build -t vnoronha/tcp-echo-server:latest .
@@ -145,9 +145,9 @@ latest: digest: sha256:0a45b5a0d362db6aa9154717ee3f2b... size: 949
 
 ### 服务配置
 
-我们部署2个版本的TCP ECHO服务，用不同的前缀演示路由行为。创建`service.yaml`，用Kubernetes [Service](https://kubernetes.io/docs/concepts/services-networking/service/) 和2个 [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) 构建2个版本的TCP ECHO服务。
+我们需要部署2个版本的TCP ECHO服务，用不同的前缀展示路由行为。创建`service.yaml`，用Kubernetes [Service](https://kubernetes.io/docs/concepts/services-networking/service/) 和2个 [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) 构建2个版本的TCP ECHO服务。
 
-```
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -203,11 +203,11 @@ spec:
         - containerPort: 9000
 ```
 
-### Deploying Minikube
+### 部署Minikube
 
-[Minikube](https://kubernetes.io/docs/setup/minikube/) serves as a great tool for locally developing on Kubernetes. I’ve started my Minikube instance with the following command.
+[Minikube](https://kubernetes.io/docs/setup/minikube/)是Kubernetes本地开发的最佳工具。用下面的命令启动Minikube实例：
 
-```
+```bash
 $ minikube start --bootstrapper kubeadm       \
                  --memory=8192                \
                  --cpus=4                     \
@@ -219,13 +219,13 @@ Kubectl is now configured to use the cluster.
 Loading cached images from config file.
 ```
 
-### Installing Istio
+### 安装 Istio
 
-At the time of writing this article, Istio 1.1.0 wasn’t released. Therefore, I resorted to an Istio [Daily Pre-Release](https://gcsweb.istio.io/gcs/istio-prerelease/daily-build/master-20181017-09-15/) to demonstrate the new feature. Please refer to the [Istio Docs](https://istio.io/docs/setup/kubernetes/download-release/) to learn to download and configure Istio.
+在撰写本文时，Istio 1.1.0还没有发布。因此我使用了Istio的 [Daily Pre-Release](https://gcsweb.istio.io/gcs/istio-prerelease/daily-build/master-20181017-09-15/)来演示这个新特性。请参考[Istio文档](https://istio.io/docs/setup/kubernetes/download-release/)学习下载和配置Istio。
 
-Once configured, here’s an easy way to fully deploy Istio components.
+一旦部署完毕，有一个简单的方法来完全部署Istio：
 
-```
+```bash
 $ kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
 customresourcedefinition.apiextensions.k8s.io/virtualservices.networking.istio.io created
 ...
@@ -239,20 +239,20 @@ destinationrule.networking.istio.io/istio-policy created
 destinationrule.networking.istio.io/istio-telemetry created 
 ```
 
-### Deploying TCP Echo Servers With Istio Proxies
+### 使用Istio代理部署TCP Echo服务
 
-Since we want to demonstrate Istio’s routing mechanics, let’s deploy the `tcp-echo-server` with the Istio Proxy side-car as shown below.
+为了演示Istio的路由机制，我们以side-car模式部署`tcp-echo-server` ：
 
-```
+```bash
 $ kubectl apply -f <(istioctl kube-inject -f service.yaml)
 service/tcp-echo-server created
 deployment.extensions/tcp-echo-server-v1 created
 deployment.extensions/tcp-echo-server-v2 created
 ```
 
-We can verify that the services are running via the following commands.
+通过下面的命令来验证服务运行：
 
-```
+```bash
 $ kubectl get pods
 NAME                                  READY     STATUS    RESTARTS   AGE
 tcp-echo-server-v1-78684f5697-sv5r5   2/2       Running   0          56s
@@ -265,15 +265,15 @@ $ kubectl logs tcp-echo-server-v2-74bf9999c8-hhhf9 tcp-echo-server
 listening on [::]:9000, prefix: two
 ```
 
-## Weighted TCP Routing With Istio
+## Istio加权TCP路由
 
-This is the final part of this exercise where we define a `VirtualService`,`DestinationRule` and a `Gateway` with weighted routes and verify the system behavior.
+这是本练习的最后一部分，定义`VirtualService`，`DestinationRule`和带有权重路由的 `Gateway`，并验证系统行为。
 
-### Routing Configuration
+### 路由配置
 
-We create a `DestinationRule` with 2 `subsets` to represent the 2 versions of the TCP Echo Server. The `Gateway` allows traffic to access the services on TCP port `9000`. Finally, the `VirtualService` specifies that 80% of the traffic must be routed to TCP Echo Server v1 and 20% to v2.
+创建带有两个`subset`的`DestinationRule`来代表两个版本的 TCP Echo服务。`Gateway` 容许流量通过端口`9000`访问服务。最后，`VirtualService`限定了80%的流量必须被路由到TCP Echo服务的v1版本，20%被路由到v2版本。
 
-```
+```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -330,22 +330,22 @@ spec:
       weight: 20
 ```
 
-### Deploying The Route Configuration
+### 部署路由配置
 
-To apply the configuration, copy it to a file named `route-config.yaml` and install it via the following command.
+为了让配置生效，复制上面的配置内容并创建文件`route-config.yaml`，用下面的命令进行安装：
 
-```
+```bash
 kubectl apply -f route-config.yaml
 destinationrule.networking.istio.io/destination created
 gateway.networking.istio.io/gateway created
 virtualservice.networking.istio.io/route created
 ```
 
-### Verifying Istio’s TCP Routing Behavior
+### 验证Istio的TCP路由行为
 
-We forward requsts from a local system port to the `istio-ingressgateway` like so:
+从本地端口转发请求到`istio-ingressgateway`：
 
-```
+```bash
 $ kubectl get pods -n istio-system | grep ingressgateway
 istio-ingressgateway-7b9bff766d-l478h  1/1  Running  0  30m
 
@@ -355,9 +355,9 @@ Forwarding from 127.0.0.1:9000 -> 9000
 Forwarding from [::1]:9000 -> 9000
 ```
 
-We can now send a few requests to the weight balanced TCP Echo Server as shown below.
+现在可以发送一些请求到加权负载均衡的TCP Echo服务：
 
-```
+```bash
 $ for i in {1..10}; do
 for> docker run -it --rm busybox sh -c '(date; sleep 1) | nc docker.for.mac.localhost 9000'
 for> done
@@ -373,24 +373,24 @@ one Sat Oct 20 04:38:24 UTC 2018
 two Sat Oct 20 04:38:27 UTC 2018
 ```
 
-As you see, about 80% of the requests have a prefix of “one” and the rest 20% have a prefix of “two”. This proves that the weighted TCP routes are indeed in effect.
+如你所见，大约80%的请求带有“one”前缀，剩下20%带有“two”前缀。这证明了加权TCP路由器确实生效了。
 
-The diagram below should give you a good idea as to how the Istio landscape for this demonstration looks like.
+下图能让你很好地了解这个示范的情景：
 
-![Architecture](https://venilnoronha.io/assets/images/2018-10-19-raw-tcp-traffic-shaping-with-istio-1.1.0/architecture.svg)
+![Architecture](https://ws2.sinaimg.cn/large/006tNbRwly1fwhdkuu6sgj30zg0ikmze.jpg)
 
-## Cleanup
+## 清理
 
-First, let’s stop the port forwarding via the following command.
+首先，通过下面的命令停止端口转发：
 
-```
+```bash
 $ killall kubectl
 [1]  + 69266 terminated  kubectl port-forward istio-ingressgateway-7b9bff766d-l478h -n istio-system
 ```
 
-We then delete the Minikube deployment, like so:
+然后删除Minikube的部署：
 
-```
+```bash
 $ minikube stop && minikube delete
 Stopping local Kubernetes cluster...
 Machine stopped.
@@ -398,6 +398,6 @@ Deleting local Kubernetes cluster...
 Machine deleted.
 ```
 
-## Conclusion
+## 总结
 
-As shown in this article, it’s quite easy to configure weighted TCP routes via the upcoming Istio 1.1.0 release. Also, this article should give you a good idea on constructing your own weighted TCP routes, and shaping your TCP traffic from the ground up!
+如本文所示，即将发布的Istio 1.1.0版本配置加权TCP路由非常容易。本文提供了构建一个加权TCP路由的思路，让你学会如何从头开始控制TCP流量。
