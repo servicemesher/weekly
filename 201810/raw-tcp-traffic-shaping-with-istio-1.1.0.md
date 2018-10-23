@@ -223,7 +223,7 @@ Loading cached images from config file.
 
 在撰写本文时，Istio 1.1.0还没有发布。因此我使用了Istio的 [Daily Pre-Release](https://gcsweb.istio.io/gcs/istio-prerelease/daily-build/master-20181017-09-15/)来演示这个新特性。请参考[Istio文档](https://istio.io/docs/setup/kubernetes/download-release/)学习下载和配置Istio。
 
-一旦部署完毕，有一个简单的方法来完全部署Istio：
+一旦配置完成，这里有一个完全部署Istio组件的简单方法：
 
 ```bash
 $ kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
@@ -241,7 +241,7 @@ destinationrule.networking.istio.io/istio-telemetry created
 
 ### 使用Istio代理部署TCP Echo服务
 
-为了演示Istio的路由机制，我们以side-car模式部署`tcp-echo-server` ：
+为了演示Istio的路由机制，我们以sidecar模式部署`tcp-echo-server` ：
 
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f service.yaml)
@@ -271,7 +271,7 @@ listening on [::]:9000, prefix: two
 
 ### 路由配置
 
-创建带有两个`subset`的`DestinationRule`来代表两个版本的 TCP Echo服务。`Gateway` 容许流量通过端口`9000`访问服务。最后，`VirtualService`限定了80%的流量必须被路由到TCP Echo服务的v1版本，20%被路由到v2版本。
+创建带有两个`subset`的`DestinationRule`来代表两个版本的 TCP Echo服务。`Gateway` 容许流量通过端口`31400`访问服务。最后，`VirtualService`限定了80%的流量必须被路由到TCP Echo服务的v1版本，20%被路由到v2版本。
 
 ```yaml
 apiVersion: networking.istio.io/v1alpha3
@@ -297,7 +297,7 @@ spec:
     istio: ingressgateway
   servers:
   - port:
-      number: 9000
+      number: 31400
       name: tcp
       protocol: TCP
     hosts:
@@ -314,7 +314,7 @@ spec:
   - gateway
   tcp:
   - match:
-    - port: 9000
+    - port: 31400
     route:
     - destination:
         host: tcp-echo-server
@@ -343,23 +343,18 @@ virtualservice.networking.istio.io/route created
 
 ### 验证Istio的TCP路由行为
 
-从本地端口转发请求到`istio-ingressgateway`：
+先来确定一下[Ingress的IP](https://istio.io/docs/tasks/traffic-management/ingress/#determining-the-ingress-ip-and-ports)：
 
 ```bash
-$ kubectl get pods -n istio-system | grep ingressgateway
-istio-ingressgateway-7b9bff766d-l478h  1/1  Running  0  30m
-
-$ kubectl port-forward istio-ingressgateway-7b9bff766d-l478h -n istio-system 9000 &
-[1] 69266
-Forwarding from 127.0.0.1:9000 -> 9000
-Forwarding from [::1]:9000 -> 9000
+$ minikube ip
+192.168.99.100
 ```
 
-现在可以发送一些请求到加权负载均衡的TCP Echo服务：
+现在可以通过Ingress发送一些请求到加权负载均衡的TCP Echo服务：
 
 ```bash
 $ for i in {1..10}; do
-for> docker run -it --rm busybox sh -c '(date; sleep 1) | nc docker.for.mac.localhost 9000'
+for> docker run -it --rm busybox sh -c '(date; sleep 1) | nc 192.168.99.100 31400'
 for> done
 one Sat Oct 20 04:38:05 UTC 2018
 two Sat Oct 20 04:38:07 UTC 2018
@@ -381,14 +376,7 @@ two Sat Oct 20 04:38:27 UTC 2018
 
 ## 清理
 
-首先，通过下面的命令停止端口转发：
-
-```bash
-$ killall kubectl
-[1]  + 69266 terminated  kubectl port-forward istio-ingressgateway-7b9bff766d-l478h -n istio-system
-```
-
-然后删除Minikube的部署：
+只需要像下面一样删除Minikube的部署：
 
 ```bash
 $ minikube stop && minikube delete
