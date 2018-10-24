@@ -1,4 +1,4 @@
-# Service Mesh Weekly 2018.06.04 - 2018.06.10
+# Service Mesh Weekly #2 2018.06.04 - 2018.06.10
 
 ## 活动
 
