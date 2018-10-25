@@ -1,46 +1,46 @@
 ---
 original: Yisaer
-title: "Istio在Coohom生产环境的使用实践"
-description: "本文分别介绍了Coohom项目在生产环境中使用Istio的经验与实践"
+title: "istio在Coohom生产环境的使用实践"
+description: "本文分别介绍了Coohom项目在生产环境中使用istio的经验与实践"
 categories: "原创"
 tags: ["istio","服务网格","Service Mesh"]
 date: 2018-10-25
 ---
 
-# Coohom在生产环境中使用Istio的经验与实践
+# Coohom在生产环境中使用istio的经验与实践
 
 
 ## 介绍
-自从[Istio](https://istio.io/)-1.0.0在今年发布了正式版以后，[Coohom](https://www.coohom.com)项目在生产环境中也开启了使用Istio来作为服务网格。
-本文将会介绍与分享在Coohom项目在使用Istio中的一些实践与经验。
+自从[istio](https://istio.io/)-1.0.0在今年发布了正式版以后，[Coohom](https://www.coohom.com)项目在生产环境中也开启了使用istio来作为服务网格。
+本文将会介绍与分享在Coohom项目在使用istio中的一些实践与经验。
 
 ![](https://ws1.sinaimg.cn/large/007pL7qRgy1fwjfpiwu3fj3050050mwx.jpg)
 
 ## Coohom项目
 
-[Coohom](https://www.coohom.com)是一个3D云设计平台，致力于帮助设计师与用户能够更快更便捷的使用设计工具与渲染功能。在技术实现上，Coohom也使用了istio作为服务网格，你可以在[Istio-In-Action](https://preliminary.istio.io/about/community/customers/)中找到我们。
+[Coohom](https://www.coohom.com)是一个3D云设计平台，致力于帮助设计师与用户能够更快更便捷的使用设计工具与渲染功能。在技术实现上，Coohom也使用了istio作为服务网格，你可以在[istio-In-Action](https://preliminary.istio.io/about/community/customers/)中找到我们。
 
 
-## 为什么使用Istio
-由于Istio是由Google所主导的产品，使用Istio必须在Kubernetes平台上。所以对于Coohom项目而言，在生产环境使用Istio之前，Coohom已经在Kubernetes平台上稳定运行了。我们先列一下Istio提供的功能（服务发现与负载均衡这些Kubernetes就已经提供了）：
+## 为什么使用istio
+由于istio是由Google所主导的产品，使用istio必须在Kubernetes平台上。所以对于Coohom项目而言，在生产环境使用istio之前，Coohom已经在Kubernetes平台上稳定运行了。我们先列一下istio提供的功能（服务发现与负载均衡这些Kubernetes就已经提供了）：
 
 1. 流量管理: 控制服务之间的流量和API调用的流向、熔断、灰度发布、A/BTest都可以在这个功能下完成；
 2. 可观察性: istio可以通过流量梳理出服务间依赖关系，并且进行无侵入的监控（Prometheus）和追踪（Zipkin）；
 3. 策略执行: 这是Ops关心的点， 诸如Quota、限流乃至计费这些策略都可以通过网格来做，与应用代码完全解耦；
 4. 服务身份和安全：为网格中的服务提供身份验证， 这点在小规模下毫无作用， 但在一个巨大的集群上是不可或缺的。
 
-**但是**， 这些功能并不是决定使用Istio的根本原因， 基于Dubbo或Spring-Cloud这两个国内最火的微服务框架不断进行定制开发，同样能够实现上面的功能，真正驱动我们尝试Istio的原因是：
+**但是**， 这些功能并不是决定使用istio的根本原因， 基于Dubbo或Spring-Cloud这两个国内最火的微服务框架不断进行定制开发，同样能够实现上面的功能，真正驱动我们尝试istio的原因是：
 
-* 第一：它使用了一种全新的模式（SideCar）进行微服务的管控治理，完全解耦了服务框架与应用代码。业务开发人员不需要对服务框架进行额外的学习，只需要专注于自己的业务。而Istio这一层则由可以由专门的人或团队深入并管理，这将极大地降低"做好"微服务的成本。
+* 第一：它使用了一种全新的模式（SideCar）进行微服务的管控治理，完全解耦了服务框架与应用代码。业务开发人员不需要对服务框架进行额外的学习，只需要专注于自己的业务。而istio这一层则由可以由专门的人或团队深入并管理，这将极大地降低"做好"微服务的成本。
 
-* 第二: Istio来自GCP（Google Cloud Platform），是Kubernetes上的“官方”Service Mesh解决方案，在Kubernetes上一切功能都是开箱即用，不需要改造适配的，深入Istio并跟进它的社区发展能够大大降低我们重复造轮子的成本。
+* 第二: istio来自GCP（Google Cloud Platform），是Kubernetes上的“官方”Service Mesh解决方案，在Kubernetes上一切功能都是开箱即用，不需要改造适配的，深入istio并跟进它的社区发展能够大大降低我们重复造轮子的成本。
 
-## Coohom在Istio的使用进度
+## Coohom在istio的使用进度
 
-目前Coohom在多个地区的生产环境集群内都已经使用了Istio作为服务网格，对于Istio目前所提供的功能，Coohom项目的网络流量管理已经完全交给Istio，并且已经通过Istio进行灰度发布。对于从K8S集群内流出的流量，目前也已经通过Istio进行管理。
+目前Coohom在多个地区的生产环境集群内都已经使用了istio作为服务网格，对于istio目前所提供的功能，Coohom项目的网络流量管理已经完全交给istio，并且已经通过istio进行灰度发布。对于从K8S集群内流出的流量，目前也已经通过istio进行管理。
 
-## 从单一Kubenertes切换为Kubernetes+Istio
-在使用Istio之前，Coohom项目就已经一直在Kubernetes平台稳定运行了。关于Coohom的架构，从技术栈的角度可以简单的分为：
+## 从单一Kubenertes切换为Kubernetes+istio
+在使用istio之前，Coohom项目就已经一直在Kubernetes平台稳定运行了。关于Coohom的架构，从技术栈的角度可以简单的分为：
 
 * Node.js egg应用
 * Java Springboot应用
@@ -88,13 +88,13 @@ spec:
 
 ```
 
-在接入Istio体系后，虽然这三个服务在所有POD都带有istio-proxy作为sidecar的情况下依旧可以沿用上面Kubernetes Ingress将流量导入到对应的服务。
-不过既然用了Istio，我们希望充分利用Istio的流量管理能力，所以我们先将流量导入到服务这一职责交给Istio VirtualService去完成。所以在我一开始接入Istio时，我们将上述Kubernetes方案改造成了通过下述方案:
+在接入istio体系后，虽然这三个服务在所有POD都带有istio-proxy作为sidecar的情况下依旧可以沿用上面Kubernetes Ingress将流量导入到对应的服务。
+不过既然用了istio，我们希望充分利用istio的流量管理能力，所以我们先将流量导入到服务这一职责交给istio VirtualService去完成。所以在我一开始接入istio时，我们将上述Kubernetes方案改造成了通过下述方案:
 
 ### 入口Ingress
 
 首先，我们在istio-system这个namespace下建立Ingress，将所有www.example.com这个host下的流量导入到istio-ingressgateway中。
-这样我们就从集群的流量入口开始将流量管理交付给Istio来进行管理。
+这样我们就从集群的流量入口开始将流量管理交付给istio来进行管理。
 
 ```yaml
 apiVersion: extensions/v1beta1
@@ -113,7 +113,7 @@ spec:
         path: /
 ```
 
-在交付给Istio进行管理以后，我们需要将具体的路由-服务匹配规则告诉给Istio，这一点可以通过Gateway+VirtualService实现。
+在交付给istio进行管理以后，我们需要将具体的路由-服务匹配规则告诉给istio，这一点可以通过Gateway+VirtualService实现。
 需要注意的是，下面的服务名都是用的简写，所以必须将这两个文件和对应的服务部署在同一个Kubernetes namespace下才行。
 
 ```yaml
@@ -163,9 +163,9 @@ spec:
 
 ### 外部服务注册
 
-在经过上述的操作以后，重新启动服务实例并且自动注入istio-proxy后，我们会发现两个后端的Java应用并不能正常启动。经过查询启动日志后发现，无法启动的原因则是因为不能连接到外部RDS。这是因为我们的所有网络流量都经过Istio的管控后，所有需要集群外部服务都需要先向Istio进行注册以后才能被顺利的转发过去。一个非常常见的场景则是通过TCP连接的外部RDS。当然，外部的HTTP服务也是同理。
+在经过上述的操作以后，重新启动服务实例并且自动注入istio-proxy后，我们会发现两个后端的Java应用并不能正常启动。经过查询启动日志后发现，无法启动的原因则是因为不能连接到外部RDS。这是因为我们的所有网络流量都经过istio的管控后，所有需要集群外部服务都需要先向istio进行注册以后才能被顺利的转发过去。一个非常常见的场景则是通过TCP连接的外部RDS。当然，外部的HTTP服务也是同理。
 
-以下是一个向Istio注册外部RDS的例子。
+以下是一个向istio注册外部RDS的例子。
 ```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
@@ -189,7 +189,7 @@ spec:
 
 ### 支持灰度发布
 
-上面istio-ingress+Gateway+virtualService的方案可以替代我们之前只使用Kubernetes Ingress的方案，但如果只是停留在这一步的话那么对于Istio给我们带来的好处可能就不能完全体现。值得一提的是，在上文的istio-ingress中我们将www.example.com的所有流量导入到了istio-ingressGateway，通过这一步我们可以在istio-ingressGateway的log当中查看到所有被转发过来的流量的网络情况，这一点在我们日常的debug中非常有用。然而在上述所说的方案中istio的能力还并未被完全利用，接下来我将介绍我是如何基于上述方案进行改造以后来进行Coohom日常的灰度发布。
+上面istio-ingress+Gateway+VirtualService的方案可以替代我们之前只使用Kubernetes Ingress的方案，但如果只是停留在这一步的话那么对于istio给我们带来的好处可能就不能完全体现。值得一提的是，在上文的istio-ingress中我们将www.example.com的所有流量导入到了istio-ingressGateway，通过这一步我们可以在istio-ingressGateway的log当中查看到所有被转发过来的流量的网络情况，这一点在我们日常的debug中非常有用。然而在上述所说的方案中istio的能力还并未被完全利用，接下来我将介绍我是如何基于上述方案进行改造以后来进行Coohom日常的灰度发布。
 
 还是以上文为例，假设需要同时发布三个服务，并且三个服务都需要进行灰度发布，并且我们对灰度发布有着以下几个需求:
 
@@ -200,7 +200,7 @@ spec:
 为了支持以上灰度发布的需求，我们有如下工作需要完成:
 
 1. 定义规则告诉istio，对于一个Kubernetes service而言，后续的Deployment实例哪些是新服务，哪些是老服务。
-2. 重新设计virtualService结构策略，使得整个路由管理满足上述第二第三点需求。
+2. 重新设计VirtualService结构策略，使得整个路由管理满足上述第二第三点需求。
 3. 需要设计一个合理的流程，使得当灰度发布完成以后，最终状态能恢复成与初始一致。
 
 ### 定义规则
@@ -226,10 +226,10 @@ spec:
       type: grey
 ```
 
-### 重构virtualService
+### 重构VirtualService
 
-前文我们提到，我们在Kubernetes平台内将在网络流量所有服务分为三类。之所以这么分，就是因为在这里每一类服务的virtualService的设计不同。
-我们先从第一类，只有外部连接的服务说起，即页面服务，下面是页面服务virtualService的例子：
+前文我们提到，我们在Kubernetes平台内将在网络流量所有服务分为三类。之所以这么分，就是因为在这里每一类服务的VirtualService的设计不同。
+我们先从第一类，只有外部连接的服务说起，即页面服务，下面是页面服务VirtualService的例子：
 
 从下文这个例子，我们可以看到对于页面服务而言，他定义了两种规则，对于headers带有`end-user:test`的请求，istio则会将该请求导入到上文我们所提到的
 grey分组，即特定请求进入灰度，而所有其他请求则像之前导入到normal分组，即老实例。
