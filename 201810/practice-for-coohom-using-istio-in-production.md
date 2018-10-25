@@ -7,7 +7,7 @@ tags: ["istio","服务网格","Service Mesh"]
 date: 2018-10-25
 ---
 
-# Coohom在生产环境中使用Istio-1.0.2的经验与实践
+# Coohom在生产环境中使用Istio的经验与实践
 
 
 ## 介绍
@@ -18,37 +18,37 @@ date: 2018-10-25
 
 ## Coohom项目
 
-[Coohom](https://www.coohom.com)是一个3D云设计平台，致力于帮助设计师与用户能够更快更便捷的使用设计工具与渲染功能。在技术实现上，Coohom也使用了istio作为服务网格，你可以在[istio-in-Action](https://preliminary.istio.io/about/community/customers/)中找到我们。
+[Coohom](https://www.coohom.com)是一个3D云设计平台，致力于帮助设计师与用户能够更快更便捷的使用设计工具与渲染功能。在技术实现上，Coohom也使用了istio作为服务网格，你可以在[Istio-In-Action](https://preliminary.istio.io/about/community/customers/)中找到我们。
 
 
 ## 为什么使用Istio
-由于Istio是由Google所主导的产品，使用Istio必须在Kubernetes平台上。所以对于Coohom项目而言，在生产环境使用Istio之前，Coohom已经在Kubernetes平台上稳定运行了。我们先列一下Istio提供的功能(服务发现与负载均衡这些Kubernetes就已经提供了):
+由于Istio是由Google所主导的产品，使用Istio必须在Kubernetes平台上。所以对于Coohom项目而言，在生产环境使用Istio之前，Coohom已经在Kubernetes平台上稳定运行了。我们先列一下Istio提供的功能（服务发现与负载均衡这些Kubernetes就已经提供了）：
 
-1. 流量管理: 控制服务之间的流量和API调用的流向, 熔断, 灰度发布, A/B Test 都可以在这个功能下完成;
-2. 可观察性: Istio 可以通过流量梳理出服务间依赖关系, 并且进行无侵入的监控(Prometheus)和追踪(Zipkin);
-3. 策略执行: 这是 Ops 关心的点, 诸如 Quota, 限流, 乃至计费这些策略都可以通过网格来做, 与应用代码完全解耦;
-4. 服务身份和安全：为网格中的服务提供身份验证, 这点在小规模下毫无作用, 但在一个巨大的集群上是不可或缺的.
+1. 流量管理: 控制服务之间的流量和API调用的流向、熔断、灰度发布、A/BTest都可以在这个功能下完成；
+2. 可观察性: istio可以通过流量梳理出服务间依赖关系，并且进行无侵入的监控（Prometheus）和追踪（Zipkin）；
+3. 策略执行: 这是Ops关心的点， 诸如Quota、限流乃至计费这些策略都可以通过网格来做，与应用代码完全解耦；
+4. 服务身份和安全：为网格中的服务提供身份验证， 这点在小规模下毫无作用， 但在一个巨大的集群上是不可或缺的。
 
-**但是**, 这些功能并不是决定使用 Istio 的根本原因, 基于Dubbo或Spring-Cloud这两个国内最火的微服务框架不断进行定制开发, 同样能够实现上面的功能. 真正驱动我们尝试istio的原因是:
+**但是**， 这些功能并不是决定使用Istio的根本原因， 基于Dubbo或Spring-Cloud这两个国内最火的微服务框架不断进行定制开发，同样能够实现上面的功能，真正驱动我们尝试Istio的原因是：
 
-* 第一：它使用了一种全新的模式( SideCar) 进行微服务的管控治理, 完全解耦了服务框架与应用代码. 业务开发人员不需要对服务框架进行额外的学习, 只需要专注于自己的业务. 而 Istio 这一层则由可以由专门的人或团队深入并管理, 这将极大地降低"做好"微服务的成本。
+* 第一：它使用了一种全新的模式（SideCar）进行微服务的管控治理，完全解耦了服务框架与应用代码。业务开发人员不需要对服务框架进行额外的学习，只需要专注于自己的业务。而Istio这一层则由可以由专门的人或团队深入并管理，这将极大地降低"做好"微服务的成本。
 
-* 第二: Istio 来自 GCP(Google Cloud Platform), 是 Kubernetes 上的"官方" Service Mesh 解决方案, 在 Kubernetes 上一切功能都是开箱即用, 不需要改造适配的, 深入 Istio 并跟进它的社区发展能够大大降低我们重复造轮子的成本。
+* 第二: Istio来自GCP（Google Cloud Platform），是Kubernetes上的“官方”Service Mesh解决方案，在Kubernetes上一切功能都是开箱即用，不需要改造适配的，深入Istio并跟进它的社区发展能够大大降低我们重复造轮子的成本。
 
 ## Coohom在Istio的使用进度
 
 目前Coohom在多个地区的生产环境集群内都已经使用了Istio作为服务网格，对于Istio目前所提供的功能，Coohom项目的网络流量管理已经完全交给Istio，并且已经通过Istio进行灰度发布。对于从K8S集群内流出的流量，目前也已经通过Istio进行管理。
 
 ## 从单一Kubenertes切换为Kubernetes+Istio
-在使用Istio之前,Coohom项目就已经一直在Kubernetes平台稳定运行了。关于Coohom的架构，从技术栈的角度可以简单的分为:
+在使用Istio之前，Coohom项目就已经一直在Kubernetes平台稳定运行了。关于Coohom的架构，从技术栈的角度可以简单的分为：
 
 * Node.js egg应用
 * Java Springboot应用
 
 从网络流量管理的角度去分类，可以分为三类:
 
-* 只接受集群外部流量
-* 只接受集群内部流量
+* 只接受集群外部流量；
+* 只接受集群内部流量；
 * 既接受集群外部流量，也接受集群内部流量
 
 在我们的场景里，基本上所有的Node应用属于第一类，一部分Java应用属于第二类，一部分Java应用属于第三类。
@@ -205,7 +205,7 @@ spec:
 
 ### 定义规则
 
-为了使得istio可以知道对于某个服务而言新老实例的规则，我们需要用到DestinationRule,以账户服务为例:
+为了使得istio可以知道对于某个服务而言新老实例的规则，我们需要用到DestinationRule，以账户服务为例:
 
 从下文的例子我们可以看到，对于账户服务而言，所有Pod中带有type为normal的标签被分为了normal组，所有type为grey的标签则被分为了grey组，
 这是用来在后面帮助我们让istio知道新老服务的规则，即带有type:normal标签的POD为老实例，带有type:grey标签的POD为新实例。这里所有三个服务分类都可以套用该规则，就不再赘述。
@@ -229,7 +229,7 @@ spec:
 ### 重构virtualService
 
 前文我们提到，我们在Kubernetes平台内将在网络流量所有服务分为三类。之所以这么分，就是因为在这里每一类服务的virtualService的设计不同。
-我们先从第一类，只有外部连接的服务说起，即页面服务,下面是页面服务virtualService的例子：
+我们先从第一类，只有外部连接的服务说起，即页面服务，下面是页面服务virtualService的例子：
 
 从下文这个例子，我们可以看到对于页面服务而言，他定义了两种规则，对于headers带有`end-user:test`的请求，istio则会将该请求导入到上文我们所提到的
 grey分组，即特定请求进入灰度，而所有其他请求则像之前导入到normal分组，即老实例。
@@ -270,7 +270,7 @@ spec:
 
 然后我们再看第二类服务，即权限服务，下面是权限服务的virtualService例子:
 
-从下面这个例子我们可以看到，首先在取名方面，上面的page-service的virtualService name为xxx-external-vsc,而这里权限服务则名为xxx-internal-service。这里的name对实际效果其实并没有影响，只是我个人对取名的习惯，用来提醒自己这条规则是适用于外部流量还是集群内部流量。
+从下面这个例子我们可以看到，首先在取名方面，上面的page-service的virtualService name为xxx-external-vsc，而这里权限服务则名为xxx-internal-service。这里的name对实际效果其实并没有影响，只是我个人对取名的习惯，用来提醒自己这条规则是适用于外部流量还是集群内部流量。
 在这里我们定义了一个内部服务的规则，即只有是带有type:grey的POD实例流过来的流量，才能进入grey分组。即满足了我们上述的第三个需求，整个服务链路要么是全部新实例，要么是全部老实例。
 
 ```yaml
@@ -382,12 +382,12 @@ spec:
 
 从上述的方案当中，我们将所有服务根据网络流量来源分为三类，并且通过istio实现了整个业务的灰度发布。然而整个灰度发布还并没有完全结束，我们还需要一点收尾工作。
 
-考虑整个业务刚开始的状态我们有3个Kubernetes service,3个Kubernetes Deployment，每个Deployment的POD都带有了type:normal的标签。
-然而现在经过上述方案以后，我们同样有3个Kubernetes service,3个Kubernetes Deployment，但是这里每个Deployment的POD却都带有了type:grey的标签。
+考虑整个业务刚开始的状态我们有3个Kubernetes service，3个Kubernetes Deployment，每个Deployment的POD都带有了type:normal的标签。
+然而现在经过上述方案以后，我们同样有3个Kubernetes service，3个Kubernetes Deployment，但是这里每个Deployment的POD却都带有了type:grey的标签。
 
 所以在经过上述灰度发布以后，我们还要状态恢复为初始值，这有利于我们下一次进行灰度发布。由于对于Coohom项目，在CICD上使用的是Gitlab-ci，所以我们的自动化灰度发布收尾工作深度绑定了Gitlab-ci的脚本，所以这里就不做介绍，各位读者可以根据自身情况量身定制。
 
 
 ## 结语
 
-以上就是目前Coohom在istio使用上关于灰度发布的一些实践和经验。对于Coohom项目而言，在生产环境中使用istio是从istio正式发布1.0.0版本以后才开始的。但是在这之前，我们在内网环境使用istio已经将近有半年的时间了，Coohom在内网中从istio0.7.1版本开始使用。内网环境在中长期时间内与生产环境环境架构不一致是反直觉的,一听就不靠谱。然而,恰恰istio 是对业务完全透明的, 它可以看作是基础设施的一部分,所以我们在生产环境使用istio之前，在内网环境下先上了istio，积累了不少经验。
+以上就是目前Coohom在istio使用上关于灰度发布的一些实践和经验。对于Coohom项目而言，在生产环境中使用istio是从istio正式发布1.0.0版本以后才开始的。但是在这之前，我们在内网环境使用istio已经将近有半年的时间了，Coohom在内网中从istio0.7.1版本开始使用。内网环境在中长期时间内与生产环境环境架构不一致是反直觉的，一听就不靠谱。然而，恰恰istio 是对业务完全透明的， 它可以看作是基础设施的一部分，所以我们在生产环境使用istio之前，在内网环境下先上了istio，积累了不少经验。
