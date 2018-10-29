@@ -78,14 +78,8 @@ Sysdig 2017年Docker使用报告中的容器编排
 [Cloud Foundry Foundation](http://bit.ly/2quBaL4) ， [Cloud Native Computing Foundation](http://tnstack.io/IgeO302OSc4) 和 [Red Hat](http://tnstack.io/Pncc300pqZa) 是The New Stack的赞助商。
 
 
-## 作者简介
+## 关于作者
 
-[
+![](https://ws1.sinaimg.cn/large/006tSBxtly1fuwq6p5tm2j302d02sq2y.jpg)
 
-![](https://ws1.sinaimg.cn/large/61411417ly1fwp5mrsu4gj20go0goaqn.jpg)
-
-Bilgin Ibryam
-
-Bilgin Ibryam是Red Hat的架构师，也是Apache for Camel，OFBiz和Isis项目的开源提交者。 他是博主，演讲者，开源爱好者以及Camel Design Patterns和Instant Apache Camel Message Routing书籍的作者。 在他的日常工作中，Bilgin喜欢指导，培训和领导团队在应用程序集成，分布式系统，微服务，devop和云原生应用程序方面取得成功。
-
-](http://twitter.com/bibryam)
+**Bilgin Ibryam**  （@bibryam）是 Red Hat 的首席架构师，提交者和 ASF 成员。 他是一名开源传播者，博客作者，《Camel Design Patterns》 和 《Kubernetes Patterns》 书籍的作者。 在他的日常工作中，Bilgin 喜欢指导编码和领导开发人员成功构建云原生解决方案。 他目前的工作重点是应用程序集成、分布式系统、消息传递、微服务、devops 和一般的云原生挑战。 你可以在  [Twitter](https://twitter.com/bibryam)、[Linkedin](https://uk.linkedin.com/in/bibryam)  或他的  [博客](http://www.ofbizian.com/) 上找到他 。
