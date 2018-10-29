@@ -8,7 +8,6 @@ description: "本文通过分析服务网格的优势，阐述了其未来的发
 categories: "译文"
 tags: ["Istio","Service Mesh"]
 date: 018-10-16，2018-10-24
-
 ---
 
 ## 第一部分: 服务网格的架构是必然会发生的，并且越来越重要
