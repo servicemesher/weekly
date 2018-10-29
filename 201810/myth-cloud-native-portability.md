@@ -1,3 +1,15 @@
+---
+original: https://thenewstack.io/myth-cloud-native-portability/
+translator: 殷龙飞
+reviewer: rootsongjc
+title: "云原生可移植性的神话"
+description: "本文介绍了云原生可移植性的话题"
+categories: "译文"
+tags: ["cloud native","云原生","Kubernetes","服务网格","Service Mesh"]
+date: 2018-10-29
+---
+
+
 # 云原生可移植性的神话
 
 > 原文链接：https://thenewstack.io/myth-cloud-native-portability/
