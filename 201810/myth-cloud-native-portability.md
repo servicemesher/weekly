@@ -1,6 +1,6 @@
 ---
 original: https://thenewstack.io/myth-cloud-native-portability/
-translator: 殷龙飞
+translator: loverto
 reviewer: rootsongjc
 title: "云原生可移植性的神话"
 description: "本文介绍了云原生可移植性的话题"
