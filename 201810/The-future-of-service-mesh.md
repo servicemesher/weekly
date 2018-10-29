@@ -1,7 +1,7 @@
 ---
-original: https://blogs.vmware.com/opensource/2018/10/16/service-mesh-architectures-inevitable/ ，https://blogs.vmware.com/opensource/2018/10/23/service-mesh-whats-next
+original: https://blogs.vmware.com/opensource/2018/10/16/service-mesh-architectures-inevitable/，https://blogs.vmware.com/opensource/2018/10/23/service-mesh-whats-next
 author: Stephen McPolin & Venil Noronha
-translator: [陈冬](https://github.com/shaobai)
+translator: shaobai
 reviewer: 
 title: "服务网格的未来"
 description: "本文通过分析服务网格的优势，阐述了其未来的发展情况"
@@ -22,11 +22,11 @@ date: 018-10-16，2018-10-24
 
 但服务网格的作用远远不止于此。总的来说，他们关心广泛的通行特性，包括：
 
-  1. 可观察性 - 服务之间的日志记录和度量
-  1. 发现 - 启用服务链接在一起寻找服务
-  1. 通信 - 为通信制定策略、方法和安全
-  1. 认证 - 建立服务和通信的访问权限
-  1. 平台支持 - 跨多个后端平台（Azure，AWS 等）和服务编排（Kubernetes，Nginx 等）
+- 可观察性 - 服务之间的日志记录和度量
+- 发现 - 启用服务链接在一起寻找服务
+- 通信 - 为通信制定策略、方法和安全
+- 认证 - 建立服务和通信的访问权限
+- 平台支持 - 跨多个后端平台（Azure，AWS 等）和服务编排（Kubernetes，Nginx 等）
 
 你可以看到对开发人员的吸引力--在每次构建为服务时，服务网格会处理掉大部分他们不愿意去处理的事情。这对系统管理员和运维团队来说也是一个福音，他们不需要和开发人员协商，就可以将需要的特性构建到任何特性的微服务中。至少在理论上，客户是收益的，因为他们可以更快的部署他们的市场特定的服务。
 
