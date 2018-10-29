@@ -1,18 +1,15 @@
-# 服务网格的未来
+---
+original: https://blogs.vmware.com/opensource/2018/10/16/service-mesh-architectures-inevitable/ ，https://blogs.vmware.com/opensource/2018/10/23/service-mesh-whats-next
+author: Stephen McPolin & Venil Noronha
+translator: [陈冬](https://github.com/shaobai)
+reviewer: 
+title: "服务网格的未来"
+description: "本文通过分析服务网格的优势，阐述了其未来的发展情况"
+categories: "译文"
+tags: ["Istio","Service Mesh"]
+date: 018-10-16，2018-10-24
 
-> 原文地址：<https://blogs.vmware.com/opensource/2018/10/16/service-mesh-architectures-inevitable/>，<https://blogs.vmware.com/opensource/2018/10/23/service-mesh-whats-next/>
->
-> 主题：服务网格的未来
->
-> 发布时间：2018-10-16，2018-10-24
-> 
-> 作者：Stephen McPolin & Venil Noronha
-> 
-> 译者：[陈冬](https://github.com/shaobai)
->
-> 审校：
->
-> 类型：博客
+---
 
 ## 第一部分: 服务网格的架构是必然会发生的，并且越来越重要
 
