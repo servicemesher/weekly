@@ -11,7 +11,9 @@ date: 2018-10-31
 
 # 如何将Cloud Native Workload 映射到Kubernetes 控制器
 
-[Janakiram MSV](https://thenewstack.io/author/janakiram/"Janakiram MSV的帖子")
+> 原文链接：https://thenewstack.io/how-to-map-cloud-native-workloads-to-kubernetes-controllers/
+> 作者：[Janakiram MSV](https://thenewstack.io/author/janakiram/)
+> 译者：殷龙飞
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fwrcxp30gdj20zk0npalp.jpg)
 
