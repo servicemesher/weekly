@@ -1,6 +1,6 @@
 ---
 original: https://thenewstack.io/how-to-map-cloud-native-workloads-to-kubernetes-controllers/
-author: Jaankiram MSV
+author: Janakiram MSV
 translator: loverto
 reviewer: rootsongjc
 title: "如何将Cloud Native Workload 映射到Kubernetes 控制器"
