@@ -16,28 +16,30 @@ October 23, 2018
 
 ![Envoy Golang Extension Architecture](https://ws4.sinaimg.cn/large/006tNbRwly1fwql07xp02j30lp0buaay.jpg)
 
-- **Transparent injection of extensions:** With the help of Cilium, connections are transparently redirected to Envoy without requiring to modify the application or pod. Redirects are configured based on destination ports and can be restricted to source or destination services based on labels, IPs, DNS names, and service names for both ingress and egress connections and map connections to extensions via the extension's name. The redirects are configured via the CiliumNetworkPolicy CRD or a REST API. Envoy can be configured to run either as a sidecar in each pod or as a standalone proxy, one per node.
-- **Fully distributed:** Go extensions run fully distributed inside of Envoy on each node or inside each pod and do not require a centralized control plane for data processing. The go extensions themselves can, of course, call out to arbitrary control plane components to report telemetry or validate requests.
-- **Dynamic extensions mapping:** Go extensions are made available to Envoy as a shared library. Cilium configures Envoy to automatically load the respective Go extension based on the configured redirects and invoke it when data for such a connection. Future releases will offer support to update and re-load extensions at runtime without restarting Envoy and without losing connection state.
-- **Extension configuration via CRD:** Go extensions are configured using generic key-value pairs via either the CRD or a REST API. This allows passing configuration such as security policies, security tokens or other configuration without requiring to make Envoy itself aware of it.
-- **Generic access logging:** Similar to the configuration, extensions are able to return generic key-value pairs which will make its way into the access log to allow passing extracted visibility into the access log layer.
-- **Sandboxed** A sandbox ensures that any parser instability cannot destabilize the mature core of Envoy. Inspired by Matt Klein's post [Exceptional Go](https://medium.com/@mattklein123/exceptional-go-1dd1488a6a47), parsers are allowed to panic to raise exceptions. When a panic occurs, information is logged to the access log and the TCP connection associated with the request is closed.
+- **扩展的透明注入：**在Cilium的帮助下，连接被透明地重定向到Envoy，而不需要修改应用程序或pod。重定向基于目标端口配置，可以根据labels、IPs、DNS以及ingress和egress连接的服务名称限定到源或目标服务，并通过扩展的名称将连接映射到扩展。重定向是通过CiliumNetworkPolicy CRD或REST API配置的。Envoy可以被配置为在每个pod中作为sidecar或作为每个node的独立代理运行。
+- **完全分布式：**Go扩展完全分布在每个Envoy节点或pod内部，不需要集中化的控制平面进行数据处理。当然，go扩展本身可以调用任意的外部控制面板组件来报告遥测数据或验证请求。
+- **动态扩展映射：**Go扩展被设计为共享库提供给Envoy。Cilium配置Envoy可以根据配置的重定向自动加载相应的Go扩展，并在连接数据时调用它。未来的版本将支持在运行时更新和重新加载扩展，而无需重启Envoy和不丢失连接状态。
+- **通过CRD配置扩展：**通过CRD或REST API使用通用键值对配置Go扩展。这允许传递配置如安全策略、安全令牌或其他配置，而无需让Envoy知道它。
+- **通用访问日志：**与配置类似，扩展可以返回通用键值对，这些键值对将提取的可见性传递到访问日志层。
+- **沙盒化：**沙盒确保任何解析器的不稳定性都不能破坏Envoy的成熟核心。受Matt Klein发表的文章[Exceptional Go](https://medium.com/@mattklein123/exceptional-go-1dd1488a6a47)启发，解析器被容许panic或抛出异常。当panic发生时，信息被记录到访问日志中，TCP连接与被关闭的请求关联。
 
-## What is Cilium?
+## Cilium是什么？
 
-Cilium is open source software for transparently providing and securing the network and API connectivity between application services deployed using Linux container management platforms like Kubernetes, Docker, and Mesos.
+Cilium是一种开源软件，可以透明地提供和保护使用诸如Kubernetes、Docker和Mesos等Linux容器管理平台部署的应用程服务之间的网络和API连接。
 
-At the foundation of Cilium is a new Linux kernel technology called BPF, which enables the dynamic insertion of powerful security, visibility, and networking control logic within Linux itself. Besides providing traditional network level security, the flexibility of BPF enables security on API and process level to secure communication within a container or pod. Because BPF runs inside the Linux kernel, Cilium security policies can be applied and updated without any changes to the application code or container configuration.
+Cilium的基础是一种新的Linux内核技术BPF，它支持在Linux内部动态的注入安全、可见性和网络控制逻辑。除了提供传统的网络层安全，BPF的灵活性还能提供API和流程级别的安全，保护容器或pod间通信。因为BPF在Linux内核中运行，Cilium的安全策略可以在不修改程序代码或容器配置的情况下应用和更新。
 
-See the section **Introduction to Cilium** for a more detailed general introduction to Cilium.
+有关Cilium更详细的介绍请参见**[Introduction to Cilium](https://cilium.readthedocs.io/en/v1.3/intro/)**
 
-## What is Envoy?
+## Envoy是什么？
 
 Envoy is an L7 proxy and communication bus designed for large modern service-oriented architectures. The project was born out of the belief that:
 
-> The network should be transparent to applications. When network and application problems do occur it should be easy to determine the source of the problem.
+Envoy是一个7层代理和通信总线，被设计用于大型的面向服务的架构。这个项目诞生于以下理念：
 
-You can learn more about Envoy in the section [What is Envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/what_is_envoy) of the Envoy documentation.
+> 网络应该对应用程序透明。当网络和应用程序出现问题时，应该很容易确定问题的根源。
+
+你可以通过Envoy的文档 [What is Envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/what_is_envoy)了解更多关于Envoy的内容。
 
 # How to write an Envoy Go extension
 
