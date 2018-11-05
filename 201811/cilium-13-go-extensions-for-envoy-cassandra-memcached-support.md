@@ -5,7 +5,7 @@ reviewer: rootsongjc
 title: "Cilium 1.3：支持Envoy，Cassandra和Memcached的Go语言扩展"
 description: "本文讲解了Cilium1.3的新特性，并用示例演示新的Go扩展如何使用"
 categories: "译文"
-tags: ["Cilium"]
+tags: ["Envoy","Cilium"]
 date: 2018-11-05
 ---
 
