@@ -31,21 +31,21 @@ Rancher 1.6和Rancher 2.0具有略微不同的术语和概念，支持容器编�
 
 FaaS框架应该能够在各种基础架构上运行，以实现真正有用，包括公共云，混合云和内部部署环境。在真实生产环境中基于FaaS运行时构建的无服务器框架应该能够依靠经过验证和测试的编排和管理功能来大规模部署容器和分布式工作负载。
 
-对于编排和管理，无服务器FaaS框架能够依赖Kubernetes，因为它能够：
+对于编排和管理，无服务器FaaS框架依赖Kubernetes，因为它能够：
 
 *   跨主机群集编排容器。
-*   最大化企业应用程序所需的硬件资源。
+*   最大化程度的利用企业应用程序所需的硬件资源。
 *   管理和自动化应用程序部署并提供声明式更新。
-*   挂载存储以运行有状态应用程序。
-*   即时扩展容器化应用程序并提供支持它们的资源。
+*   通过挂载存储运行有状态应用程序。
+*   秒级扩容容器化应用程序并提供支持它们的资源。
 *   声明式地管理服务。
-*   提供一个晴雨表，通过自动放置，自动重启，自动复制和自动缩放来检查应用程序和自我修复应用程序的运行状况。
+*   提供一个晴雨表，通过自动部署，自动重启，自动扩容和自动缩容来检查应用程序和自我修复应用程序的运行状况。
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fwtsgn1842j20ao07idgj.jpg)
 
 #### 无服务器系统可以包括通过客户端请求触发的功能或作为业务服务的一部分执行的功能。这两个过程都可以使用容器集群管理器（如Kubernetes）进行编排。资料来源：dzone.com
 
-我们将在本文中介绍三个无服务器框架各自的优点和缺点。这些FaaS框架之间的共同点是，它们能够（1）将函数转化为服务; （2）利用Kubernetes平台管理这些服务的生命周期。这些框架背后的设计会由于其用于实现这些共同目标的具体方式的差异，我们将在下一节中探讨。我们将在以下部分中重点介绍这些框架之间的一些差异：
+我们将在本文中介绍三个无服务器框架各自的优点和缺点。这些FaaS框架之间的共同点是，它们能够（1）将函数转化为服务; （2）利用Kubernetes平台管理这些服务的生命周期。这些框架背后的设计，会由于其用于实现的具体方式的不同而有差异，我们将在下一节中探讨。我们将在以下部分中重点介绍这些框架之间的一些差异：
 
 1.  框架是在源码级别或Docker镜像级别还是在中间运行，例如buildpacks？
 2.  由于使用公共语言运行库启动容器，冷启动性能的延迟或执行函数期间的延迟分别是多少？
@@ -62,7 +62,7 @@ SpringBoot和Vertx是开发微服务的非常流行的框架，它们的易用�
 
 #### 在本地计算机上下载和安装模板
 
-我们需要安装和配置FaaS CLI以与本地或远程K8或Docker配合使用。在本练习中，我们将使用本地Docker客户端，并在后续工作中将其扩展到基于云的GKE集群。
+我们需要安装和配置FaaS CLI以与本地或远程K8S或Docker配合使用。在本练习中，我们将使用本地Docker客户端，并在后续工作中将其扩展到基于云的GKE集群。
 
 对于最新版本的CLI类型：
 
@@ -72,11 +72,10 @@ SpringBoot和Vertx是开发微服务的非常流行的框架，它们的易用�
 
 使用以下命令验证本地安装的模板：
 
-` faas-cli new --list`
+`faas-cli new --list`
 
 在我们创建无服务器函数之前，我们必须在本地计算机上安装这些模板。
 ```shell
-TL; DR
  faas-cli template pull https://github.com/tmobile/faas-java-templates.git
 ```
 
@@ -104,13 +103,13 @@ TL; DR
 
 `version` 显示客户端版本信息
 
-标志： `-h`，`--help` 帮助FAAS\-CLI `-f`，`--yaml string` 路径YAML文件描述功能（S）
+参数： `-h`，`--help` 帮助FAAS\-CLI `-f`，`--yaml string` 描述函数的yaml文件的路径
 
 有关命令的更多信息，请使用 `faas-cli` \[command\] `--help`。
 
 #### 用已安装的模板创建函数
 
-使用我们感兴趣的函数来自Vertx/SpringBoot模板的github存储库，我们可以创建一个函数（用我们的函数替换大括号内的文本，我们使用springboot但你可以用vertx模板代替它）：
+使用来自Vertx/SpringBoot模板的github存储库中我们感兴趣的函数，我们可以创建一个函数（用我们的函数替换大括号内的文本，我们使用springboot但你可以用vertx模板代替它）：
 
 `faas-cli new {function of function} --lang springboot`
 
@@ -140,11 +139,11 @@ Building: mvnw with node template. Please wait..
 docker build -t mvnw .
 Sending build context to Docker daemon  8.704kB
 Step 1/19 : FROM node:6.11.2-alpine
- ---&gt; 16566b7ed19e
+ ---> 16566b7ed19e
 
 Step 19/19 : CMD fwatchdog
- ---&gt; Running in 53d04c1631aa
- ---&gt; f5e1266b0d32
+ ---> Running in 53d04c1631aa
+ ---> f5e1266b0d32
 Removing intermediate container 53d04c1631aa
 Successfully built f5e1266b0d32
 Successfully tagged mvnw:latest
@@ -183,11 +182,11 @@ Reading from STDIN - hit (Control + D) to stop.
 This is my message
 
 {"status":"done"}
+```
 
+我们还可以将命令传递给函数，例如:
 
-We can also pipe a command into the function such as:
-
-
+```
 $ date | faas-cli invoke -f mvnw.yml mvnw
 {"status":"done"}
 
@@ -198,7 +197,7 @@ $ date | faas-cli invoke -f mvnw.yml mvnw
 在使用OpenFaaS时，我们不限于任何本地或云基础架构。现在我们已经在本地Docker集群中部署了模板，我们可以通过在GCP中的GKE上设置它来利用OpenFaaS的多功能性。
 
 1.  创建一个名为的GCP项目
-2.  [在此处](https://cloud.google.com/sdk/) 下载并安装Google Cloud SDK。安装SDK后，运行gcloud init，然后将默认项目设置为penfaas。
+2.  [在此处](https://cloud.google.com/sdk/) 下载并安装Google Cloud SDK。安装SDK后，运行gcloud init，然后将默认项目设置为openfaas。
 3.  使用gcloud安装kubectl： `gcloud components install kubectl`
 4.  导航到API Manager>凭据>创建凭据>服务帐户密钥。
 5.  选择JSON作为密钥类型。将文件重命名为json并将其放在项目中
@@ -220,7 +219,7 @@ gcloud container clusters create demo \
 
 `gcloud container clusters resize --size=3`
 
-您可以通过调用此 [页面中](https://cloud.google.com/sdk/gcloud/reference/container/clusters/) 所述的适用SDK命令来执行大量集群管理功能，例如删除集群。
+您可以通过调用此 [页面中](https://cloud.google.com/sdk/gcloud/reference/container/clusters/) 所述的合适的SDK命令来执行集群管理功能，例如删除集群。
 
 `gcloud container clusters delete demo -z=us-west1-a`
 
@@ -246,11 +245,11 @@ kubectl create clusterrolebinding "cluster-admin-$(whoami)" \
 --user="$(gcloud config get-value core/account)"
 ```
 
-您可以通过 使用kubectl反向代理 在浏览器（或在 [http：// localhost：9099 / ui](http://localhost:9099/ui) ） 上 调用 `kubectl proxy --port=8080` 和导航到 [http：// localhost：8080 / ui](http://localhost:8080/ui) 来访问port\-8080上的kubernetes\-dashboard ：[](http://localhost:9099/ui)
+您可以通过使用kubectl反向代理在浏览器（或在 [http//localhost:9099/ui](http://localhost:9099/ui) ）上调用 `kubectl proxy --port=8080` 和导航到 [http//localhost:8080/ui](http://localhost:8080/ui) 来访问port\-8080上的kubernetes\-dashboard ：[http://localhost:9099/ui](http://localhost:9099/ui)
 
 `kubectl proxy --port=9099 &`
 
-Kubernetes集群由主节点和节点资源组成 \- 主资源协调集群，节点运行应用程序，并通过Kubernetes API进行通信。我们使用OpenFaaS CLI构建了容器化应用程序并编写了.yml文件来构建和部署该功能。通过在Kubernetes集群中的节点之间部署该功能，我们允许GKE分发和调度我们的节点资源。我们的节点已经配置了处理容器操作的工具，可以通过kubectl CLI。
+Kubernetes集群由主节点和节点资源组成 \- 主资源协调集群，节点运行应用程序，并通过Kubernetes API进行通信。我们使用OpenFaaS CLI构建了容器化应用程序并编写了.yml文件来构建和部署该函数。通过在Kubernetes集群中的节点之间部署该函数，我们允许GKE分发和调度我们的节点资源。我们的节点已经配置了处理容器操作的工具，可以通过kubectl CLI。
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fwtsgn3annj20d80apmy6.jpg)
 
@@ -287,7 +286,7 @@ kubectl -n openfaas create secret generic basic-auth \
 
 `kubectl apply -f ./caddy`
 
-然后，我们将使用K8s服务对象公开的外部IP访问OpenFaaS网关UI，并使用我们的凭据访问http：// <EXTERNAL\-IP>。我们可以通过运行kubectl get svc来获取外部IP。
+然后，我们将使用K8s服务对象公开的外部IP访问OpenFaaS网关UI，并使用我们的凭据访问http://<EXTERNAL\-IP>。我们可以通过运行kubectl get svc来获取外部IP。
 
 ```shell
 get_gateway_ip() {
@@ -298,17 +297,17 @@ get_gateway_ip() {
 
 until [["$(get_gateway_ip)"]]
 
-dosleep1;
+do sleep1;
 
-echo-n".";
+echo -n ".";
 
 done
 
-echo"."
+echo "."
 
 gateway_ip=$(get_gateway_ip)
 
-echo"OpenFaaS Gateway IP: ${gateway_ip}"
+echo "OpenFaaS Gateway IP: ${gateway_ip}"
 ```
 
 > 注意：如果外部IP地址显示为<pending>，请等待一分钟再次输入相同的命令。
@@ -323,7 +322,7 @@ echo"OpenFaaS Gateway IP: ${gateway_ip}"
 
 > 注意：（a）您可以通过创建Ingress资源，使用Google Cloud L7 HTTPS负载均衡器公开OpenFaaS网关。您可以在 [此处](https://cloud.google.com/kubernetes-engine/docs/tutorials/http-balancer) 找到有关创建负载均衡器的详细指南。（b）您可以使用密码创建文本文件，并将该文件与\-password\-stdin标志一起使用，以避免在bash历史记录中输入密码。
 
-### 您可以使用先前在上一个练习中发布的图像并部署无服务器功能。
+### 您可以使用先前在上一个练习中发布的镜像并部署无服务器功能。
 
 `$ faas-cli deploy -f mvnw.yml`
 
@@ -333,17 +332,17 @@ deploy命令在当前目录中查找mvnw.yml文件，并部署openfaas\-fn命名
 
 ### 调用无服务器功能。
 
-`  faas-cli invoke mvnw--gateway=http://<GATEWAY-IP>`
+`faas-cli invoke mvnw--gateway=http://<GATEWAY-IP>`
 
 ### 您可以随时注销：
 
-faas\-cli logout \-gateway http：// <EXTERNAL\-IP>
+`faas-cli logout -gateway http://<EXTERNAL-IP>`
 
 ## C. Fission和部署简单的HTTP请求
 
-Fission是一个无服务器框架，它进一步抽象出容器图像，并允许仅通过函数在K8上创建HTTP服务。Fission中的容器图像包含语言运行时，一组常用的依赖项和一个用于函数的动态加载器。可以定制这些图像，例如打包二进制依赖项。Fission能够通过维护一个正在运行的容器池来优化冷启动开销。当新请求来自客户端应用程序或业务服务时，它会将该函数复制到容器中，动态加载它，并将请求路由到该实例。因此，对于NodeJS和Python函数，它能够最小化100毫秒的冷启动开销。
+Fission是一个无服务器框架，它进一步抽象出容器镜像，并允许仅通过函数在K8s上创建HTTP服务。Fission中的容器镜像包含语言运行时，一组常用的依赖项和一个用于函数的动态加载器。可以定制这些图像，例如打包二进制依赖项。Fission能够通过维护一个正在运行的容器池来优化冷启动开销。当新请求来自客户端应用程序或业务服务时，它会将该函数复制到容器中，动态加载它，并将请求路由到该实例。因此，对于NodeJS和Python函数，它能够最小化100毫秒的冷启动开销。
 
-通过在源级别进行操作，Fission使用户不必处理容器映像构建，将映像推送到注册表，管理注册表凭据，映像版本控制和其他管理任务。
+通过在源码级别进行操作，Fission使用户不必处理容器的镜像构建，将镜像推送到注册表，管理注册表凭据，镜像版本控制和其他管理任务。
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fwtsgn7oehj20hs0dcglu.jpg)
 
@@ -351,13 +350,13 @@ Fission是一个无服务器框架，它进一步抽象出容器图像，并允�
 
 如上图所示，Fission被设计为一组微服务，主要组件如下所述：
 
-1.  跟踪功能，HTTP路由，事件触发器和环境图像的控制器;
+1.  跟踪功能，HTTP路由，事件触发器和环境镜像的控制器;
 2.  管理空闲环境容器池的池管理器，将函数加载到这些容器中，并定期杀死函数实例以管理容器开销;
-3.  一种路由器，它接收HTTP请求并将它们路由到poolmgr或已在运行的实例中的新鲜功能实例。
+3.  一种路由器，它接收HTTP请求并将它们路由到poolmgr或已在运行的实例中的新鲜函数实例。
 
-我们可以使用我们在上一个练习中在GCP上创建的K8s群集在Fission上部署HTTP请求。让我们走过这个过程吧。
+我们可以使用在上一个练习中GCP上创建的K8s群集在Fission上部署HTTP请求。让我们走过这个过程吧。
 
-1.  安装Helm CLI Helm是一个Kubernetes包管理器。让我们发起头盔：
+1.  安装Helm CLI， Helm是一个Kubernetes包管理器。让我们初始化Helm：
 
 ```shell
      $ helm init
@@ -394,16 +393,16 @@ def main(context):
 ```shell
 $ fission function create --name hello --env python --code hello.py --route /hello
 
-$ curl http://\&lt;fission router\&gt;/hello
+$ curl http://<fission router>/hello
 
 Hello, world!
 ```
 
 ## D. Kubeless和部署Spring Boot模板
 
-Kubeless是一个Kubernetes本机无服务器框架，可以将功能部署在K8s集群上，同时允许用户利用Kubernetes资源提供自动扩展，API路由，监控和故障排除。Kubeless使用Kubernetes自定义资源定义来创建自定义kubernetes资源的功能。自定义资源是 [Kubernetes API](https://kubernetes.io/docs/reference/api-overview/) 中 的端点，用于存储 [API对象](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/) 的集合 [](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/)某种类型的K8s pod对象，它代表了特定K8s安装的自定义。自定义资源非常有用，因为它们可以通过动态注册进行配置然后在正在运行的集群中删除，集群管理员可以独立于集群本身更新自定义资源。Kubeless利用这些功能并运行集群内控制器，可以跟踪这些自定义资源并按需启动运行时。
+Kubeless是一个Kubernetes原生无服务器框架，可以将功能部署在K8s集群上，同时允许用户利用Kubernetes资源提供自动扩展，API路由，监控和故障排除。Kubeless使用Kubernetes自定义资源定义来创建自定义kubernetes资源的功能。自定义资源是 [Kubernetes API](https://kubernetes.io/docs/reference/api-overview/) 中的端点，用于存储[API对象](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/)的集合某种类型的K8s pod对象，它代表了特定K8s安装的自定义。自定义资源非常有用，因为它们可以通过动态注册进行配置然后在正在运行的集群中删除，集群管理员可以独立于集群本身更新自定义资源。Kubeless利用这些功能并运行集群内控制器，可以跟踪这些自定义资源并按需启动运行时。
 
-我们可以使用我们在上一个练习中在GCP上创建的K8s群集在Fission上部署HTTP请求。让我们走过这个过程吧。
+我们可以使用在上一个练习中GCP上创建的K8s群集在Fission上部署HTTP请求。让我们走过这个过程吧。
 
 1.  访问Kubernetes仪表板
 
@@ -421,9 +420,9 @@ Kubeless是一个Kubernetes本机无服务器框架，可以将功能部署在K8
 **OSX**
 
 ```shell
-$ curl -L https://github.com/kubeless/kubeless/releases/download/0.0.20/kubeless\_darwin-amd64.zip &gt; kubeless.zip
+$ curl -L https://github.com/kubeless/kubeless/releases/download/0.0.20/kubeless_darwin-amd64.zip > kubeless.zip
 $ unzip kubeless.zip
-$ sudo cp bundles/kubeless\_darwin-amd64/kubeless /usr/local/bin/
+$ sudo cp bundles/kubeless_darwin-amd64/kubeless /usr/local/bin/
 ```
 
 **Windows**
@@ -432,32 +431,31 @@ $ sudo cp bundles/kubeless\_darwin-amd64/kubeless /usr/local/bin/
 
 1.  在K8s群集中部署Kubeless
 
-![](https://rancher.com/img/blog/2018/evaluation-of-serverless-frameworks-for-kbe-5.png)
+![](https://ws1.sinaimg.cn/large/61411417ly1fwx4ug1ieuj20jr0c3dgl.jpg)
 
-我们将使用此 [链接中](https://github.com/kubeless/kubeless/releases) 的清单在K8s群集中部署Kubless。清单创建一个无库的命名空间，一个函数ThirdPartyResource，一个无库存控制器，并在进程中设置一个kafka，zookeeper StatefulSet。Kubless的一个主要优点是它具有高度的Kubernetes本地特性，它可以设置非rbac和rbac特定环境。下面的屏幕截图显示了如何使用kubectl命令在非rbac环境中部署kubeless。
+我们将使用此[链接中](https://github.com/kubeless/kubeless/releases) 的清单在K8s群集中部署Kubless。根据清单创建一个kubeless命名空间，一个函数ThirdPartyResource，一个kubeless控制器，并在进程中设置一个kafka，zookeeper StatefulSet。Kubless的一个主要优点是它具有高度的Kubernetes原生特性，它可以设置非rbac和rbac特定环境。下面的屏幕截图显示了如何使用kubectl命令在非rbac环境中部署kubeless。
 
-![](https://rancher.com/img/blog/2018/evaluation-of-serverless-frameworks-for-kbe-6.png)
+![](https://ws1.sinaimg.cn/large/61411417ly1fwx4ug4tx0j20hr05bwew.jpg)
 
 1.  创建函数
 
-    我们可以创建一个允许我们创建服务器的函数，并从请求中提取方法，URL，标题和正文。
+    我们可以创建一个服务函数，并从请求中接受方法，URL，标题和请求体。
 
 ```shell
-const http = require('http&');
+const http = require('http');
 
     http.createServer((request, response) => {
       const { headers, method, url } = request;
       let body = [];
       request.on('error', (err) => {
         console.error(err);
-      }).on('data';, (chunk) => {
+      }).on('data', (chunk) => {
         body.push(chunk);
       }).on('end', () => {
         body = Buffer.concat(body).toString();
-        // At this point, we have the headers, method, url and body, and can now
-        // do whatever we need to in order to respond to this request.
+        // 此时，我们有标题，方法，网址和请求体，现在可以做任何我们需要的事情来回应这个要求。
       });
-    }).listen(8080); // Activates this server, listening on port 8080.
+    }).listen(8080); // 激活此服务器，监听8080端口。
 ```
 2.  在Kubeless环境中运行函数
 
@@ -474,11 +472,11 @@ const http = require('http&');
 ` kubeless function deploy serverequest--trigger-http --runtime nodejs6 --handler serverequest.createServer --from-file /tmp/serverequest.js`
 ## E.无服务器平台的评估
 
-我们评估的每个无服务器平台都有其独特的价值主张。使用OpenFaas，任何进程或容器都可以打包为Linux或Windows的无服务器功能。对于企业而言，OpenFaaS使用的体系结构提供了无缝插入计划群集和现有微服务的CI / CD工作流的能力，因为OpenFaaS是围绕Docker构建的，所有功能都打包到Docker镜像中。OpenFaaS还为企业提供了一种通过外部API，网关管理和执行功能的无缝方式，并管理功能的生命周期，包括通过提供商进行部署，扩展和分泌管理。
+我们评估的每个无服务器平台都有其独特的价值主张。使用OpenFaas，任何进程或容器都可以打包为Linux或Windows的无服务器功能。对于企业而言，OpenFaaS使用的体系结构提供了无缝插入计划群集和现有微服务的CI/CD工作流的能力，因为OpenFaaS是围绕Docker构建的，所有功能都打包到Docker镜像中。OpenFaaS还为企业提供了一种通过外部API，网关管理和执行函数的无缝方式，并管理函数的生命周期，包括通过提供商进行部署，扩展和secret管理。
 
-Fission具有事件驱动架构，使其成为短期无状态应用程序的理想选择，包括REST API或webhook实现以及DevOps自动化。使用Fission的一个很好的用例可能是聊天机器人开发的后端，因为Fission可以实现良好的冷启动性能，并在需要时通过保持运行时的容器池来提供快速响应时间。
+Fission具有事件驱动架构，使其成为短期无状态应用程序的理想选择，包括REST API或webhook实现以及DevOps自动化。使用Fission的一个很好的用例可能是开发聊天机器人的后端，因为Fission可以实现良好的冷启动性能，并在需要时通过保持运行时的容器池来提供快速响应时间。
 
-最后，Kubeless架构利用本机Kubernetes概念来部署和管理功能，例如自定义资源定义以定义功能和自定义控制器来管理功能，将其部署为Kubernetes部署并通过Kubernetes服务公开它。与Kubernetes原生功能的紧密结合将吸引现有的Kubernetes用户，降低所需的学习曲线并无缝插入现有的Kubernetes架构。
+最后，Kubeless架构利用原生Kubernetes概念来部署和管理功能，例如自定义资源定义，用于定义功能和自定义控制器来管理函数，将其部署为Kubernetes部署并通过Kubernetes服务公开它。与Kubernetes原生功能的紧密结合将吸引现有的Kubernetes用户，降低所需的学习曲线并无缝插入现有的Kubernetes架构。
 
 ## 关于作者
 
