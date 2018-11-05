@@ -20,7 +20,7 @@ date: 2018-11-02
 
 # 评估Kubernetes（K8s）的无服务器框架
 
-Rancher 1.6和Rancher 2.0具有略微不同的术语和概念，支持容器编排引擎。需要了解Cattle和Kubernetes之间的根本区别。对于使用过Cattle或者是Kubernetes的新人来说，这篇文章适合您。获取容器编排Cattle 到 Kubernetes的对应关系词汇表cheatsheet。
+Rancher 1.6和Rancher 2.0具有略微不同的术语和概念，支持容器编排引擎。需要了解Cattle和Kubernetes之间的根本区别。对于使用过Cattle或者是Kubernetes的新手来说，这篇文章适合您。获取容器编排Cattle 到 Kubernetes的对应关系词汇表cheatsheet。
 
 [无服务器](https://rancher.com/tags/serverless) [kubernetes](https://rancher.com/tags/kubernetes)
 
