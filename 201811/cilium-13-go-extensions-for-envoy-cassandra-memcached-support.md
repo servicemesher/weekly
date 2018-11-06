@@ -56,12 +56,12 @@ Envoy是一个7层代理和通信总线，被设计用于大型的面向服务�
 
 要实现扩展的主要API是`OnData()`函数，当Envoy收到通过`CiliumNetworkPolicy`映射到扩展连接的数据时，就会调用这个函数。函数必须解析数据并返回下面的断言之一：
 
-- **MORE:** 解析器需要更多的字节来继续解析。
-- **PASS:** 传递*n*字节数据流。
-- **DROP:** 删除*n*字节数据流。
-- **INJECT:** 向指定的方向注入*n*字节的数据。
-- **ERROR:** 发生了解析错误，连接必须关闭。
-- **NOP:** 什么也没发生。
+- **MORE**：解析器需要更多的字节来继续解析。
+- **PASS**：传递*n*字节数据流。
+- **DROP**：删除*n*字节数据流。
+- **INJECT**：向指定的方向注入*n*字节的数据。
+- **ERROR**：发生了解析错误，连接必须关闭。
+- **NOP**：什么也没发生。
 
 为了注册扩展，需要创建一个必须实现`Create()`函数的解析器工厂。当Envoy建立了一个新的连接并使用解析器时就会调用该函数。
 
@@ -125,8 +125,8 @@ import (
 
 Cassandra的Go扩展能够在以下协议字段上提供可见性和执行能力：
 
-- **query_action:** 这个行为在数据库的`SELECT`， `INSERT`， `UPDATE`等操作上执行，字段总是精确匹配。
-- **query_table:** 查询执行的表，以正则表达式进行匹配。
+- **query_action**： 这个行为在数据库的`SELECT`， `INSERT`， `UPDATE`等操作上执行，字段总是精确匹配。
+- **query_table**： 查询执行的表，以正则表达式进行匹配。
 
 ### 例子：Empire如何通过表限制Cassandra访问
 
@@ -235,19 +235,17 @@ specs:
 
 ## Linux基金会"Core Infrastructure Initiative"最佳实践
 
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1269/badge)](https://bestpractices.coreinfrastructure.org/projects/1269)
-
 我们致力于在开放和最好的开源实践中开发Cilium，包括对安全的坚定承诺。我们很高兴地宣布，我们已经完成了所有工作，获得了Linux基金会 [Core Infrastructure Initiative](https://www.coreinfrastructure.org/)的 [CII Best Practices](https://bestpractices.coreinfrastructure.org/en)殊荣 。在 [这里](https://www.coreinfrastructure.org/programs/badge-program/)了解更多关于奖章的信息。
 
-## 特别兴趣组（SIGs）介绍
+## 特别兴趣组（SIG）介绍
 
 社区的关注点越来越多样化。为了确保项目的可伸缩性，我们正式引入了特殊兴趣组（SIGs）来帮助提供一些组织结构。已经创建了以下的SIGs：
 
-- **Datapath:** (#sig-datapath) 所有BPF和Linux内核相关的数据通路代码拥有者。
-- **Documentation:** (#sig-docs) 所有文档相关的讨论。
-- **Envoy:** (#sig-envoy) Envoy， Istio和所有7层协议解析器的维护。
-- **Policy:** (#sig-policy) 所有策略相关的主题。这个SIG负责所有与安全相关的API和实现逻辑。
-- **Release Management:** (#launchpad) 负责发布管理和向后移植的过程。
+- **Datapath**： (#sig-datapath) 所有BPF和Linux内核相关的数据通路代码拥有者。
+- **Documentation**： (#sig-docs) 所有文档相关的讨论。
+- **Envoy**： (#sig-envoy) Envoy， Istio和所有7层协议解析器的维护。
+- **Policy**： (#sig-policy) 所有策略相关的主题。这个SIG负责所有与安全相关的API和实现逻辑。
+- **Release Management**： (#launchpad) 负责发布管理和向后移植的过程。
 
 任何人都可以建立额外的SIGs。这个过程很简单有[文档说明](https://cilium.readthedocs.io/en/v1.3/community/#how-to-create-a-sig)
 
