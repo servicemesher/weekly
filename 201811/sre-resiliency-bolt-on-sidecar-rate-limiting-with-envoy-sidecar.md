@@ -1,7 +1,7 @@
 ---
 original: https://medium.com/dm03514-tech-blog/sre-resiliency-bolt-on-sidecar-rate-limiting-with-envoy-sidecar-5381bd4a1137
 translator: yangchuansheng
-reviewer: rootsongjc
+reviewer: rootsongjc/yangchuansheng/yiduwangkai 
 title: "SRE 弹性能力：使用 Envoy 对应用进行速率限制"
 description: "使用速率限制服务来减轻客户端对 API 资源的消耗"
 categories: "译文"
