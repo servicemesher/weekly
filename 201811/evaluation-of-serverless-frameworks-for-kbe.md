@@ -2,7 +2,7 @@
 original: https://rancher.com/blog/2018/2018-04-23-evaluation-of-serverless-frameworks-for-kbe/
 author: Hisham Hasan 
 translator: loverto
-reviewer: rootsongjc
+reviewer: [rootsongjc, yangchuangsheng, yiduwangkai]
 title: "Kubernetes（K8s）的无服务器框架的评估"
 description: "关于Kubernetes（K8s）的无服务器框架的评估"
 categories: "译文"
@@ -20,17 +20,17 @@ date: 2018-11-02
 
 # 评估Kubernetes（K8s）的无服务器框架
 
-Rancher 1.6和Rancher 2.0具有略微不同的术语和概念，支持容器编排引擎。需要了解Cattle和Kubernetes之间的根本区别。对于使用过Cattle或者是Kubernetes的新手来说，这篇文章适合您。获取容器编排Cattle 到 Kubernetes的对应关系词汇表cheatsheet。
+Rancher 1.6和Rancher 2.0底层容器编排引擎的术语和概念略微有所不同。想要了解这些差异就需要先了解Cattle和Kubernetes之间的根本区别。对于使用过Cattle或者Kubernetes的新手来说，这篇文章比较适合您。同时你也可以从这里获取到容器编排引擎 Cattle 到 Kubernetes 的对应关系词汇表cheatsheet。
 
 [无服务器](https://rancher.com/tags/serverless) [kubernetes](https://rancher.com/tags/kubernetes)
 
 ---
 
-在Pokemon Go的早期，我们都惊讶于Niantic如何在全球范围内扩展其用户群，现在看来他们应该是以无缝地向其容器集群添加额外的节点以容纳更多的玩家和环境，所有这一切都可以通过使用Kubernetes作为容器编排工具来实现。Kubernetes能够从程序员眼中抽象出部分处理和低级依赖关系，以扩展和管理容器基础架构。这使它成为一个非常有效的平台，用于开发和维护跨多个容器的应用程序服务。本文将探讨如何利用K8S的设计参数和服务编排功能，并将它们与无服务器框架和函数即服务（FaaS）结合起来。特别是，我们将深入研究其特性和功能，分析在K8s架构上构建的三个无服务器框架的运行性能和效率：（i）Fission; （ii）OpenFaaS; （iii）Kubeless。
+在Pokemon Go的早期，我们都惊讶于Niantic如何在全球范围内扩展其用户群，现在看来他们应该是以无缝地向其容器集群添加额外的节点以容纳更多的玩家和环境，所有这一切都可以通过使用Kubernetes作为容器编排工具来实现。Kubernetes在扩展和管理容器基础架构中，能够从开发者角度抽象出部分过程和低级依赖关系。这使它成为一个非常有效的平台，用于开发和维护跨多个容器的应用程序服务。本文将探讨如何利用K8S的设计参数和服务编排功能，并将它们与无服务器框架和函数即服务（FaaS）结合起来。特别是，我们将深入研究其特性和功能，分析在K8s架构上构建的三个无服务器框架的运行性能和效率：（i）Fission; （ii）OpenFaaS; （iii）Kubeless。
 
 ## A. 为什么Kubernetes是无服务器的优秀编排系统？
 
-无服务器体系结构指的是从开发人员中抽象出服务器管理任务的应用程序体系结构，并通过动态分配和管理计算资源来提高开发速度和效率。函数即服务（FaaS）是一个运行时，可以在其上构建无服务器体系结构。FaaS框架作为短暂的容器运行，它们已经安装了公共语言运行时，并允许在这些运行时内执行代码。
+无服务器体系结构指的是从开发人员中抽象出服务器管理任务的应用程序体系结构，并通过动态分配和管理计算资源来提高开发速度和效率。函数即服务（FaaS）是一个运行时被构建的无服务架构，可以在其上构建无服务器体系结构。FaaS框架作为短暂的容器运行，它们已经安装了公共语言运行时，并允许在这些运行时内执行代码。
 
 FaaS框架应该能够在各种基础架构上运行，以实现真正有用，包括公共云，混合云和内部部署环境。在真实生产环境中基于FaaS运行时构建的无服务器框架应该能够依靠经过验证和测试的编排和管理功能来大规模部署容器和分布式工作负载。
 
@@ -42,7 +42,7 @@ FaaS框架应该能够在各种基础架构上运行，以实现真正有用，�
 *   通过挂载存储运行有状态应用程序。
 *   秒级扩容容器化应用程序并提供支持它们的资源。
 *   声明式地管理服务。
-*   提供一个晴雨表，通过自动部署，自动重启，自动扩容和自动缩容来检查应用程序和自我修复应用程序的运行状况。
+*   提供一个大盘，来检查应用的健康情况，并通过自动重启，自动复制和自动缩放来进行应用程序的自我修复。
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fwtsgn1842j20ao07idgj.jpg)
 
@@ -100,7 +100,7 @@ SpringBoot和Vertx是开发微服务的非常流行的框架，它们的易用�
 
 `help` 有关任何命令的帮助
 
-`push` 将OpenFaaS功能推送到远程注册表（Docker Hub）
+`push` 将OpenFaaS功能推送到远程仓库（Docker Hub）
 
 `remove` 删除已部署的OpenFaaS功能
 
@@ -252,7 +252,7 @@ kubectl create clusterrolebinding "cluster-admin-$(whoami)" \
 
 `kubectl proxy --port=9099 &`
 
-Kubernetes集群由主节点和节点资源组成 \- 主资源协调集群，节点运行应用程序，并通过Kubernetes API进行通信。我们使用OpenFaaS CLI构建了容器化应用程序并编写了.yml文件来构建和部署该函数。通过在Kubernetes集群中的节点之间部署该函数，我们允许GKE分发和调度我们的节点资源。我们的节点已经配置了处理容器操作的工具，可以通过kubectl CLI。
+Kubernetes集群由主节点和节点资源组成 \- 主节点协调集群，节点运行应用程序，并通过Kubernetes API进行通信。我们使用OpenFaaS CLI构建了容器化应用程序并编写了.yml文件来构建和部署该函数。通过在Kubernetes集群中的节点之间部署该函数，我们允许GKE分发和调度我们的节点资源。我们的节点已经配置了处理容器操作的工具，可以通过kubectl CLI。
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1fwtsgn3annj20d80apmy6.jpg)
 
