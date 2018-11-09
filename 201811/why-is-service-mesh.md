@@ -10,21 +10,21 @@ date: 2018-11-08
 ---
 
 ## 为什么要使用Service Mesh
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;除非你长期与世隔绝，否则你应该听说过Kubernetes，他已经称为高速发展的互联网公司的一条准则。最近又有一个热门话题--Service Mesh（服务网格），它已经被这些高速发展公司用来解决一些特定的问题。所以如果你想了解什么是Service Mesh，接下来我可以给你一个更好的解释。
+除非你长期与世隔绝，否则你应该听说过Kubernetes，他已经称为高速发展的互联网公司的一条准则。最近又有一个热门话题--Service Mesh（服务网格），它已经被这些高速发展公司用来解决一些特定的问题。所以如果你想了解什么是Service Mesh，接下来我可以给你一个更好的解释。
 
-![v](http://ww1.sinaimg.cn/mw690/7267315bgy1fx0r3hzbzlj20zk0ilnmj.jpg)
+![](http://ww1.sinaimg.cn/mw690/7267315bgy1fx0r3hzbzlj20zk0ilnmj.jpg)
 
 ### 互联网应用的演进
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;为了理解Sevice Mesh的重要性，我们先通过4个阶段来简短的回顾下互联网应用的发展历程。
+为了理解Sevice Mesh的重要性，我们通过四个阶段来简短的回顾下互联网应用的发展历程。
 
 #### 阶段0：单体应用
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](http://ww1.sinaimg.cn/mw690/7267315bgy1fx0r9265r7j208s06omxs.jpg)
+![](http://ww1.sinaimg.cn/mw690/7267315bgy1fx0r9265r7j208s06omxs.jpg)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;还记得那些年吗？所有的代码库都打包成一个可执行和部署的软件包。当然，至今在某些使用场景下这个方式依然是很管用的。但是对于一些业务快速增长的互联网公司，在应用的可扩展性、快速部署和所有权等方面遇到了阻力。
+还记得那些年吗？所有的代码库都打包成一个可执行和部署的软件包。当然，至今在某些使用场景下这个方式依然是很管用的。但是对于一些业务快速增长的互联网公司，在应用的可扩展性、快速部署和所有权等方面遇到了阻力。
 
 #### 阶段1：微服务
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;微服务的思思想很简单，依照SLA（服务等级协议）将单体应用拆分成多个模块。这种方式运行方式显著，所以广泛为企业所接受。现在，每个团队都用他们喜爱的语言、框架等自由地设计他们的微服务。然后它开始看起来就像这样。
+微服务的思思想很简单，依照SLA（服务等级协议）将单体应用拆分成多个模块。这种方式运行效果显著，所以广泛为企业所接受。现在，每个团队都用他们喜爱的语言、框架等自由地设计他们的微服务。然后它开始看起来就像下面这样。
 
 ![](http://ww1.sinaimg.cn/mw690/7267315bgy1fx0si4ef85j218g0n4tde.jpg)
 
@@ -36,7 +36,7 @@ date: 2018-11-08
 * 维护系统级别依赖操作系统版本、自动化工具（如chef）等
 * 监控每个服务
 
-对负责构建和部署的人来说就是一个噩梦。
+对负责构建和部署的人来说这就是一个噩梦。
 
 ![](http://ww1.sinaimg.cn/mw690/7267315bgy1fx0vg3ks7aj20dc07iq53.jpg)
 
@@ -48,9 +48,9 @@ date: 2018-11-08
 
 #### 阶段2：容器化
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;容器是利用Linux中的cgroups和namespace的一种新的操作系统级别的虚拟化技术，通过共享主机的操作系统，实现为不同的应用隔离运行环境的。Docker是目前最流行的容器运行时。
+容器是利用Linux中的cgroups和namespace的一种新的操作系统级别的虚拟化技术，通过共享主机的操作系统，实现为不同的应用隔离运行环境的。Docker是目前最流行的容器运行时。
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;所以我们会为每个微服务创建一个容器镜像并以容器形式发布成服务。这样不仅可以在一个操作系统上实现应用运行环境的隔离，而且启动新的容器相比于启动新的VM速度更快、成本也更低！使用容器技术之后的微服务设计看起来就像这样。
+所以我们会为每个微服务创建一个容器镜像并以容器形式发布成服务。这样不仅可以在一个操作系统上实现应用运行环境的隔离，而且启动新的容器相比于启动新的VM速度更快、成本也更低！使用容器技术之后的微服务设计看起来就像这样。
 ![](http://ww1.sinaimg.cn/mw690/7267315bgy1fx0wzyguoej218g0n4ju8.jpg)
 容器化解决了构建和部署的问题，但还没有完美的监控解决方案！那要怎么办？我们还有其他问题吗？管理容器！
 
@@ -64,7 +64,7 @@ date: 2018-11-08
 
 
 #### 阶段3：容器编排
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](http://ww1.sinaimg.cn/mw690/7267315bgy1fx1kwi5nvpj205t05o74e.jpg)
+![](http://ww1.sinaimg.cn/mw690/7267315bgy1fx1kwi5nvpj205t05o74e.jpg)
 
 Kubernetes是当下最流行的容器编排工具，它彻底改变了我们对基础设施的看法。Kubernetes侧重于健康检查，可用性，负载均衡，服务发现，扩展性，跨主机调度容器等等，很神奇！
 
@@ -96,7 +96,7 @@ Kubernetes是当下最流行的容器编排工具，它彻底改变了我们对�
 怎样才能让所有团队使用/维护/升级库版本？
 我们公司有上百个服务，我要修改所有应用都使用上面的库吗？
 
-发现问题了吗？自微服务诞生以来，这些一直都是个问题（语言限制、应用代码改造）。
+发现了吗？自微服务诞生以来，这些一直都是个问题（语言限制、应用代码改造）。
 
 #### 阶段4：服务网格
 目前有多种代理为Service Mesh提供解决方案，如：Envoy、Linkerd和Nginx。本文只关注Envoy的Service Mesh。
