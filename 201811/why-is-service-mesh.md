@@ -48,7 +48,7 @@ date: 2018-11-08
 
 #### 阶段2：容器化
 
-容器是利用Linux中的cgroups和namespace的一种新的操作系统级别的虚拟化技术，通过共享主机的操作系统，实现为不同的应用隔离运行环境的。Docker是目前最流行的容器运行时。
+容器是利用Linux中的 [cgroups](https://en.wikipedia.org/wiki/Cgroups) 和 [namespace]( https://en.wikipedia.org/wiki/Linux_namespaces) 的一种新的操作系统级别的虚拟化技术，通过共享主机的操作系统，实现为不同的应用隔离运行环境的。Docker是目前最流行的容器运行时。
 
 所以我们会为每个微服务创建一个容器镜像并以容器形式发布成服务。这样不仅可以在一个操作系统上实现应用运行环境的隔离，而且启动新的容器相比于启动新的VM速度更快、成本也更低！使用容器技术之后的微服务设计看起来就像这样。
 ![](http://ww1.sinaimg.cn/mw690/7267315bgy1fx0wzyguoej218g0n4ju8.jpg)
@@ -70,7 +70,7 @@ Kubernetes是当下最流行的容器编排工具，它彻底改变了我们对�
 
 我们要的就是这样吗？
 
-并不完全是，仅仅这样还不能解决在微服务阶段提到的服务监控/观测的问题。这只是冰山一角。微服务是分布式的，所以管理为服务不是件容易的事。
+并不完全是，仅仅这样还不能解决在微服务阶段提到的服务监控/观测的问题。这只是冰山一角。微服务是分布式的，所以管理微服务不是件容易的事。
 
 我们需要考虑一些最佳实践来便捷地运行微服务。
 
@@ -99,11 +99,11 @@ Kubernetes是当下最流行的容器编排工具，它彻底改变了我们对�
 发现了吗？自微服务诞生以来，这些一直都是个问题（语言限制、应用代码改造）。
 
 #### 阶段4：服务网格
-目前有多种代理为Service Mesh提供解决方案，如：Envoy、Linkerd和Nginx。本文只关注Envoy的Service Mesh。
+目前有多种代理为Service Mesh提供解决方案，如：[Envoy](https://www.envoyproxy.io/)、Linkerd和Nginx。本文只关注Envoy的Service Mesh。
 
 Envoy是针对微服务产生的这些问题设计出来的服务代理。
 
-Envoy能够作为SideCar运行在每个应用的旁边，形成抽象的应用网络。当基础设施中的所有服务流量通过Envoy网格流动时，通过一致的可观察性来问题区域变得容易。
+Envoy能够作为 [SideCar](https://docs.microsoft.com/en-us/azure/architecture/patterns/sidecar) 运行在每个应用的旁边，形成抽象的应用网络。当基础设施中的所有服务流量通过Envoy网格流动时，通过一致的可观察性来问题区域变得容易。
 
 如下图所示，当把Envoy作为SideCar添加到服务后，所有微服务的入站和出站流量都通过各自的Envoy代理
 ![](http://ww1.sinaimg.cn/mw690/7267315bgy1fx1t3tisq1j218g0n4q5x.jpg)
@@ -127,5 +127,4 @@ Envoy拥有许多方便的功能
 所以通过从服务中抽象出整个网络，使用Envoy作为SideCar形成网格组成数据平面，允许我们控制上面列出的能力。
 
 欢迎反馈，谢谢！
-
 
