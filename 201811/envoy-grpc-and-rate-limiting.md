@@ -3,7 +3,7 @@ original: https://venilnoronha.io/envoy-grpc-and-rate-limiting
 translator: roganw
 reviewer: rootsongjc
 title: "Envoy，gRPC和速率限制"
-description: "本文分别使用C++和Go构建了两个应用，并使用gPRC进行通信，的C++语言应用和Go语言应用，以及使用Envoy做代理和速率控制的方法。"
+description: "本文使用C++构建了客户端/服务端应用，通过Envoy代理和gPRC协议进行通信，然后使用Go语言实现了Envoy速率限制服务。"
 categories: "译文"
 tags: ["Envoy","gRPC","速率限制"]
 date: 2018-11-04
@@ -15,7 +15,7 @@ date: 2018-11-04
 
 ![Envoy](https://ws3.sinaimg.cn/large/006tNbRwly1fx4iq37avnj31kw0j1ju5.jpg)
 
-在这篇文章中，我们将使用gRPC和[Protocol Buffers](https://developers.google.com/protocol-buffers/)构建C++语言的[Greeter应用](https://grpc.io/docs/quickstart/cpp.html)，使用[Go](https://golang.org/)语言构建另一个gRPC应用，实现Envoy的[RateLimitService](https://github.com/envoyproxy/envoy/blob/71152b710e3543732464fca57c8f07b7395de68d/api/envoy/service/ratelimit/v2/rls.proto#L11-L15)接口。最后，将Envoy部署为Greeter应用的代理，使用我们的速率限制服务实现[反压机制](https://www.learnenvoy.io/articles/backpressure.html)（backpressure）。
+在这篇文章中，我们将使用gRPC和[Protocol Buffers](https://developers.google.com/protocol-buffers/)构建C++语言版本的[Greeter应用](https://grpc.io/docs/quickstart/cpp.html)，使用[Go](https://golang.org/)语言构建另一个gRPC应用，实现Envoy的[RateLimitService](https://github.com/envoyproxy/envoy/blob/71152b710e3543732464fca57c8f07b7395de68d/api/envoy/service/ratelimit/v2/rls.proto#L11-L15)接口。最后，将Envoy部署为Greeter应用的代理，使用我们的速率限制服务实现[反压机制](https://www.learnenvoy.io/articles/backpressure.html)（backpressure）。
 
 ## gRPC Greeter应用
 
@@ -39,7 +39,7 @@ Greeter received: Hello world
 
 ## 升级gRPC Greeter应用
 
-现在，我们通过使用带有请求计数前缀的返回值替代静态的“Hello”前缀，来增强Greeter应用。只需如下所示更新`greeter_server.cc`文件。
+现在，我们通过使用带有请求计数前缀的返回值替代静态的“Hello”前缀，来增强Greeter应用。只需更新`greeter_server.cc`文件，如下所示。
 
 ```diff
  // Logic and data behind the server's behavior.
@@ -53,6 +53,7 @@ Greeter received: Hello world
      return Status::OK;
    }
 ```
+
 然后重新构建和运行`greeter_server`，通过`greeter_client`发送请求时你就能看到如下输出。
 
 ```bash
