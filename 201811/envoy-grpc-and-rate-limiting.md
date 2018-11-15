@@ -1,15 +1,15 @@
 ---
 original: https://venilnoronha.io/envoy-grpc-and-rate-limiting
 translator: roganw
-reviewer: rootsongjc
-title: "Envoy，gRPC和速率限制"
+reviewer: ["yangchuansheng","yiduwangkai"]
+title: "Envoy、gRPC和速率限制"
 description: "本文使用C++构建了客户端/服务端应用，通过Envoy代理和gPRC协议进行通信，然后使用Go语言实现了Envoy速率限制服务。"
 categories: "译文"
 tags: ["Envoy","gRPC","速率限制"]
 date: 2018-11-04
 ---
 
-# Envoy，gRPC和速率限制
+# Envoy、gRPC和速率限制
 
 [Envoy](https://www.envoyproxy.io/)是专为Cloud Native应用设计的轻量级服务代理，也是为数不多的支持[gRPC](https://grpc.io/)的代理之一。gRPC是一个基于[HTTP/2](https://en.wikipedia.org/wiki/HTTP/2)的高性能RPC（[远程过程调用](https://en.wikipedia.org/wiki/Remote_procedure_call)）框架，支持多种语言。
 
