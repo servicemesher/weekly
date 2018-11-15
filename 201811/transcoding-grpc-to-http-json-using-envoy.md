@@ -101,128 +101,162 @@ If you would like to see how this gRPC service can be used in Java, see如果你
 
 ## **使用HTTP选项对服务进行注解来转码**
 
-Inside the curly braces of each rpc operation you can add options. Google defined an javaoption that allows you to specify how to transcode your operation to an HTTP endpoint. The option becomes available after importing ‘**google/api/annotations.proto’** inside *reservation_service.proto*. This import is not available by default, but you can make it available by adding the following compile dependency to *build.gradle*:
+在每个rpc操作的花括号中可以添加选项。Google定义了一个java option，允许您指定如何将操作转换到HTTP端点。在*reservation_service.proto*中引入 ‘**google/api/annotations.proto’**即可使用该选项。在默认情况下这个import是不可用的，但是您可以通过向*build.gradle*添加以下编译依赖来实现它：
 
+```gradle
+compile "com.google.api.grpc:proto-google-common-protos:1.13.0-pre2"
+```
 
+这个依赖将由protobuf解压并将几个.proto文件放入构建目录中。现在可以把**\*google/api/annotations.proto***引入你的.proto文件中并开始指定如何转换API。
 
-| 1    | compile "com.google.api.grpc:proto-google-common-protos:1.13.0-pre2" |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
+## **转码GetReservation操作为GET方法**
 
-This dependency will be unpacked by the protobuf task and put several *.proto* files inside the build directory. You can now import **\*google/api/annotations.proto*** inside your .proto file and start specifying how to transcode your API.
+让我们从GetReservation操作开始，我已经添加了GetReservationRequest到代码示例中：
 
-## **Transcoding the GetReservation operation as GET**
+```protobuf
+  message GetReservationRequest {
+       string id = 1;
+   }
+ 
+   rpc GetReservation(GetReservationRequest) returns (Reservation) {
+       option (google.api.http) = {            
+           get: "/v1/reservations/{id}"         
+       };
+   }
+```
 
-Let’s start with the GetReservation operation, I’ve also added GetReservationRequest to the code sample for clarity:
+在选项定义中有一个名为“get”的字段，设置为“/v1/reservation /{id}”。字段名对应于HTTP客户端应该使用的HTTP请求方法。get的值对应于请求URL。在URL中，我们看到一个名为id的路径变量，这个路径变量会自动映射到输入操作中同名的字段。在本例中，它将是GetReservationRequest.id。
 
+发送 **GET /v1/reservations/1234** 到代理将转码到下面的伪代码：
 
+```java
+var request = GetReservationRequest.builder().setId(“1234”).build()
+var reservation = reservationServiceClient.GetReservation(request)
+return toJson(reservation)
+```
 
-| 123456789 | message GetReservationRequest {       string id = 1;   }    rpc GetReservation(GetReservationRequest) returns (Reservation) {       option (google.api.http) = {                       get: "/v1/reservations/{id}"                };   } |
-| --------- | ------------------------------------------------------------ |
-|           |                                                              |
+HTTP response body将返回预订的所有非空字段的JSON形式。
 
-Inside the option definition there is one field named ‘get’ set to ‘/v1/reservations/{id}’. The field name corresponds to the HTTP request method that should be used by the HTTP clients. The value of get corresponds to the request URL. Inside the URL we see a path variable called id. This path variable is automatically mapped to a field with the same name in the input operation. In this example that will be GetReservationRequest.id.
+**记住：转码不是由gRPC服务完成的。单独运行这个示例不会将其发布为HTTP JSON API。前端的代理负责转码。我们稍后将对此进行配置。**
 
-Sending **GET /v1/reservations/1234** to the proxy will transcode to the following pseudocode:
+## 转码CreateReservation操作为POST方法
 
+现在来考虑CreateReservation操作。
 
+```protobuf
+message CreateReservationRequest {
+   Reservation reservation = 2;
+}
+ 
+rpc CreateReservation(CreateReservationRequest) returns (Reservation) {
+   option(google.api.http) = {
+      post: "/v1/reservations"
+      body: "reservation"
+   };
+}
+```
 
-| 123  | var request = GetReservationRequest.builder().setId(“1234”).build()var reservation = reservationServiceClient.GetReservation(request)return toJson(reservation) |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
+这个操作被转为POST请求*/v1/reservation*。选项中的body字段告诉转码器将请求体转成CreateReservationRequest中的字段。这意味着我们可以使用以下curl调用：
 
-The HTTP response body will be the JSON representation of all non-empty fields inside the reservation.
+```shell
+curl -X POST \
+    http://localhost:51051/v1/reservations \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "title": "Lunchmeeting",
+    "venue": "JDriven Coltbaan 3",
+    "room": "atrium",
+    "timestamp": "2018-10-10T11:12:13",
+    "attendees": [
+       {
+           "ssn": "1234567890",
+           "firstName": "Jimmy",
+           "lastName": "Jones"
+       },
+       {
+           "ssn": "9999999999",
+           "firstName": "Dennis",
+           "lastName": "Richie"
+       }
+    ]
+}'
+```
 
-**\*Remember, transcoding is not done by the gRPC service itself. Running this example on its own will not expose it as HTTP JSON API. A proxy in the front takes care of transcoding. We will configure that later.***
+响应包含同样的对象，只不过多了一个生成的id字段。
 
-## Transcoding the CreateReservation operation as POST
+## **转码带查询参数过滤的ListReservations**
 
-Let’s now consider the CreateReservation operation.
+查询集合资源的一种常见方法是提供查询参数作为过滤器。ListReservations的gRPC服务就有此功能。ListReservations接收到一个包含可选字段的ListReservationRequest，用于过滤预订集合。
 
+```protobuf
+message ListReservationsRequest {
+    string venue = 1;
+    string timestamp = 2;
+    string room = 3;
+ 
+    Attendees attendees = 4;
+ 
+    message Attendees {
+        repeated string lastName = 1;
+    }
+}
+ 
+rpc ListReservations(ListReservationsRequest) returns (stream Reservation) {
+   option (google.api.http) = {
+       get: "/v1/reservations"
+   };
+}
+```
 
+在这里，转码器将自动创建ListReservationsRequest，并将查询参数映射到ListReservationRequest的内部字段。没有指定的所有字段都包含默认值，对于字符串是""。例如:
 
-| 12345678910 | message CreateReservationRequest {   Reservation reservation = 2;} rpc CreateReservation(CreateReservationRequest) returns (Reservation) {   option(google.api.http) = {      post: "/v1/reservations"      body: "reservation"   };} |
-| ----------- | ------------------------------------------------------------ |
-|             |                                                              |
+```shell
+curl http://localhost:51051/v1/reservations?room=atrium
+```
 
-This operation is transcoded to a POST on /v1/reservations. The field named body inside the option tells the transcoder to marshall the request body into the reservation field of the CreateReservationRequest message. This means we could use the following curl call:
+字段room设置为atrium并映射到ListReservationRequest里，其余字段设置为默认值。还可以提供以下子消息字段：
 
+```shell
+curl "http://localhost:51051/v1/reservations?attendees.lastName=Richie"
+```
 
+attendees.lastName是一个repeated的字段，可以被设置多次：
 
-| 123456789101112131415161718192021 | curl -X POST \    http://localhost:51051/v1/reservations \    -H 'Content-Type: application/json' \    -d '{    "title": "Lunchmeeting",    "venue": "JDriven Coltbaan 3",    "room": "atrium",    "timestamp": "2018-10-10T11:12:13",    "attendees": [       {           "ssn": "1234567890",           "firstName": "Jimmy",           "lastName": "Jones"       },       {           "ssn": "9999999999",           "firstName": "Dennis",           "lastName": "Richie"       }    ]}' |
-| --------------------------------- | ------------------------------------------------------------ |
-|                                   |                                                              |
+```shell
+curl  "http://localhost:51051/v1/reservations?attendees.lastName=Richie&attendees.lastName=Kruger"
+```
 
-The response contains the same object, but with an extra generated ‘id’ field.
+gRPC服务将会看到ListReservationRequest.attendees.lastName作为一个列表有两个元素：Richie和Kruger. Supernice。
 
-## **Transcoding ListReservations with query parameter filters**
+## **运行转码器**
 
-A common way of querying a collection resource is by providing query parameters as filter. This functionality corresponds to the ListReservations in our gRPC service. ListReservations receives a ListReservationRequest that contains optional fields to filter the reservation collection with.
-
-
-
-| 1234567891011121314151617 | message ListReservationsRequest {    string venue = 1;    string timestamp = 2;    string room = 3;     Attendees attendees = 4;     message Attendees {        repeated string lastName = 1;    }} rpc ListReservations(ListReservationsRequest) returns (stream Reservation) {   option (google.api.http) = {       get: "/v1/reservations"   };} |
-| ------------------------- | ------------------------------------------------------------ |
-|                           |                                                              |
-
-Here, the transcoder will automatically create a ListReservationsRequest and map query parameters onto fields inside the ListReservationRequest for you. All the fields you do not specify will contain their default value, for strings this is “”. For example:
-
-
-
-| 1    | curl http://localhost:51051/v1/reservations?room=atrium |
-| ---- | ------------------------------------------------------- |
-|      |                                                         |
-
-Will be mapped to a ListReservationRequest with the field room set to atrium, and the rest to their default values. It’s also possible to provide fields of sub-messages as follows:
-
-
-
-| 1    | curl "http://localhost:51051/v1/reservations?attendees.lastName=Richie" |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
-
-And since attendees.lastName is a repeated field, it can be specified multiple times:
-
-
-
-| 1    | curl  "http://localhost:51051/v1/reservations?attendees.lastName=Richie&attendees.lastName=Kruger" |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
-
-The gRPC service will see ListReservationRequest.attendees.lastName as a list with two items, Richie and Kruger. Supernice.
-
-# **Running the transcoder**
-
-Now it’s time to actually get this thing working. The Google cloud supports transcoding, even when running in Kubernetes (incl GKE) or Compute Engine, for more information see [cloud.google.com/endpoints/docs/grpc/tutorials](https://cloud.google.com/endpoints/docs/grpc/tutorials).
+是时候让这些运行起来了。Google cloud支持转码，即使运行在Kubernetes (incl GKE) 或计算引擎中。更多信息请参看[cloud.google.com/endpoints/docs/grpc/tutorials](https://cloud.google.com/endpoints/docs/grpc/tutorials).
 
 If you are not running inside the Google cloud or when you’re running locally, then you can use Envoy. Envoy is a very flexible proxy initially created by Lyft. It’s a major component in [istio.io](https://istio.io/) as well. We will use Envoy for this example.
 
-In order to to start transcoding we need to:
+如果您不在Google cloud中运行，或者在本地运行，那么您可以使用Envoy。它是一个由Lyft创建的非常灵活的代理。它也是[istio.io](https://istio.io/)中的主要组件。在这个例子中，我们将使用Envoy。
 
-1. Have a project with a gRPC service, including transcoding options in the .proto files.
-2. Generate .pd file from our .proto file that contains a gRPC service descriptor.
-3. Configure envoy to proxy HTTP requests to our gRPC service using that definition.
-4. Run envoy using docker.
+为了转码我们需要：
+
+1. 一个gRPC服务的项目，在.proto文件中包含转码选项。
+2. 从.proto文件中生成的.pd文件包含gRPC服务描述。
+3. 使用该定义，配置Envoy作为gRPC服务的HTTP请求代理。
+4. 使用docker运行Envoy。
 
 ### **STEP 1**
 
-I’ve created the application described above and published it in github. You can clone it here: [github.com/toefel18/transcoding-grpc-to-http-json](https://github.com/toefel18/transcoding-grpc-to-http-json). Then build it using
+我已经创建了如上描述的项目并发布在github上。你可以从这里clone： [github.com/toefel18/transcoding-grpc-to-http-json](https://github.com/toefel18/transcoding-grpc-to-http-json)。然后构建：
 
+```shell
+# Script will download gradle if it’s not installed, no need to install it :)
+./gradlew.sh clean build    # windows: ./gradlew.bat clean build
+```
 
+**提示：我创建了脚本自动执行步骤2到4，在项目[github.com/toefel18/transcoding-grpc-to-http-json](github.com/toefel18/transcoding-grpc-to-http-json)的根目录下。这将节省你的开发时间。步骤2到4详细的解释了它是如何工作的。**
 
-| 12   | # Script will download gradle if it’s not installed, no need to install it :)./gradlew.sh clean build    # windows: ./gradlew.bat clean build |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
-
-**TIP: I’ve created a script that automates steps 2 to 4. It is located in the root of github.com/toefel18/transcoding-grpc-to-http-json. This saves you a lot of time while developing. Steps 2 to 4 explain in greater detail what happens and how it works.**
-
-
-
-| 1    | ./start-envoy.sh |
-| ---- | ---------------- |
-|      |                  |
-
-
+```shell
+./start-envoy.sh
+```
 
 ### **STEP 2**
 
