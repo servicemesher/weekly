@@ -13,13 +13,13 @@ date: 2018-11-05
 
 # Envoy service mesh、Prometheus和Grafana下的微服务监控
 
-如果你刚接触“Service Mesh“和“Envoy”，我[这里](https://medium.com/@dnivra26/service-mesh-with-envoy-101-e6b2131ee30b)有一篇解释它们文章。
+如果你刚接触“Service Mesh“和“Envoy”，我[这里](https://medium.com/@dnivra26/service-mesh-with-envoy-101-e6b2131ee30b)有一篇文章可以帮你入门。
 
 这是**Envoy service mesh下的可观测性**系列的第二篇文章，你可以在[这里](https://medium.com/@dnivra26/distributed-tracing-with-envoy-service-mesh-jaeger-c365b6191592)阅读第一篇关于分布式追踪的文章。
 
 在微服务中谈及监控时，你可不能被蒙在鼓里，至少要知道问题出在哪儿了。
 
-让我们看看Envoy是怎样帮助我们了解我们的服务运行状况的。在service mesh下，所有的通信都会通过mesh，这意味着没有任何服务会与其它服务直接通信，服务向Envoy发起调用，然后Envoy将调用路由到目标服务，所以Envoy将持有传入和传出通信的上下文。Envoy通常提供关于[传入](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/stats)请求、[传出](https://www.envoyproxy.io/docs/envoy/latest/configuration/cluster_manager/cluster_stats)请求和[Envoy实例状态](https://www.envoyproxy.io/docs/envoy/latest/configuration/statistics)的指标。
+让我们看看Envoy是怎样帮助我们了解我们的服务运行状况的。在service mesh下，所有的通信都会通过mesh，这意味着没有任何服务会与其它服务直接通信，服务向Envoy发起调用请求，然后Envoy将调用请求路由到目标服务，所以Envoy将持有传入和传出流量的上下文。Envoy通常提供关于[传入](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/stats)请求、[传出](https://www.envoyproxy.io/docs/envoy/latest/configuration/cluster_manager/cluster_stats)请求和[Envoy实例状态](https://www.envoyproxy.io/docs/envoy/latest/configuration/statistics)的指标。
 
 ## 准备
 
@@ -29,11 +29,11 @@ date: 2018-11-05
 
 ## Statsd
 
-Envoy支持以2种或3种格式发布指标，但本文中我们将使用[statsd](https://github.com/b/statsd_spec)格式。
+Envoy支持通过两到三种格式来暴露指标，但本文中我们将使用[statsd](https://github.com/b/statsd_spec)格式。
 
 所以流程将是这样，首先Envoy推送指标到statsd，然后我们用[prometheus](https://github.com/prometheus)（一个时序数据库）从statsd拉取指标，最后通过[grafana](https://github.com/grafana/grafana)可视化这些指标。
 
-在准备概览图中，我提到了statsd exporter而不是statsd，这是因为我们并不会使用statsd，而是使用一个接收statsd格式数据，并将其以prometheus格式输出的转换器（服务）。下面让我们来搞定它吧。
+在准备概览图中，我提到了statsd exporter而不是statsd，这是因为我们并不会直接使用statsd，而是使用一个接收statsd格式数据，并将其以prometheus格式输出的转换器（服务）。下面让我们来搞定它吧。
 
 Envoy的指标主要分为两类：
 
@@ -122,10 +122,10 @@ static_resources:
 
 第55-63行配置了我们的环境中的statsd sink。
 
-这就是让Envoy输出统计信息所需要的所有配置。现在如果你看第2-7行，那里将做这两件事：
+这就是让Envoy输出统计信息所需要的所有配置。现在让我们来看看第2-7行做了哪些事情：
 
 1. Envoy在9901端口暴露了一个管理端，你可以通过它动态地改变日志级别，查看当前配置、统计数据等
-2. Envoy也可以生成与nginx类似的访问日志，你可以通过它掌握服务间的通信状况。访问日志的格式也是可配置的，如第29-33行
+2. Envoy也可以生成与nginx类似的访问日志，你可以通过它了解服务间的通信状况。访问日志的格式也是可配置的，如第29-33行
 
 你需要将相同的配置添加到系统中的其它Envoy sidecar上（是的，每个服务都有自己的Envoy sidecar）。
 
