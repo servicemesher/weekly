@@ -232,8 +232,6 @@ gRPC服务将会看到ListReservationRequest.attendees.lastName作为一个列�
 
 是时候让这些运行起来了。Google cloud支持转码，即使运行在Kubernetes (incl GKE) 或计算引擎中。更多信息请参看[cloud.google.com/endpoints/docs/grpc/tutorials](https://cloud.google.com/endpoints/docs/grpc/tutorials).
 
-If you are not running inside the Google cloud or when you’re running locally, then you can use Envoy. Envoy is a very flexible proxy initially created by Lyft. It’s a major component in [istio.io](https://istio.io/) as well. We will use Envoy for this example.
-
 如果您不在Google cloud中运行，或者在本地运行，那么您可以使用Envoy。它是一个由Lyft创建的非常灵活的代理。它也是[istio.io](https://istio.io/)中的主要组件。在这个例子中，我们将使用Envoy。
 
 为了转码我们需要：
@@ -243,7 +241,7 @@ If you are not running inside the Google cloud or when you’re running locally,
 3. 使用该定义，配置Envoy作为gRPC服务的HTTP请求代理。
 4. 使用docker运行Envoy。
 
-### **STEP 1**
+### **步骤 1**
 
 我已经创建了如上描述的项目并发布在github上。你可以从这里clone： [github.com/toefel18/transcoding-grpc-to-http-json](https://github.com/toefel18/transcoding-grpc-to-http-json)。然后构建：
 
@@ -258,64 +256,109 @@ If you are not running inside the Google cloud or when you’re running locally,
 ./start-envoy.sh
 ```
 
-### **STEP 2**
+### **步骤 2**
 
-Then we need to create .pb file. To do this, you need to download the precompiled protoc executable here [github.com/protocolbuffers/protobuf/releases/latest](https://github.com/protocolbuffers/protobuf/releases/latest)(choose the correct version for your platform, i.e. *protoc-3.6.1-osx-x86_64.zip* for mac) and extract it somewhere in your path, that’s it, simple.
+然后我们需要创建.pb文件。我们需要在这里先下载预编译的protoc可执行文件：[github.com/protocolbuffers/protobuf/releases/latest](https://github.com/protocolbuffers/protobuf/releases/latest)(为你的平台选择正确的版本，例如针对Mac的*protoc-3.6.1-osx-x86_64.zip*)，然后解压到你的路径，很简单。
 
-Then running the following command inside the [transcoding-grpc-to-http-json](https://github.com/toefel18/transcoding-grpc-to-http-json)directory will result in a *reservation_service_definition.pb* file that envoy understands. (Don’t forget to build the project first to actually retrieve the required *.proto* files imported by *reservation_service.proto*)
+在[transcoding-grpc-to-http-json目录下运行下面的命令生成Envoy理解的文件 *reservation_service_definition.pb*  (别忘了先构建项目并导入 *reservation_service.proto*需要的.proto文件)
 
+```shell
+protoc -I. -Ibuild/extracted-include-protos/main --include_imports \
+               --include_source_info \
+               --descriptor_set_out=reservation_service_definition.pb \
+               src/main/proto/reservation_service.proto
+```
 
+这个命令可能看起来很复杂，但实际上非常简单。-I代表include，protoc寻找.proto文件的目录。*–descriptor_set_out*表示包含定义的输出文件，最后一个参数是我们要处理的原始文件。
 
-| 1234 | protoc -I. -Ibuild/extracted-include-protos/main --include_imports \               --include_source_info \               --descriptor_set_out=reservation_service_definition.pb \               src/main/proto/reservation_service.proto |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
+### **步骤 3**
 
-This command might look complex but in reality it’s quite simple. The -I stands for include, these are directories where protoc will look for .proto files. *–descriptor_set_out* signifies the output file containing the definition and the last argument is the proto file we want to process.
+我们快要完成了，在运行Envoy之前，最后一件事是创建配置文件。Envoy的配置文件以yaml描述。您可以使用Envoy做很多事情，但是，现在让我们专注于转码我们的服务。我从[他们的网站](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_filters/grpc_json_transcoder_filter#config-http-filters-grpc-json- transcocoder)中获取了一个基本的配置示例，并使用#标记感兴趣的部分。
 
-### **STEP 3**
+```yaml
+admin:
+  access_log_path: /tmp/admin_access.log
+  address:
+    socket_address: { address: 0.0.0.0, port_value: 9901 }         #1
+ 
+static_resources:
+  listeners:
+  - name: main-listener
+    address:
+      socket_address: { address: 0.0.0.0, port_value: 51051 }      #2
+    filter_chains:
+    - filters:
+      - name: envoy.http_connection_manager
+        config:
+          stat_prefix: grpc_json
+          codec_type: AUTO
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match: { prefix: "/", grpc: {} }  
+                #3 see next line!
+                route: { cluster: grpc-backend-services, timeout: { seconds: 60 } }   
+          http_filters:
+          - name: envoy.grpc_json_transcoder
+            config:
+              proto_descriptor: "/data/reservation_service_definition.pb" #4
+              services: ["reservations.v1.ReservationService"]            #5
+              print_options:
+                add_whitespace: true
+                always_print_primitive_fields: true
+                always_print_enums_as_ints: false
+                preserve_proto_field_names: false                        #6
+          - name: envoy.router
+ 
+  clusters:
+  - name: grpc-backend-services                  #7
+    connect_timeout: 1.25s
+    type: logical_dns
+    lb_policy: round_robin
+    dns_lookup_family: V4_ONLY
+    http2_protocol_options: {}
+    hosts:
+    - socket_address:
+        address: 127.0.0.1                       #8
+        port_value: 53000
+```
 
-We are almost there, the last thing we need before running Envoy is to create its configuration file. Envoy’s configuration is described in yaml. There are many things you can do with Envoy, however, let’s now just focus on the minimum required to transcode our service. I took a basic config example from [their website](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_filters/grpc_json_transcoder_filter#config-http-filters-grpc-json-transcoder)modified it a bit and marked the interesting parts with # markers.
+我已经在配置文件中添加了一些标记来强调我们感兴趣的部分：
 
+- \#1 admin接口的地址。你也可以在这里获取prometheus的测量数据去查询服务怎样执行！
+- \#2 HTTP API的可用的地址
+- \#3 将请求路由到的后端服务的名称。步骤 #7 定义这个名字。
+- \#4 我们之前生成的.pb描述符文件的路径
+- \#5 转码的服务
+- \#6 Protobuf字段名通常包含下划线。设置该选项为false会将字段名转换为驼峰式。
+- \#7 集群定义了上游服务 (在步骤#3中Envoy代理的服务)
+- \#8 可连接后端服务的地址和端口。我使用了 (127.0.0.1/localhost)。
 
+### **步骤 4**
 
-| 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748 | admin:  access_log_path: /tmp/admin_access.log  address:    socket_address: { address: 0.0.0.0, port_value: 9901 }         #1 static_resources:  listeners:  - name: main-listener    address:      socket_address: { address: 0.0.0.0, port_value: 51051 }      #2    filter_chains:    - filters:      - name: envoy.http_connection_manager        config:          stat_prefix: grpc_json          codec_type: AUTO          route_config:            name: local_route            virtual_hosts:            - name: local_service              domains: ["*"]              routes:              - match: { prefix: "/", grpc: {} }                  #3 see next line!                route: { cluster: grpc-backend-services, timeout: { seconds: 60 } }             http_filters:          - name: envoy.grpc_json_transcoder            config:              proto_descriptor: "/data/reservation_service_definition.pb" #4              services: ["reservations.v1.ReservationService"]            #5              print_options:                add_whitespace: true                always_print_primitive_fields: true                always_print_enums_as_ints: false                preserve_proto_field_names: false                        #6          - name: envoy.router   clusters:  - name: grpc-backend-services                  #7    connect_timeout: 1.25s    type: logical_dns    lb_policy: round_robin    dns_lookup_family: V4_ONLY    http2_protocol_options: {}    hosts:    - socket_address:        address: 127.0.0.1                       #8        port_value: 53000 |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-|                                                              |                                                              |
+我们现在准备运行Envoy。最简单的方式是通过Docker镜像。这需要先安装Docker。如果你还没有，请先[安装docker](https://docs.docker.com/install/) 。
 
-I’ve added some markers in the config file to emphasize the sections that are interesting to us:
+有两个Envoy需要的资源，配置文件和.pb描述文件。我们可以先把文件导入容器以便Envoy启动时找到他们。运行下面github代码库根目录的命令：
 
-- \#1 The address of the admin interface. You can also get prometheus metrics here to see how the service performs!!
-- \#2 The address at which the HTTP API will be available
-- \#3 The name of the backend services to route requests to. Step #7 defines this name.
-- \#4 The path to the .pb descriptor file we generated before
-- \#5 The services to transcode
-- \#6 Protobuf field names usually contain underscores. Setting this field to false will translate field names to camelcase.
-- \#7 A cluster defines upstream services (services that envoy can proxy to in step #3)
-- \#8 The address and port at which the backend services are reachable. I’ve used (127.0.0.1/localhost).
+```shell
+sudo docker run -it --rm --name envoy --network="host" \
+  -v "$(pwd)/reservation_service_definition.pb:/data/reservation_service_definition.pb:ro" \
+  -v "$(pwd)/envoy-config.yml:/etc/envoy/envoy.yaml:ro" \
+  envoyproxy/envoy
+```
 
-### **STEP 4**
+如果Envoy成功启动将会看到下面的日志：
 
-We are now ready to run envoy. The easiest way to run envoy is by running the docker image. This requires that docker is installed. If you haven’t, please [install docker](https://docs.docker.com/install/) first.
+```
+[2018-11-10 14:55:02.058][000009][info][main] [source/server/server.cc:454] starting main dispatch loop
+```
 
-There are two resources that Envoy needs, the config file, and .pb descriptor file. We can map these files inside the container so that envoy finds them when it starts. Run this command within the github repo root directory:
+注意，我在docker run命令中将-network设置为“host”。这意味着在本地可以访问正在运行的容器，而不需要额外的网络配置。根据页面 [docs.docker.com/docker-for-mac/networking/](https://docs.docker.com/docker-for-mac/networking/#i-want-to-connect-from-a-container-to-a-service-on-the-host)的建议，应该更改步骤#8中Envoy配置的IP地址为host.docker.internal 或 gateway.docker.internal。
 
-
-
-| 1234 | sudo docker run -it --rm --name envoy --network="host" \  -v "$(pwd)/reservation_service_definition.pb:/data/reservation_service_definition.pb:ro" \  -v "$(pwd)/envoy-config.yml:/etc/envoy/envoy.yaml:ro" \  envoyproxy/envoy |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
-
-If envoy started successfully you will see a log line at the end :
-
-
-
-| 1    | [2018-11-10 14:55:02.058][000009][info][main] [source/server/server.cc:454] starting main dispatch loop |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
-
-Note that I set the –network to “host” in the docker run command. This means that the running container is accessible on localhost without additional network configuration. This works on Linux, but might not work on Windows and Mac. The docker pages suggest you should change the IP address in step #8 of the envoy config to host.docker.internal or gateway.docker.internal according to: [docs.docker.com/docker-for-mac/networking/](https://docs.docker.com/docker-for-mac/networking/#i-want-to-connect-from-a-container-to-a-service-on-the-host)
-
-## **Using your service via HTTP**
+## **通过HTTP访问服务**
 
 If all goes well, you can now cURL your service using HTTP. On Linux, you can connect to localhost, but on windows or mac you might have to connect to the IP address of the VM or docker container. The examples use localhost as there are many ways you can configure docker.
 
