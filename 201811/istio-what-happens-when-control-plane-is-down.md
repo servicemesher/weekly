@@ -1,3 +1,16 @@
+```raw
+---
+original: https://bani.com.br/2018/11/istio-what-happens-when-control-plane-is-down/
+translator: Waret
+reviewer: 审阅者的GitHub账号
+title: "Istio: 控制平面故障以后会发生什么？"
+description: "本文展示了当Istio控制平面的组件故障以后会发生什么现象。"
+categories: "译文"
+tags: ["Istio","Istio Pilot","Istio Mixer Policy","Istio Mixer Telemetry"]
+date: 2018-11-16
+---
+```
+
 # Istio: 控制平面故障以后会发生什么？
 
 大家好！
