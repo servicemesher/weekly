@@ -27,7 +27,7 @@ Mixer在启动时读取配置，并监听Kubernetes的资源变化。当检测�
 
 边车代理在每次请求服务应用时，检查（发起连接）Mixer Policy Pod。
 
-当Mixer Policy Pod停止以后，所有到服务的请求会失败，并收到 **“503 UNAVAILABLE:no healthy upstream”** 的错误————因为所有边车无法连接到这些Pod。
+当Mixer Policy Pod停止以后，所有到服务的请求会失败，并收到 **“503 UNAVAILABLE:no healthy upstream”** 的错误——因为所有边车无法连接到这些Pod。
 在Istio 1.1版本中新增了[global]配置（*policyCheckfailOpen*），允许 *“失败打开”* 策略，也即当Mixer Policy Pod无法响应时，所有的请求会成功，而不是报*503*错误。默认情况下该配置设置为 *false* ，也即 *“失败关闭”* 。
 
 当Mixer停止后，我们在网格中执行的操作（例如新增规则、更新配置等等）都不会对应用产生影响，直到Mixer重新启动。
