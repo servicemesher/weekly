@@ -131,9 +131,9 @@ static_resources:
 
 这些服务本身是用go写的，它们做的事情很简单，仅仅是通过Envoy调用其它服务。你可以在[这里](https://github.com/dnivra26/envoy_monitoring)查看服务和Envoy的配置。
 
-现在，虽然我们只有图中的statsd exporter，但有了它，如果我们运行docker容器（docker-compose build & docker-compose up），然后向Front Envoy（localhost:8080）发送一些流量，Envoy将开始发送关于这些流量的指标到我们的statsd exporter，statsd exporter将把这些指标转换成prometheus格式，并将其暴露在9102端口。
+现在，虽然我们只有图中的statsd exporter，但有了它，如果我们运行docker容器（docker-compose build & docker-compose up），然后向Front Envoy（localhost:8080）发送一些流量，Envoy 将把这些流量的指标发送到statsd exporter，随后statsd exporter会把这些指标转换成prometheus格式，并将其暴露在9102端口。
 
-Statsd exporter中的统计信息看起来像这样
+Statsd exporter中的统计信息格式如下图所示
 
 ![来自statsd exporter的prometheus格式的指标](https://ws3.sinaimg.cn/large/006tNbRwgy1fwxf9t7t5bj318g0azgof.jpg)
 
@@ -147,7 +147,7 @@ metric_name ["{" label_name "=" `"` label_value `"` { "," label_name "=" `"` lab
 
 ## Prometheus
 
-我们将使用[Prometheus](https://prometheus.io/)作为时序数据库来保存我们的指标。Prometheus不仅是一个时序数据库，它本身还是一个监控系统，但在我们的设置中，将用它来存储指标数据。需要注意的是，prometheus是一个基于拉取的系统，这意味着你必须告诉prometheus从何处拉取指标，在我们的例子中是从statsd exporter处拉取。
+我们将使用[Prometheus](https://prometheus.io/)作为时序数据库来保存我们的指标。Prometheus不仅是一个时序数据库，它本身还是一个监控系统，但本文我们只用它来存储指标数据。需要注意的是，prometheus是一个通过主动拉取来获取指标的系统，这意味着你必须告诉prometheus从何处拉取指标，在我们的例子中是从statsd exporter处拉取。
 
 将Prometheus添加到系统中非常简单而又直接，我们只需要将拉取目标（statsd exporter）作为配置文件传递给Prometheus就可以了。配置看起来是这样的
 
@@ -163,7 +163,7 @@ scrape_configs:
           group: 'services'
 ```
 
-scrape_interval是Prometheus从目标处拉取配置的频率。
+scrape_interval的值表示Prometheus从目标处拉取配置的频率。
 
 现在启动Prometheus，里面应该有一些数据了。让我们打开localhost:9090来看一看
 
