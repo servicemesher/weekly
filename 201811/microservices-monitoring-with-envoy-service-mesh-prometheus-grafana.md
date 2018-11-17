@@ -267,7 +267,7 @@ dashboard = Dashboard(
 ).auto_panel_ids()
 ```
 
-我们正为2xx，5xx和延迟数据构建图表。第5-22行很重要，它从我们的设置中提取可用的service names作为grafana的变量，为我们创建一个动态的仪表盘，这意味着我们能够选择性地查看特定源服务和目标服务的统计数据。更多关于变量的内容参考[这里](http://docs.grafana.org/reference/templating/)。
+在这段代码中，我们为2xx，5xx和延迟数据构建了图表。其中第5-22行很重要，它从我们的设置中提取可用的service names作为grafana的变量，为我们创建一个动态的仪表盘，这意味着我们能够选择性地查看特定源服务和目标服务的统计数据。如果想了解更多关于变量的内容请参考[这里](http://docs.grafana.org/reference/templating/)。
 
 你需要通过grafanalib命令来从上述python文件生成仪表盘
 
