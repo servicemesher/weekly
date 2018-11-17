@@ -169,7 +169,7 @@ scrape_interval的值表示Prometheus从目标处拉取配置的频率。
 
 ![prometheus查询页面](https://ws2.sinaimg.cn/large/006tNbRwgy1fwy55z3klmj31jk0f6gmd.jpg)
 
-如图所示，可以看到我们的指标。你能做的可不仅仅是选择已有的指标，从[这里](https://prometheus.io/docs/prometheus/latest/querying/basics/)可以阅读关于prometheus查询语言的更多信息。它还可以基于我们的查询绘制图表。它还拥有报警系统。
+如图所示，可以看到我们的指标。你能做的可不仅仅是选择已有的指标，从[这里](https://prometheus.io/docs/prometheus/latest/querying/basics/)可以阅读关于prometheus查询语言的更多信息。它还可以基于查询结果绘制图表，除此之外还有一个报警系统。
 
 如果我们打开prometheus的targets页面，将能看到所有的拉取目标和它们的健康状态
 
@@ -181,7 +181,7 @@ Grafana是一个很棒的监控可视化解决方案，它支持Prometheus，Gra
 
 Grafana有两大主要组件需要我们配置
 
-1. 数据源（Datasource）：指定grafana从哪个后端获取指标。你可以通过配置文件来配置数据源，如下面代码
+1. 数据源（Datasource）：指定grafana从哪个后端获取指标。你可以通过配置文件来配置数据源，代码如下所示
 
    ```yaml
    apiVersion: 1
@@ -195,11 +195,11 @@ Grafana有两大主要组件需要我们配置
        isDefault:
    ```
 
-2. 看板（Dashboard）：你可以从看板查看来自数据源的指标。Grafana支持多种可视化元素，如Graphs，Single Stats，Heatmaps……你可以继承这些元素并使用插件来构造自己的元素。
+2. 仪表盘（Dashboard）：你可以从仪表盘查看来自数据源的指标。Grafana支持多种可视化元素，如Graphs，Single Stats，Heatmaps……你可以继承这些元素并使用插件来构造自己的元素。
 
-我在使用Grafana时遇到的唯一一个问题是，缺少一种标准的方法来用代码开发那些看板。所幸有一些第三方的库提供了支持，我们将使用来自weaveworks的[grafanalib](https://github.com/weaveworks/grafanalib)。
+我在使用Grafana时遇到的唯一一个问题是，缺少一种标准的方法来用代码开发那些仪表盘。所幸有一些第三方的库提供了支持，我们将使用来自weaveworks的[grafanalib](https://github.com/weaveworks/grafanalib)。
 
-下面是一个我们正试着构建的看板，这是它的pytho代码形式
+下面是我们通过 python 代码尝试构建的一个仪表盘
 
 ```python
 
@@ -267,9 +267,9 @@ dashboard = Dashboard(
 ).auto_panel_ids()
 ```
 
-我们正为2xx，5xx和延迟数据构建图表。第5-22行很重要，它从我们的设置中提取可用的service names作为grafana的变量，为我们创建一个动态的看板，这意味着我们能够选择性地查看特定源服务和目标服务的统计数据。更多关于变量的内容参考[这里](http://docs.grafana.org/reference/templating/)。
+我们正为2xx，5xx和延迟数据构建图表。第5-22行很重要，它从我们的设置中提取可用的service names作为grafana的变量，为我们创建一个动态的仪表盘，这意味着我们能够选择性地查看特定源服务和目标服务的统计数据。更多关于变量的内容参考[这里](http://docs.grafana.org/reference/templating/)。
 
-你需要通过grafanalib命令来从上述python文件生成看板
+你需要通过grafanalib命令来从上述python文件生成仪表盘
 
 ```shell
      generate-dashboard -o dashboard.json service-dashboard.py
@@ -277,11 +277,11 @@ dashboard = Dashboard(
 
 注意这里生成的dashboard.json可不容易阅读。
 
-所以，启动Grafana时我们只需要传递看板和数据源就好了。当访问http:localhost:3000时，你将看到：
+所以，启动Grafana时我们只需要传递仪表盘和数据源就好了。当访问http:localhost:3000时，你将看到：
 
-![grafana看板](https://ws4.sinaimg.cn/large/006tNbRwly1fx6n732mrdj31jk0h7jsc.jpg)
+![grafana仪表盘](https://ws4.sinaimg.cn/large/006tNbRwly1fx6n732mrdj31jk0h7jsc.jpg)
 
-看吧，你现在能看到2xx，5xx和延迟图表，同时还能看到一个下拉菜单，你可以通过它选择源服务和目标服务。Grafana还有许多我们没有讨论到的内容，包括一个强大的查询编辑器，一个告警系统。更重要的是，这一切都是可以通过插件和应用扩展的，可以参考[这里](https://github.com/grafana/kubernetes-app)的例子。如果你正想可视化常见服务如redis，rabbitmq等的指标，grafana有一个[公共看板](https://grafana.com/dashboards)库，你只需要导入它们就可以使用了。关于Grafana还有一件很棒的事，你可以通过配置文件和代码创建和管理所有东西，而不需要过于涉及UI。
+现在你应该能看到2xx，5xx和延迟的图表，同时还能看到一个下拉菜单，你可以通过它选择源服务和目标服务。关于Grafana还有许多内容我们没有讨论到，包括强大的查询编辑器和告警系统。更重要的是，这一切都是可以通过插件和应用扩展的，可以参考[这里](https://github.com/grafana/kubernetes-app)的例子。如果你正想可视化常见服务如redis，rabbitmq等的指标，grafana有一个[公共仪表盘](https://grafana.com/dashboards)库，你只需要导入它们就可以使用了。使用Grafana 还有一个好处，你可以通过配置文件和代码创建和管理所有东西，而不需要过多地通过UI来操作。
 
 我建议你试用一下prometheus和grafana以了解更多信息。感谢阅读，如有建议和意见，请写在评论中。
 
