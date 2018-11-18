@@ -360,137 +360,133 @@ sudo docker run -it --rm --name envoy --network="host" \
 
 ## **通过HTTP访问服务**
 
-If all goes well, you can now cURL your service using HTTP. On Linux, you can connect to localhost, but on windows or mac you might have to connect to the IP address of the VM or docker container. The examples use localhost as there are many ways you can configure docker.
+If all goes well, you can now cURL your service using HTTP. On Linux, you can connect to localhost, but on windows or mac you might have to connect to the IP address of the VM or docker container. The examples use localhost as there are many ways you can configure docker.如果一切顺利，你现在可以使用curl命令来访问服务。Linux下你可以直接连接localhost，但是在windows或者Mac下你可能需要通过虚拟机或docker容器的IP地址连接。有很多方法可以配置docker，这里使用localhost。
 
-### CREATE A RESERVATION VIA HTTP
+### 通过HTTP创建预订
 
+```shell
+curl -X POST http://localhost:51051/v1/reservations \
+          -H 'Content-Type: application/json' \
+          -d '{
+            "title": "Lunchmeeting2",
+            "venue": "JDriven Coltbaan 3",
+            "room": "atrium",
+            "timestamp": "2018-10-10T11:12:13",
+            "attendees": [
+                {
+                    "ssn": "1234567890",
+                    "firstName": "Jimmy",
+                    "lastName": "Jones"
+                },
+                {
+                    "ssn": "9999999999",
+                    "firstName": "Dennis",
+                    "lastName": "Richie"
+                }
+            ]
+        }'
+```
 
+输出：
 
+```json
+ {
+        "id": "2cec91a7-d2d6-4600-8cc3-4ebf5417ac4b",
+        "title": "Lunchmeeting2",
+        "venue": "JDriven Coltbaan 3",
+...
+```
 
+### 通过HTTP获取预订
 
-| 1234567891011121314151617181920 | curl -X POST http://localhost:51051/v1/reservations \          -H 'Content-Type: application/json' \          -d '{            "title": "Lunchmeeting2",            "venue": "JDriven Coltbaan 3",            "room": "atrium",            "timestamp": "2018-10-10T11:12:13",            "attendees": [                {                    "ssn": "1234567890",                    "firstName": "Jimmy",                    "lastName": "Jones"                },                {                    "ssn": "9999999999",                    "firstName": "Dennis",                    "lastName": "Richie"                }            ]        }' |
-| ------------------------------- | ------------------------------------------------------------ |
-|                                 |                                                              |
+使用上面创建的ID：
 
-Example output:
+```shell
+curl http://localhost:51051/v1/reservations/ENTER-ID-HERE!
+```
 
+输出应该和创建结果一致。
 
+### 通过HTTP获取预订列表
 
-| 12345 | {        "id": "2cec91a7-d2d6-4600-8cc3-4ebf5417ac4b",        "title": "Lunchmeeting2",        "venue": "JDriven Coltbaan 3",... |
-| ----- | ------------------------------------------------------------ |
-|       |                                                              |
+对于这个例子可能需要以不同的字段多次执行CreateReservation来验证过滤器的行为。
 
+```shell
+curl "http://localhost:51051/v1/reservations"
+```
 
+```shell
+curl "http://localhost:51051/v1/reservations?room=atrium"
+```
 
-### RETRIEVE A RESERVATION VIA HTTP
+```shell
+curl "http://localhost:51051/v1/reservations?room=atrium&attendees.lastName=Jones"
+```
 
-Use the ID that the POST created!
+响应结果是Reservations的数组。
 
+### 删除预订
 
+```shell
+curl -X DELETE http://localhost:51051/v1/reservations/ENTER-ID-HERE!
+```
 
-| 1    | curl http://localhost:51051/v1/reservations/ENTER-ID-HERE! |
-| ---- | ---------------------------------------------------------- |
-|      |                                                            |
+## 返回头
 
-The output should be the same as the result of the create
+gRPC会返回一些HTTP头。有些可以在调试的时候帮到你：
 
-### LIST RESERVATIONS VIA HTTP
+- grpc-status：这个值是io.grpc.Status.Code的序数，它能帮助查看gRPC的返回状态。
+- grpc-message：一旦出现问题返回的错误信息。
 
-For this example it might be nice to run CreateReservation multiple times with different fields to see the filter in action.
+更多信息请查看[github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md)
 
+## **缺陷**
 
+#### 1. 如果路径不存在响应很奇怪
 
-| 1    | curl "http://localhost:51051/v1/reservations" |
-| ---- | --------------------------------------------- |
-|      |                                               |
+Envoy工作的很好但在我看来有时候返回不正确的状态码。比如当我获取一个合法的预订：
 
+```shell
+curl http://localhost:51051/v1/reservations/ENTER-ID-HERE!
+```
 
+返回状态码200，没错，但如果我这样做：
 
+```shell
+curl http://localhost:51051/v1/reservations/ENTER-ID-HERE!/blabla
+```
 
+Envoy会返回：
 
-| 1    | curl "http://localhost:51051/v1/reservations?room=atrium" |
-| ---- | --------------------------------------------------------- |
-|      |                                                           |
+```
+415 Unsupported Media Type
+Content-Type is missing from the request
+```
 
+我期望返回404而不是上面解释的错误信息。这有一个相关问题：[github.com/envoyproxy/envoy/issues/5010](https://github.com/envoyproxy/envoy/issues/5010)
 
+**解决**: Envoy将所有请求路由到gRPC服务，如果服务中不存在该路径，gRPC服务本身就会响应该错误。解决方案是，通过在Envoy的配置中添加' gRPC:{} '，使其仅转发在gRPC服务中实现了的请求：
 
+```yaml
+ name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match: { prefix: "/" , grpc: {}}  # <--- this fixes it
+                route: { cluster: grpc-backend-services, timeout: { seconds: 60 } }
+```
 
+#### 2. 有时候在查询集合时，即使服务器有错误响应，依然会返回空资源‘[]’
 
-| 1    | curl "http://localhost:51051/v1/reservations?room=atrium&attendees.lastName=Jones" |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
+我提交了这一问题给Envoy开发者： [github.com/envoyproxy/envoy/issues/5011](https://github.com/envoyproxy/envoy/issues/5011)
 
-The response will be an array of Reservations.
+**部分解决方案：** 其中一部分是已知的转码限制，因为状态和头是先发送的。在一个响应中转换器首先发送一个200，然后对流进行转码。
 
-### DELETE A RESERVATION
+## 即将到来的特性
 
+将来，还可以在响应体中返回响应消息的子字段，以便您不想返回完整的响应体。这可以通过HTTP选项中的“response_body”字段完成。如果您想在HTTP API中裁剪包装的对象这是非常合适的。
 
+# 结语
 
-
-
-| 1    | curl -X DELETE http://localhost:51051/v1/reservations/ENTER-ID-HERE! |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
-
-
-
-# Returned headers
-
-gRPC returns several HTTP headers. Some might might help you with debugging:
-
-- grpc-status: the value is the ordinal value of io.grpc.Status.Code. It can come in handy to see what status gRPC returns.
-- grpc-message: the error in case something went wrong.
-
-Visit for more info: [github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md)
-
-## **Imperfections**
-
-#### 1. Weird responses if path does not exist.
-
-Envoy does a good job but it sometimes returns, in my opinion, an incorrect status code. For example, when I GET a valid reservation:
-
-
-
-| 1    | curl http://localhost:51051/v1/reservations/ENTER-ID-HERE! |
-| ---- | ---------------------------------------------------------- |
-|      |                                                            |
-
-It returns 200, which is good. But then if I do this
-
-
-
-| 1    | curl http://localhost:51051/v1/reservations/ENTER-ID-HERE!/blabla |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
-
-Envoy returns:
-
-
-
-| 123  | 415 Unsupported Media Type Content-Type is missing from the request |
-| ---- | ------------------------------------------------------------ |
-|      |                                                              |
-
-I expect 404 here, and the body doesn’t really explain the error well. I filed an issue here: [github.com/envoyproxy/envoy/issues/5010](https://github.com/envoyproxy/envoy/issues/5010)
-
-**RESOLVED**: Envoy was routing all requests to the gRPC service, if the path did not exist in the gRPC service, the gRPC service itself responded with that error. The solution is to make Envoy only forward requests that have an implementation in the gRPC service by adding ‘grpc : {}’ to the configuration of envoy:
-
-
-
-| 1234567 | name: local_route            virtual_hosts:            - name: local_service              domains: ["*"]              routes:              - match: { prefix: "/" , grpc: {}}  # <--- this fixes it                route: { cluster: grpc-backend-services, timeout: { seconds: 60 } } |
-| ------- | ------------------------------------------------------------ |
-|         |                                                              |
-
-
-
-#### 2. Sometimes when querying a collection the resource returns ‘[ ]’ even when the server responds with an error.
-
-I filed an issue with the envoy developers [github.com/envoyproxy/envoy/issues/5011](https://github.com/envoyproxy/envoy/issues/5011)
-
-## Upcoming features
-
-In the future it will also be possible to provide subfields of the response message that you want to return in the response body, in case you do not want to return the complete response body. This can be done via a “response_body” field inside the HTTP option. This could be nice if you want to cut out a wrapper object in your HTTP API.
-
-# Final words
-
-I hope this gives a good overview on transcoding a gRPC API to HTTP/JSON.
+我希望这篇文章对将gRPC API转码为HTTP/JSON提供了一个很好的概述。
