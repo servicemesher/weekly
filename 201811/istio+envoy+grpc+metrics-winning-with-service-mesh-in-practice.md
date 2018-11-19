@@ -2,7 +2,7 @@
 original: https://medium.com/pismolabs/istio-envoy-grpc-metrics-winning-with-service-mesh-in-practice-d67a08acd8f7
 translator: shaobai
 reviewer: 
-title: "使用 Istio，Envoy 实践服务网格 GRPC 度量"
+title: "使用 Istio，Envoy 实践服务网格 GRPC 度量"
 description: ""
 categories: "译文"
 tags: ["Envoy","服务网格","Service Mesh","Metric"]
@@ -74,6 +74,7 @@ kubectl label namespace istio-apps istio-injection=enabled
 所有外部的流量将通过 Istio-ingressgateway 进入网格中，Istio-ingressgateway 会尝试查找网格内主机与路径匹配一致的虚拟服务。如果未查找到匹配的虚拟服务，则外部服务将访问不到网格内的应用程序。
 
 **提示：正是因为这样的虚拟服务，我们可以做到流量的管理！**
+
 
 对于网格中的服务需要访问外部的服务，例如：访问镜像中的存储应用，你还需要做虚拟服务的流量映射。
 
