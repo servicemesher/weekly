@@ -6,49 +6,49 @@ title: "使用Envoy转码gRPC到HTTP/JSON"
 description: "本文用实例讲解了如何利用Envoy将gRPC转码为HTTP/JSON"
 categories: "译文"
 tags: ["Envoy"]
-date: 2018-11-15
+date: 2018-11-19
 ---
 
 # 使用Envoy将gRPC转码为HTTP/JSON
 
-在gRPC中构建服务时，要在.proto文件中定义消息和服务。gRPC支持多种语言自动生成客户端、服务器和DTO实现。这篇文章的最后，您将了解到使用Envoy作为转码代理，使gRPC API也可以通过HTTP JSON访问。您可以通过github代码库中的Java代码来测试它。有关gRPC的快速介绍请阅读[blog.jdriven.com/2018/10/grpc-as-an-alternative-to-rest/](https://blog.jdriven.com/2018/10/grpc-as-an-alternative-to-rest/).
+试用gRPC构建服务时要在.proto文件中定义消息（message）和服务（service）。gRPC支持多种语言自动生成客户端、服务端和DTO实现。在读完这篇文章后，你将了解到使用Envoy作为转码代理，使gRPC API也可以通过HTTP/JSON的方式访问。你可以通过github代码库中的Java代码来测试它。有关gRPC的介绍请参阅[blog.jdriven.com/2018/10/grpc-as-an-alternative-to-rest/](https://blog.jdriven.com/2018/10/grpc-as-an-alternative-to-rest/)。
 
-## **为什么转码gRPC服务？**
+## **为什么要对gRPC服务进行转码？**
 
-一旦有了一个可用的gRPC服务，您可以通过向服务添加一些额外的注解将gRPC服务作为HTTP JSON API发布。然后需要一个代理来转换HTTP JSON调用并将其传递给gRPC服务。我们称这个过程为转码。然后你的服务可以通过gRPC和HTTP/JSON访问。大多数时候我更倾向使用gRPC，因为使用遵循“契约”生成的类型安全的代码更方便、更安全，但有时转码也很有用：
+一旦有了一个可用的gRPC服务，可以通过向服务添加一些额外的注解（annotation）将其作为HTTP/JSON API发布。你需要一个代理来转换HTTP/JSON调用并将其传递给gRPC服务。我们称这个过程为转码。然后你的服务就可以通过gRPC和HTTP/JSON访问。大多数时候我更倾向使用gRPC，因为使用遵循“契约”生成的类型安全的代码更方便、更安全，但有时转码也很有用：
 
-1. 您的web应用程序可以通过HTTP/JSON调用与gRPC服务通信。[github.com/grpc/grpc-web](https://github.com/grpc/grpc-web)是一个可以在浏览器中使用的JavaScript的gRPC实现。这个项目很有前途，但还不成熟。
-2. 因为gRPC在网络上使用二进制格式，所以很难看到实际发送和接收的内容。将其作为HTTP/JSON API公开，可以通过使用cURL或postman等工具更容易地检查服务。
-3. 如果您使用的语言gRPC不支持，您可以通过HTTP/JSON访问它。
+1. web应用程序可以通过HTTP/JSON调用与gRPC服务通信。[github.com/grpc/grpc-web](https://github.com/grpc/grpc-web)是一个可以在浏览器中使用的JavaScript的gRPC实现。这个项目很有前途，但还不成熟。
+2. 因为gRPC在网络通信上使用二进制格式，所以很难看到实际发送和接收的内容。将其作为HTTP/JSON API发布，可以使用cURL或postman等工具更容易地检查服务。
+3. 如果你使用的语言gRPC不支持，你可以通过HTTP/JSON访问它。
 4. 它为在项目中更平稳地采用gRPC铺平了道路，允许其他团队逐步过渡。
 
 ## **创建一个gRPC服务：ReservationService**
 
-让我们创建一个简单的gRPC服务作为示例。在gRPC中，定义包含远程过程调用(rpc)的类型和服务。您可以随意设计自己的服务，但是谷歌建议使用面向资源的设计(源代码：[cloud.google.com/apis/design/resources](https://cloud.google.com/apis/design/resources))，因为用户无需知道每个方法是做什么的就可以容易地理解API。如果您创建了许多松散格式的rpc，您的用户必须理解每种方法的作用，从而使您的API更难学习。面向资源的设计还可以更好地转换为HTTP/JSON API。
+让我们创建一个简单的gRPC服务作为示例。在gRPC中，定义包含远程过程调用(rpc)的类型和服务。你可以随意设计自己的服务，但是谷歌建议使用面向资源的设计（源代码：[cloud.google.com/apis/design/resources](https://cloud.google.com/apis/design/resources)），因为用户无需知道每个方法是做什么的就可以容易地理解API。如果你创建了许多不固定格式的rpc，用户必须理解每种方法的作用，从而使你的API更难学习。面向资源的设计还可以更好地转换为HTTP/JSON API。
 
-在本例中，我们将创建一个会议预订服务。该服务称为ReservationService，由创建、获取、列出和删除预订4个操作组成。这是服务定义:
+在本例中，我们将创建一个会议预订服务。该服务称为ReservationService，由创建、获取、获取列表和删除预订4个操作组成。服务定义如下：
 
 ```protobuf
 //reservation_service.proto
- 
+
 syntax = "proto3";
- 
+
 package reservations.v1;
 option java_multiple_files = true;
 option java_outer_classname = "ReservationServiceProto";
 option java_package = "nl.toefel.reservations.v1";
- 
+
 import "google/protobuf/empty.proto";
- 
+
 service ReservationService {
- 
+
     rpc CreateReservation(CreateReservationRequest) returns (Reservation) {  }
     rpc GetReservation(GetReservationRequest) returns (Reservation) {  }
     rpc ListReservations(ListReservationsRequest) returns (stream Reservation) {  }
     rpc DeleteReservation(DeleteReservationRequest) returns (google.protobuf.Empty) {  }
- 
+
 }
- 
+
 message Reservation {
     string id = 1;
     string title = 2;
@@ -57,57 +57,55 @@ message Reservation {
     string timestamp = 5;
     repeated Person attendees = 6;
 }
- 
+
 message Person {
     string ssn = 1;
     string firstName = 2;
     string lastName = 3;
 }
- 
+
 message CreateReservationRequest {
     Reservation reservation = 2;
 }
- 
+
 message CreateReservationResponse {
     Reservation reservation = 1;
 }
- 
+
 message GetReservationRequest {
     string id = 1;
 }
- 
+
 message ListReservationsRequest {
     string venue = 1;
     string timestamp = 2;
     string room = 3;
- 
+
     Attendees attendees = 4;
- 
+
     message Attendees {
         repeated string lastName = 1;
     }
 }
- 
+
 message DeleteReservationRequest {
     string id = 1;
 }
 ```
 
-It is common practice to wrap the input for the operations inside a request object. This makes adding extra fields or options to your operation in the future easier. The ListReservations operation returns a stream of Reservations. In Java that means you will get an iterator of Reservation objects. The client can start processing the responses before the server is even finished sending them, pretty awesome :D.
+通常的做法是将操作的入参封装在请求对象中。这会在以后的操作中添加额外的字段或选项时更加容易。ListReservations操作返回一个Reservations列表。在Java中，这意味着你将得到Reservations对象的一个迭代（Iterator）。客户端甚至可以在服务器发送完响应之前就开始处理它们，非常棒。
 
-通常的做法是将操作的输入包装在请求对象中。这使得在以后的操作中添加额外的字段或选项更加容易。ListReservations操作返回一个Reservations流。在Java中，这意味着您将得到Reservations对象的迭代器。客户端甚至可以在服务器发送完响应之前就开始处理它们，非常棒:D。
+如果你想知道这个gRPC服务在Java中是如何被使用的，请查看 [ServerMain.java](https://github.com/toefel18/transcoding-grpc-to-http-json/blob/master/src/main/java/nl/toefel/server/ServerMain.java) 和 [ClientMain.java](https://github.com/toefel18/transcoding-grpc-to-http-json/blob/master/src/main/java/nl/toefel/client/ClientMain.java)实现。
 
-If you would like to see how this gRPC service can be used in Java, see如果你想知道这个gRPC服务在Java中是如何使用的，请查看 [ServerMain.java](https://github.com/toefel18/transcoding-grpc-to-http-json/blob/master/src/main/java/nl/toefel/server/ServerMain.java) 和 [ClientMain.java](https://github.com/toefel18/transcoding-grpc-to-http-json/blob/master/src/main/java/nl/toefel/client/ClientMain.java)实现。
+## **使用HTTP选项标注服务进行转码**
 
-## **使用HTTP选项对服务进行注解来转码**
+在每个rpc操作的花括号中可以添加选项。Google定义了一个java option，允许你指定如何将操作转换到HTTP请求（endpoint）。在*reservation_service.proto*中引入 ‘**google/api/annotations.proto’**即可使用该选项。默认情况下这个import是不可用的，但是你可以通过向*build.gradle*添加以下编译依赖来实现它：
 
-在每个rpc操作的花括号中可以添加选项。Google定义了一个java option，允许您指定如何将操作转换到HTTP端点。在*reservation_service.proto*中引入 ‘**google/api/annotations.proto’**即可使用该选项。在默认情况下这个import是不可用的，但是您可以通过向*build.gradle*添加以下编译依赖来实现它：
-
-```gradle
+```shell
 compile "com.google.api.grpc:proto-google-common-protos:1.13.0-pre2"
 ```
 
-这个依赖将由protobuf解压并将几个.proto文件放入构建目录中。现在可以把**\*google/api/annotations.proto***引入你的.proto文件中并开始指定如何转换API。
+这个依赖将由protobuf解压并生成几个.proto文件放入构建目录中。现在可以把**google/api/annotations.proto**引入你的.proto文件中并开始说明如何转换API。
 
 ## **转码GetReservation操作为GET方法**
 
@@ -117,15 +115,15 @@ compile "com.google.api.grpc:proto-google-common-protos:1.13.0-pre2"
   message GetReservationRequest {
        string id = 1;
    }
- 
+
    rpc GetReservation(GetReservationRequest) returns (Reservation) {
-       option (google.api.http) = {            
-           get: "/v1/reservations/{id}"         
+       option (google.api.http) = {
+           get: "/v1/reservations/{id}"
        };
    }
 ```
 
-在选项定义中有一个名为“get”的字段，设置为“/v1/reservation /{id}”。字段名对应于HTTP客户端应该使用的HTTP请求方法。get的值对应于请求URL。在URL中，我们看到一个名为id的路径变量，这个路径变量会自动映射到输入操作中同名的字段。在本例中，它将是GetReservationRequest.id。
+在选项定义中有一个名为“get”的字段，设置为“/v1/reservation /{id}”。字段名对应于HTTP客户端应该使用的HTTP请求方法。get的值对应于请求URL。在URL中有一个名为id的路径变量，这个变量会自动映射到输入操作中同名的字段。在本例中，它将是GetReservationRequest.id。
 
 发送 **GET /v1/reservations/1234** 到代理将转码到下面的伪代码：
 
@@ -135,7 +133,7 @@ var reservation = reservationServiceClient.GetReservation(request)
 return toJson(reservation)
 ```
 
-HTTP response body将返回预订的所有非空字段的JSON形式。
+HTTP响应体（response body）将返回预订的所有非空字段的JSON形式。
 
 **记住：转码不是由gRPC服务完成的。单独运行这个示例不会将其发布为HTTP JSON API。前端的代理负责转码。我们稍后将对此进行配置。**
 
@@ -147,7 +145,7 @@ HTTP response body将返回预订的所有非空字段的JSON形式。
 message CreateReservationRequest {
    Reservation reservation = 2;
 }
- 
+
 rpc CreateReservation(CreateReservationRequest) returns (Reservation) {
    option(google.api.http) = {
       post: "/v1/reservations"
@@ -186,21 +184,21 @@ curl -X POST \
 
 ## **转码带查询参数过滤的ListReservations**
 
-查询集合资源的一种常见方法是提供查询参数作为过滤器。ListReservations的gRPC服务就有此功能。ListReservations接收到一个包含可选字段的ListReservationRequest，用于过滤预订集合。
+查询集合资源的一种常见方法是提供查询参数作为过滤器。ListReservations的gRPC服务就有此功能。它接收到一个包含可选字段的ListReservationRequest，用于过滤预订集合。
 
 ```protobuf
 message ListReservationsRequest {
     string venue = 1;
     string timestamp = 2;
     string room = 3;
- 
+
     Attendees attendees = 4;
- 
+
     message Attendees {
         repeated string lastName = 1;
     }
 }
- 
+
 rpc ListReservations(ListReservationsRequest) returns (stream Reservation) {
    option (google.api.http) = {
        get: "/v1/reservations"
@@ -208,7 +206,7 @@ rpc ListReservations(ListReservationsRequest) returns (stream Reservation) {
 }
 ```
 
-在这里，转码器将自动创建ListReservationsRequest，并将查询参数映射到ListReservationRequest的内部字段。没有指定的所有字段都包含默认值，对于字符串是""。例如:
+在这里，转码器将自动创建ListReservationsRequest，并将查询参数映射到ListReservationRequest的内部字段。没有指定的字段都取默认值，对于字符串来说是""。例如:
 
 ```shell
 curl http://localhost:51051/v1/reservations?room=atrium
@@ -226,13 +224,13 @@ attendees.lastName是一个repeated的字段，可以被设置多次：
 curl  "http://localhost:51051/v1/reservations?attendees.lastName=Richie&attendees.lastName=Kruger"
 ```
 
-gRPC服务将会看到ListReservationRequest.attendees.lastName作为一个列表有两个元素：Richie和Kruger. Supernice。
+gRPC服务将会知道ListReservationRequest.attendees.lastName是一个有两个元素的列表：Richie和Kruger. Supernice。
 
 ## **运行转码器**
 
-是时候让这些运行起来了。Google cloud支持转码，即使运行在Kubernetes (incl GKE) 或计算引擎中。更多信息请参看[cloud.google.com/endpoints/docs/grpc/tutorials](https://cloud.google.com/endpoints/docs/grpc/tutorials).
+是时候让这些运行起来了。Google cloud支持转码，即使运行在Kubernetes (incl GKE) 或计算引擎中。更多信息请参看[cloud.google.com/endpoints/docs/grpc/tutorials](https://cloud.google.com/endpoints/docs/grpc/tutorials)。
 
-如果您不在Google cloud中运行，或者在本地运行，那么您可以使用Envoy。它是一个由Lyft创建的非常灵活的代理。它也是[istio.io](https://istio.io/)中的主要组件。在这个例子中，我们将使用Envoy。
+如果你不在Google cloud中运行，或者是在本地运行，那么可以使用Envoy。它是一个由Lyft创建的非常灵活的代理。它也是[istio.io](https://istio.io/)中的主要组件。在这个例子中我们将使用它。
 
 为了转码我们需要：
 
@@ -243,14 +241,14 @@ gRPC服务将会看到ListReservationRequest.attendees.lastName作为一个列�
 
 ### **步骤 1**
 
-我已经创建了如上描述的项目并发布在github上。你可以从这里clone： [github.com/toefel18/transcoding-grpc-to-http-json](https://github.com/toefel18/transcoding-grpc-to-http-json)。然后构建：
+我已经创建了如上描述的项目并发布在github上。你可以从这里clone： [github.com/toefel18/transcoding-grpc-to-http-json](https://github.com/toefel18/transcoding-grpc-to-http-json)。然后构建它：
 
 ```shell
 # Script will download gradle if it’s not installed, no need to install it :)
 ./gradlew.sh clean build    # windows: ./gradlew.bat clean build
 ```
 
-**提示：我创建了脚本自动执行步骤2到4，在项目[github.com/toefel18/transcoding-grpc-to-http-json](github.com/toefel18/transcoding-grpc-to-http-json)的根目录下。这将节省你的开发时间。步骤2到4详细的解释了它是如何工作的。**
+**提示：我创建了脚本自动执行步骤2到4，脚本在项目[github.com/toefel18/transcoding-grpc-to-http-json](github.com/toefel18/transcoding-grpc-to-http-json)的根目录下。这将节省你的开发时间。步骤2到4详细的解释了它是如何工作的。**
 
 ```shell
 ./start-envoy.sh
@@ -258,9 +256,9 @@ gRPC服务将会看到ListReservationRequest.attendees.lastName作为一个列�
 
 ### **步骤 2**
 
-然后我们需要创建.pb文件。我们需要在这里先下载预编译的protoc可执行文件：[github.com/protocolbuffers/protobuf/releases/latest](https://github.com/protocolbuffers/protobuf/releases/latest)(为你的平台选择正确的版本，例如针对Mac的*protoc-3.6.1-osx-x86_64.zip*)，然后解压到你的路径，很简单。
+然后我们需要创建.pb文件。我们需要先下载预编译的protoc可执行文件：[github.com/protocolbuffers/protobuf/releases/latest](https://github.com/protocolbuffers/protobuf/releases/latest)（为你的平台选择正确的版本，例如针对Mac的*protoc-3.6.1-osx-x86_64.zip*），然后解压到你的路径，很简单。
 
-在[transcoding-grpc-to-http-json目录下运行下面的命令生成Envoy理解的文件 *reservation_service_definition.pb*  (别忘了先构建项目并导入 *reservation_service.proto*需要的.proto文件)
+在[transcoding-grpc-to-http-json](https://github.com/toefel18/transcoding-grpc-to-http-json)目录下运行下面的命令生成Envoy可以理解的文件 *reservation_service_definition.pb* （别忘了先构建项目并导入 *reservation_service.proto*需要的.proto文件）。
 
 ```shell
 protoc -I. -Ibuild/extracted-include-protos/main --include_imports \
@@ -273,14 +271,14 @@ protoc -I. -Ibuild/extracted-include-protos/main --include_imports \
 
 ### **步骤 3**
 
-我们快要完成了，在运行Envoy之前，最后一件事是创建配置文件。Envoy的配置文件以yaml描述。您可以使用Envoy做很多事情，但是，现在让我们专注于转码我们的服务。我从[他们的网站](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_filters/grpc_json_transcoder_filter#config-http-filters-grpc-json- transcocoder)中获取了一个基本的配置示例，并使用#标记感兴趣的部分。
+我们快要完成了，在运行Envoy之前，最后一件事是创建配置文件。Envoy的配置文件以yaml描述。你可以使用Envoy做很多事情，但是现在让我们专注于转码我们的服务。我从[Envoy的网站](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_filters/grpc_json_transcoder_filter#config-http-filters-grpc-json- transcocoder)中获取了一个基本的配置示例，并使用#标记了感兴趣的部分。
 
 ```yaml
 admin:
   access_log_path: /tmp/admin_access.log
   address:
     socket_address: { address: 0.0.0.0, port_value: 9901 }         #1
- 
+
 static_resources:
   listeners:
   - name: main-listener
@@ -298,9 +296,9 @@ static_resources:
             - name: local_service
               domains: ["*"]
               routes:
-              - match: { prefix: "/", grpc: {} }  
+              - match: { prefix: "/", grpc: {} }
                 #3 see next line!
-                route: { cluster: grpc-backend-services, timeout: { seconds: 60 } }   
+                route: { cluster: grpc-backend-services, timeout: { seconds: 60 } }
           http_filters:
           - name: envoy.grpc_json_transcoder
             config:
@@ -312,7 +310,7 @@ static_resources:
                 always_print_enums_as_ints: false
                 preserve_proto_field_names: false                        #6
           - name: envoy.router
- 
+
   clusters:
   - name: grpc-backend-services                  #7
     connect_timeout: 1.25s
@@ -328,14 +326,14 @@ static_resources:
 
 我已经在配置文件中添加了一些标记来强调我们感兴趣的部分：
 
-- \#1 admin接口的地址。你也可以在这里获取prometheus的测量数据去查询服务怎样执行！
-- \#2 HTTP API的可用的地址
-- \#3 将请求路由到的后端服务的名称。步骤 #7 定义这个名字。
-- \#4 我们之前生成的.pb描述符文件的路径
-- \#5 转码的服务
+- \#1 admin接口的地址。你也可以在这里获取prometheus的测量数据去查询服务是怎样执行的。
+- \#2 HTTP API的可用地址。
+- \#3 将请求路由到后端服务的名称。步骤 #7 定义这个名字。
+- \#4 我们之前生成的.pb描述符文件的路径。
+- \#5 转码的服务。
 - \#6 Protobuf字段名通常包含下划线。设置该选项为false会将字段名转换为驼峰式。
-- \#7 集群定义了上游服务 (在步骤#3中Envoy代理的服务)
-- \#8 可连接后端服务的地址和端口。我使用了 (127.0.0.1/localhost)。
+- \#7 集群定义了上游服务（在步骤#3中Envoy代理的服务）。
+- \#8 可连接后端服务的地址和端口。我使用了127.0.0.1/localhost。
 
 ### **步骤 4**
 
@@ -360,9 +358,9 @@ sudo docker run -it --rm --name envoy --network="host" \
 
 ## **通过HTTP访问服务**
 
-If all goes well, you can now cURL your service using HTTP. On Linux, you can connect to localhost, but on windows or mac you might have to connect to the IP address of the VM or docker container. The examples use localhost as there are many ways you can configure docker.如果一切顺利，你现在可以使用curl命令来访问服务。Linux下你可以直接连接localhost，但是在windows或者Mac下你可能需要通过虚拟机或docker容器的IP地址连接。有很多方法可以配置docker，这里使用localhost。
+如果一切顺利，你现在可以使用curl命令来访问服务。Linux下你可以直接连接localhost，但是在windows或者Mac下你可能需要通过虚拟机或docker容器的IP地址连接。有很多方法可以配置docker，这里使用localhost。
 
-### 通过HTTP创建预订
+#### 通过HTTP创建预订
 
 ```shell
 curl -X POST http://localhost:51051/v1/reservations \
@@ -397,7 +395,7 @@ curl -X POST http://localhost:51051/v1/reservations \
 ...
 ```
 
-### 通过HTTP获取预订
+#### 通过HTTP获取预订
 
 使用上面创建的ID：
 
@@ -407,7 +405,7 @@ curl http://localhost:51051/v1/reservations/ENTER-ID-HERE!
 
 输出应该和创建结果一致。
 
-### 通过HTTP获取预订列表
+#### 通过HTTP获取预订列表
 
 对于这个例子可能需要以不同的字段多次执行CreateReservation来验证过滤器的行为。
 
@@ -425,7 +423,7 @@ curl "http://localhost:51051/v1/reservations?room=atrium&attendees.lastName=Jone
 
 响应结果是Reservations的数组。
 
-### 删除预订
+#### 删除预订
 
 ```shell
 curl -X DELETE http://localhost:51051/v1/reservations/ENTER-ID-HERE!
@@ -444,7 +442,7 @@ gRPC会返回一些HTTP头。有些可以在调试的时候帮到你：
 
 #### 1. 如果路径不存在响应很奇怪
 
-Envoy工作的很好但在我看来有时候返回不正确的状态码。比如当我获取一个合法的预订：
+Envoy工作的很好，但在我看来有时候会返回不正确的状态码。比如当我获取一个合法的预订：
 
 ```shell
 curl http://localhost:51051/v1/reservations/ENTER-ID-HERE!
@@ -463,9 +461,9 @@ Envoy会返回：
 Content-Type is missing from the request
 ```
 
-我期望返回404而不是上面解释的错误信息。这有一个相关问题：[github.com/envoyproxy/envoy/issues/5010](https://github.com/envoyproxy/envoy/issues/5010)
+我期望返回404而不是上面解释的错误信息。这有一个相关的问题：[github.com/envoyproxy/envoy/issues/5010](https://github.com/envoyproxy/envoy/issues/5010)
 
-**解决**: Envoy将所有请求路由到gRPC服务，如果服务中不存在该路径，gRPC服务本身就会响应该错误。解决方案是，通过在Envoy的配置中添加' gRPC:{} '，使其仅转发在gRPC服务中实现了的请求：
+**解决**: Envoy将所有请求路由到gRPC服务，如果服务中不存在该路径，gRPC服务本身就会响应该错误。解决方案是在Envoy的配置中添加' gRPC:{} '，使其仅转发在gRPC服务中实现了的请求：
 
 ```yaml
  name: local_route
@@ -481,12 +479,12 @@ Content-Type is missing from the request
 
 我提交了这一问题给Envoy开发者： [github.com/envoyproxy/envoy/issues/5011](https://github.com/envoyproxy/envoy/issues/5011)
 
-**部分解决方案：** 其中一部分是已知的转码限制，因为状态和头是先发送的。在一个响应中转换器首先发送一个200，然后对流进行转码。
+**部分解决方案：** 其中一部分是已知的转码限制，因为状态和头是先发送的。在一个响应中转换器首先发送一个200状态码，然后对流进行转码。
 
 ## 即将到来的特性
 
-将来，还可以在响应体中返回响应消息的子字段，以便您不想返回完整的响应体。这可以通过HTTP选项中的“response_body”字段完成。如果您想在HTTP API中裁剪包装的对象这是非常合适的。
+将来还可以在响应体中返回响应消息的子字段，以便你不想返回完整的响应体。这可以通过HTTP选项中的“response_body”字段完成。如果你想在HTTP API中裁剪包装的对象这是非常合适的。
 
-# 结语
+## 结语
 
-我希望这篇文章对将gRPC API转码为HTTP/JSON提供了一个很好的概述。
+我希望这篇文章对将gRPC API转码HTTP/JSON提供了一个很好的概述。
