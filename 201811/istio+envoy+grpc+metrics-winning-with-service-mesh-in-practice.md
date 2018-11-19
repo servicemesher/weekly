@@ -75,7 +75,7 @@ kubectl label namespace istio-apps istio-injection=enabled
 
 **提示：正是因为这样的虚拟服务，我们可以做到流量的管理！**
 
-
+
 对于网格中的服务需要访问外部的服务，例如：访问镜像中的存储应用，你还需要做虚拟服务的流量映射。
 
 本教程中，我们可以使用下面的 yaml 文件（也可以指定 ips）访问网格中的所有主机：
