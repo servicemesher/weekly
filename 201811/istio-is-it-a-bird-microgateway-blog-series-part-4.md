@@ -98,4 +98,5 @@ Istio采用[外交官模式](https://docs.microsoft.com/en-us/azure/architecture
 作者简介：
 
 ![David](https://apifriends.com/wp-content/uploads/2018/10/David-McKenna-96x96.jpg)
+
 [大卫麦肯纳](https://apifriends.com/author/dmckenna/) <br>http://www.axway.com <br>David是Axway的SVP工程师，负责指导Axway平台未来架构。 API管理平台的专家，包括API网关，API管理器 和API门户。
