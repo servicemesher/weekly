@@ -1,10 +1,10 @@
 ```raw
 ---
 original: https://bani.com.br/2018/11/istio-what-happens-when-control-plane-is-down/
-translator: Waret
+translator: 博云-李守超
 reviewer: 审阅者的GitHub账号
-title: "Istio: 控制平面故障以后会发生什么？"
-description: "本文展示了当Istio控制平面的组件故障以后会发生什么现象。"
+title: "Istio: 控制平面出现故障以后会发生什么？"
+description: "本文展示了当Istio控制平面的组件出现故障以后会发生什么现象。"
 categories: "译文"
 tags: ["Istio","Istio Pilot","Istio Mixer Policy","Istio Mixer Telemetry"]
 date: 2018-11-16
@@ -19,26 +19,26 @@ date: 2018-11-16
 
 ## Pilot
 
-Pilot负责Istio的流量控制特性，同时将边车代理更新至最新的网格配置。
+Pilot负责Istio的流量控制特性，同时将Sidecar更新至最新的网格配置。
 
 Pilot启动以后，监听端口*15010*（gRPC）和*8080*（HTTP）。
 
-当应用的便车代理（Envoy，Istio-Proxy）启动以后，它将会连接*pilot.istio-system:15010*，获取初始配置，并保持长连接。
+当应用的Sidecar（Envoy，Istio-Proxy）启动以后，它将会连接*pilot.istio-system:15010*，获取初始配置，并保持长连接。
 
-Pilot会监听Kubernets资源，只要检测到网格发生变化，就会将最新的配置通过gRPC连接推送到边车代理上。
+Pilot会监听Kubernets资源，只要检测到网格发生变化，就会将最新的配置通过gRPC连接推送到Sidecar上。
 
-- 当Pilot停止以后，Pilot和边车代理之间的gRPC连接被关闭，同时边车代理会一直尝试重连。
-- 网络流量不会受到Pilot停止的影响，因为所有的配置被推送过来以后，就会存储在边车代理的内存中。
-- 网格中新的变更信息（例如新的Pod、规则、服务等等）不会继续到达边车代理，因为Pilot不再监听这些变化并转发。
-- 当Pilot重新上线以后，边车代理就会重新建立连接（一直尝试重连）并获取到最新的网格配置。
+- 当Pilot停止以后，Pilot和Sidecar之间的gRPC连接被关闭，同时Sidecar会一直尝试重连。
+- 网络流量不会受到Pilot停止的影响，因为所有的配置被推送过来以后，就会存储在Sidecar的内存中。
+- 网格中新的变更信息（例如新的Pod、规则、服务等等）不会继续到达Sidecar，因为Pilot不再监听这些变化并转发。
+- 当Pilot重新上线以后，Sidecar就会重新建立连接（一直尝试重连）并获取到最新的网格配置。
 
 ## Mixer Policy
 
 Policy执行网络策略。
 
-Mixer在启动时读取配置，并监听Kubernetes的资源变化。当检测到新的配置，Mixer加载至内存中。
+Mixer在启动时读取配置，并监听Kubernetes的资源变化。一旦检测到新的配置，Mixer就会将其加载至内存中。
 
-边车代理在每次请求服务应用时，检查（发起连接）Mixer Policy Pod。
+Sidecar在每次请求服务应用时，检查（发起连接）Mixer Policy Pod。
 
 当Mixer Policy Pod停止以后，所有到服务的请求会失败，并收到 **“503 UNAVAILABLE:no healthy upstream”** 的错误——因为所有边车无法连接到这些Pod。
 在Istio 1.1版本中新增了[global]配置（*policyCheckfailOpen*），允许 *“失败打开”* 策略，也即当Mixer Policy Pod无法响应时，所有的请求会成功，而不是报*503*错误。默认情况下该配置设置为 *false* ，也即 *“失败关闭”* 。
@@ -49,9 +49,9 @@ Mixer在启动时读取配置，并监听Kubernetes的资源变化。当检测�
 
 Telemetry为Istio插件提供遥测信息。
 
-每次请求完成以后，边车代理调用Telemetry Pod，给适配器提供遥测信息（例如Promethues等）。无论是超过批量100次请求，或者时间超过1秒钟（默认配置），就会执行该操作，这是为了避免对Telemetry Pod造成过于频繁的调用。
+Sidecar什么时候调用Telemetry Pod取决于两个因素：批量完成100次请求和请求时间超过1秒钟（默认配置），这两个条件只要有一个先满足就会执行该操作，这是为了避免对Telemetry Pod造成过于频繁的调用。
 
-当Telemetry Pod停止以后，边车代理记录一次失败信息（在Pod标准错误输出里），并丢弃遥测信息。请求不会收到影响，正如Policy Pod停止时一样。当Telemetry Pod重新启动以后，就会继续从边车代理收到遥测信息。
+当Telemetry Pod停止以后，Sidecar记录一次失败信息（在Pod标准错误输出里），并丢弃遥测信息。请求不会受到影响，正如Policy Pod停止时一样。当Telemetry Pod重新启动以后，就会继续从Sidecar收到遥测信息。
 
 ## 其它信息
 
