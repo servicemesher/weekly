@@ -22,6 +22,7 @@ date: 2018-11-19
 在漫画的世界中，最小的超级英雄可以说是Ant-Man。在微服务的世界中，它绝对是Istio，就像Ant-Man一样，Istio小巧，快速，灵活，强大。超人和Kubernetes非常适合解决大问题，但在狭小的空间里它们反而显得很笨拙并且很慢。Ant-Man和Istio则在这些环境中表现出色，事实上，它们正是出于这个原因而设计的（[关注点分离SOC](https://en.wikipedia.org/wiki/Separation_of_concerns)）。
 
 ![](https://s3.amazonaws.com/www.appcelerator.com.images/4_Ant-Man_Lego-190x300.jpg)
+
 *Istio - 微服务部署的小英雄 - 就像Ant-Man（[图像链接](https://lego.fandom.com/wiki/Ant-Man)）*
 
 Istio提供统一方法来管理，保护和监控微服务。我们之前听过这个，对吧？Netflix技术栈提供Eureka（路由），Hystrix（弹性/容错）和Zuul（安全/ API管理）。Kubernetes也解决了许多同样的问题; 那么，令人奇怪的是为什么Istio很重要？
@@ -33,11 +34,13 @@ Istio于2017年5月由Google，IBM和Lyft联合推出。Istio并没有像Kuberne
 Istio基于轻量级的[Sidecar](https://www.appcelerator.com/blog/2018/03/microgateway-blog-series-part-1-traffic-management/)实现管理服务之间的流量。为了在微服务架构中支持Istio，部署Sidecar代理（基于[Envoy](https://www.envoyproxy.io/)）被部署到整个环境中。Sidecars负责拦截服务之间的网络通信。Envoy支持针对自定义协议需求的L3/L4过滤器和针对HTTP/2流量的L7路由。当您部署了所有的Sidecar的时候，就获得了服务网格！
 
 ![](https://s3.amazonaws.com/www.appcelerator.com.images/4_Sidecar.png)
+
 *带有和不带sidecar的微服务架构。使用sidecar=服务网格*
 
 如果仔细观察设计，我们就能发现架构设计的优雅。考虑到Envoy是以“进程外”的方式部署，这意味着它和服务进程相互独立，由此带来了好处。此外，由于它不在服务进程内，因此可以提供治理层，而无需嵌入类库并在服务代码中提供丑陋的注释（如Hystrix）。最后，也是最显而易见的，它解决了跨语言问题。大家可以在任何微服务之前部署Envoy代理，不论服务的原始开发语言：java，javascript，go，比较老的开发语言，甚至COBOL（不开玩笑，如果它运行在容器中，没问题）。作为开发人员，您仅仅需要关注在能为公司赚钱的业务逻辑上，而不是微服务编排的复杂性问题上。
 
 ![](https://s3.amazonaws.com/www.appcelerator.com.images/4_IstioOverview-1024x576.jpg)
+
 *Istio概述（[图像链接](https://istio.io/docs/concepts/what-is-Istio/img/overview/arch.svg)）*
 
 上图描述了Istio技术栈的主要组件。该图可以在逻辑上分为两部分：
@@ -67,11 +70,13 @@ Istio基于轻量级的[Sidecar](https://www.appcelerator.com/blog/2018/03/micro
 我们一直在我们的环境中尝试Istio，看看它到底能为我们提供什么，以及它如何帮助我们将微服务带入生产准备阶段。Istio为我们提供了大量开箱即用的可见性，而团队无需提供服务。另外，请记住，我们使用的一些服务还没有在内部构建，因此Istio允许我们通过捕获和记录入口和出口周围的数据点来“窥探”这些黑盒子。
 
 ![](https://s3.amazonaws.com/www.appcelerator.com.images/4_Grafana-1024x526.jpg)
+
 *Istio Dashboard（使用Grafana Istio附加组件）显示微服务指标（[图像链接](https://istio.io/docs/tasks/telemetry/using-istio-dashboard/)）*
 
 此外，由于Istio控制服务的所有入口和出口流量，因此可以使用[Zipkin](https://github.com/openzipkin)等工具捕获和显示复杂的微服务链路跟踪。
 
 ![](https://s3.amazonaws.com/www.appcelerator.com.images/4_Zipkin-1024x350.png)
+
 *Zipkin跟踪服务之间的调用*
 
 Istio采用[外交官模式](https://docs.microsoft.com/en-us/azure/architecture/patterns/ambassador)，使其易于扩展。Istio可以插入许多不同的指标/遥测或日志系统，也可以用于执行用户自定义策略。从根本上说，您可以添加[现有适配器](https://istio.io/docs/reference/config/policy-and-telemetry/adapters/)或为您想要交互的系统[构建自己的适配器](https://github.com/istio/istio/wiki/Mixer-Using-a-Custom-Adapter)。
@@ -81,6 +86,7 @@ Istio采用[外交官模式](https://docs.microsoft.com/en-us/azure/architecture
 就像即将上映的电影一样，我希望你现在知道微网关和Istio比你想象的要强大得多。
 
 ![](https://s3.amazonaws.com/www.appcelerator.com.images/4_Ant-Man-Large.jpg)
+
 *图片来自《蚁人2：黄蜂女现身》预告片*
 
 有关更多microgateway信息，请阅读本系列中的其他博客：
@@ -91,4 +97,5 @@ Istio采用[外交官模式](https://docs.microsoft.com/en-us/azure/architecture
 
 作者简介：
 
-![David](https://apifriends.com/wp-content/uploads/2018/10/David-McKenna-96x96.jpg) | [大卫麦肯纳](https://apifriends.com/author/dmckenna/) <br>http://www.axway.com <br>David是Axway的SVP工程师，负责指导Axway平台未来架构。 API管理平台的专家，包括API网关，API管理器 和API门户。
+![David](https://apifriends.com/wp-content/uploads/2018/10/David-McKenna-96x96.jpg)
+[大卫麦肯纳](https://apifriends.com/author/dmckenna/) <br>http://www.axway.com <br>David是Axway的SVP工程师，负责指导Axway平台未来架构。 API管理平台的专家，包括API网关，API管理器 和API门户。
