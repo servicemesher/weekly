@@ -2,7 +2,7 @@
 original: https://apifriends.com/microservices/istio-microgateway-blog/
 translator: 博云-杨建宾
 reviewer: 
-title: "Istio-它是一只鸟...？"
+title: "Istio-它是一只鸟？...微网关博客系列（4）"
 description: "本文讲述Istio强大的功能以及Istio组件介绍"
 categories: "译文"
 tags: ["Istio", "Microservices", "Kubernetes", "tracing"]
@@ -15,7 +15,7 @@ date: 2018-11-19
 
 ![first picture](https://apifriends.com/wp-content/uploads/2018/11/Microgateway-Blog-Series-Part-4-Istio-%E2%80%93-Is-it-a-bird.png)
 
-“它是一只鸟，它是一架飞机，它是超级……”“不，等等，它是Istio!即使你眯着眼睛，也能够看出来! ”什么是Istio，超级英雄有各种形状和大小! 今天，在微服务架构中，Kubernetes是超人。它很容易被认出来，它是当今最强大的云（和本地）超级英雄：刀枪不入，飞来飞去，总是随叫随到，安全，值得信赖…
+“它是一只鸟，它是一架飞机，它是超级……”。不，等等，它是Istio！即使你眯着眼睛，也能够看出来！什么是Istio？超级英雄有各种形状和大小! 今天，在微服务架构中，Kubernetes是超人。它很容易被认出来，它是当今最强大的云（和本地）超级英雄：刀枪不入，飞来飞去，总是随叫随到，安全，值得信赖...
 
 正如电影《[蚁人2：黄蜂女现身](https://www.imdb.com/title/tt5095030/)》，我想谈谈微服务架构中最小的超级英雄，被称为Istio！Istio拥有超级英雄的一些最佳品质，混乱必定被遏制，并保卫银河系的正常秩序。
 
@@ -30,7 +30,7 @@ Istio于2017年5月由Google，IBM和Lyft联合推出。Istio并没有像Kuberne
 
 微网关的一个关键作用是降低了开发人员工作的复杂度。开发人员可以专注于重要的业务逻辑，而不用担心他或者她的服务如何处理常见的网络功能，如路由和负载均衡；弹性功能，如重试或者超时；安全功能，如身份验证，授权和服务级别的监控和跟踪。
 
-Istio基于轻量级的[边车](https://www.appcelerator.com/blog/2018/03/microgateway-blog-series-part-1-traffic-management/)实现管理服务之间的流量。为了在微服务架构中支持Istio，部署sidecar代理（基于[Envoy](https://www.envoyproxy.io/)）被部署到整个环境中。Sidecars负责拦截服务之间的网络通信。Envoy支持针对自定义协议需求的L3/L4过滤器和针对HTTP/2流量的L7路由。当您部署了所有的sidecar的时候，就获得了服务网格！
+Istio基于轻量级的[Sidecar](https://www.appcelerator.com/blog/2018/03/microgateway-blog-series-part-1-traffic-management/)实现管理服务之间的流量。为了在微服务架构中支持Istio，部署Sidecar代理（基于[Envoy](https://www.envoyproxy.io/)）被部署到整个环境中。Sidecars负责拦截服务之间的网络通信。Envoy支持针对自定义协议需求的L3/L4过滤器和针对HTTP/2流量的L7路由。当您部署了所有的Sidecar的时候，就获得了服务网格！
 
 ![](https://s3.amazonaws.com/www.appcelerator.com.images/4_Sidecar.png)
 *带有和不带sidecar的微服务架构。使用sidecar=服务网格*
@@ -92,4 +92,3 @@ Istio采用[外交官模式](https://docs.microsoft.com/en-us/azure/architecture
 作者简介：
 
 ![David](https://apifriends.com/wp-content/uploads/2018/10/David-McKenna-96x96.jpg) | [大卫麦肯纳](https://apifriends.com/author/dmckenna/) <br>http://www.axway.com <br>David是Axway的SVP工程师，负责指导Axway平台未来架构。 API管理平台的专家，包括API网关，API管理器 和API门户。
---------|--------
