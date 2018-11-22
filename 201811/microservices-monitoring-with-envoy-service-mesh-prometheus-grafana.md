@@ -1,15 +1,13 @@
-```
 ---
 original: https://medium.com/@dnivra26/microservices-monitoring-with-envoy-service-mesh-prometheus-grafana-a1c26a8595fc
 translator: moeyui1
 reviewer: rootsongjc
 title: "Envoy service mesh、Prometheus和Grafana下的微服务监控"
 description: "本文介绍了Envoy service mesh下结合Prometheus和Grafana实现的微服务监控方案"
-categories: "译文"
+categories: "translation"
 tags: ["Envoy","Service Mesh","监控","prometheus","grafana"]
 date: 2018-11-05
 ---
-```
 
 # Envoy service mesh、Prometheus和Grafana下的微服务监控
 
