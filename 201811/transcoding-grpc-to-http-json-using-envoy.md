@@ -4,7 +4,7 @@ translator: malphi
 reviewer: rootsongjc
 title: "使用Envoy转码gRPC到HTTP/JSON"
 description: "本文用实例讲解了如何利用Envoy将gRPC转码为HTTP/JSON"
-categories: "译文"
+categories: "translation"
 tags: ["Envoy"]
 date: 2018-11-19
 ---
@@ -24,7 +24,7 @@ date: 2018-11-19
 
 ## **创建一个gRPC服务：ReservationService**
 
-让我们创建一个简单的gRPC服务作为示例。在gRPC中，定义包含远程过程调用(rpc)的类型和服务。你可以随意设计自己的服务，但是谷歌建议使用面向资源的设计（源代码：[cloud.google.com/apis/design/resources](https://cloud.google.com/apis/design/resources)），因为用户无需知道每个方法是做什么的就可以容易地理解API。如果你创建了许多不固定格式的rpc，用户必须理解每种方法的作用，从而使你的API更难学习。面向资源的设计还可以更好地转换为HTTP/JSON API。
+让我们创建一个简单的gRPC服务作为示例。在gRPC中，定义包含远程过程调用（rpc）的类型和服务。你可以随意设计自己的服务，但是谷歌建议使用面向资源的设计（源代码：[cloud.google.com/apis/design/resources](https://cloud.google.com/apis/design/resources)），因为用户无需知道每个方法是做什么的就可以容易地理解API。如果你创建了许多不固定格式的rpc，用户必须理解每种方法的作用，从而使你的API更难学习。面向资源的设计还可以更好地转换为HTTP/JSON API。
 
 在本例中，我们将创建一个会议预订服务。该服务称为ReservationService，由创建、获取、获取列表和删除预订4个操作组成。服务定义如下：
 
