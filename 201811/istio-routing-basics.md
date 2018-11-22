@@ -1,4 +1,3 @@
-```raw
 ---
 original: https://medium.com/google-cloud/istio-routing-basics-14feab3c040e
 translator: featen
@@ -9,7 +8,6 @@ categories: "译文"
 tags: ["Istio","Istio Routing","Istio Gateway","Istio VirtualService","Istio DestinationRule"]
 date: 2018-11-15
 ---
-```
 
 #Istio路由基础
 
