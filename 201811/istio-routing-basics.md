@@ -19,19 +19,13 @@ date: 2018-11-15
 
 这些大致是创建Istio“HelloWorld”应用程序的步骤：
 
-1.     创建一个Kubernetes集群并安装带有自动sidecar注入的Istio。
-
-2.     使用您选择的语言创建一个HelloWorld应用程序，基于这个程序创建一个Docker镜像并将其推送到公共图像存储库。
-
-3.     为容器创建Kubernetes  Deployment和Service。
-
-4.     创建[Gateway](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#Gateway)以启用到群集的HTTP（S）流量。
-
-5.     创建[VirtualService](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#VirtualService)以通过Gateway公开Kubernetes服务。
-
-6.     （可选）如果要创建应用程序的多个版本，请创建[DestinationRule](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule)以定义可从VirtualService引用的子集。
-
-7.     （可选）如果要从服务网格调用外部服务，请创建[ServiceEntry](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#ServiceEntry)。
+1. 创建一个Kubernetes集群并安装带有自动sidecar注入的Istio。
+2. 使用您选择的语言创建一个HelloWorld应用程序，基于这个程序创建一个Docker镜像并将其推送到公共图像存储库。
+3. 为容器创建Kubernetes  Deployment和Service。
+4. 创建[Gateway](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#Gateway)以启用到群集的HTTP（S）流量。
+5. 创建[VirtualService](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#VirtualService)以通过Gateway公开Kubernetes服务。
+6. （可选）如果要创建应用程序的多个版本，请创建[DestinationRule](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule)以定义可从VirtualService引用的子集。
+7. （可选）如果要从服务网格调用外部服务，请创建[ServiceEntry](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#ServiceEntry)。
 
 我不会在本文中介绍步骤1和2，因为它们不是Istio特有的。 如果您需要有关这些步骤的帮助，可以查看我在本文末尾提到的codelabs。 第3步也不是Istio特定的，但它是其他一切的先决条件，所以我们从那开始。
 
