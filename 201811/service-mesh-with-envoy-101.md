@@ -1,10 +1,11 @@
 ---
 original: https://medium.com/@dnivra26/service-mesh-with-envoy-101-e6b2131ee30b
-translator: zhanye
-reviewer:  
+translator: heisenbergye
+reviewer: rootsongjc
+author: Arvind Thangamani
 title: "使用 Envoy 搭建 Service Mesh"
-description: "使用速率限制服务来减轻客户端对 API 资源的消耗"
-categories: "译文"
+description: "本文将简单的讨论下我们经常听到的 Service Mesh 是什么，以及如何使用 Envoy 构建服务网格(Service Mesh),使用速率限制服务来减轻客户端对 API 资源的消耗。"
+categories: "translation"
 tags: ["Docker","Microservices","Kubernetes","Observability","Architecture"]
 date: 2018-11-16
 ---
@@ -16,7 +17,7 @@ Service Mesh 可以比作是微服务结构中的通信层。每个服务之间�
 
 ![](http://ww1.sinaimg.cn/large/7267315bgy1fx9svk4k4kj20dd059wef.jpg)
 
-当你在谈论 “Service Mesh” 的时候，你肯定也会听到 “Sidecar” 这个词，一个 “SideCar” 就是用于每个服务实例中的代理，每个 “SideCar” 负责一个服务中的一个实例。
+当你在谈论 “Service Mesh” 的时候，你肯定也会听到 “Sidecar” 这个词，“SideCar” 就是用于每个服务实例中的代理，每个 “SideCar” 负责一个服务中的一个实例。
 
 ![](http://ww1.sinaimg.cn/large/7267315bgy1fx9td4xqnjj20hd0csthg.jpg)
 
@@ -41,7 +42,7 @@ Envoy 是一个用 C++ 编写的高性能代理。绝不是一定要使用 Envoy
 “Front Envoy” 是边界代理即前端代理，常常会用它来做 TLS 终止，认证，生成请求头部，等……
 
 我们先一起来看下“Front Envoy”的配置。
-```
+```yaml
 ---
 admin:
   access_log_path: "/tmp/admin_access.log"
@@ -94,16 +95,20 @@ static_resources:
 
 Envoy 的配置主要包括：
 1. 侦听器 Listeners
+
 2. 路由 Routes
+
 3. 集群 Clusters
+
 4. 端点 Endpoints
+
 我们逐个来看。
 
 ### 侦听器（Listeners）
-一个 Envoy 实例中可以运行一个或多个侦听器。第9-36行，配置了"http_listener"的地址和端口，每个侦听器也可以有一个或多个网络过滤器（filter）。这些过滤器可以实现路由、TLS终止、流量迁移等…… 我们这里用到的过滤器 “envoy.http_connection_manager” 是内嵌的过滤器之一，Envoy 还有其他几种[过滤器](https://www.envoyproxy.io/docs/envoy/latest/configuration/network_filters/network_filters#config-network-filters)
+Envoy 实例中可以运行一个或多个侦听器。第9-36行，配置了"http_listener"的地址和端口，每个侦听器也可以有一个或多个网络过滤器（filter）。这些过滤器可以实现路由、TLS终止、流量迁移等…… 我们这里用到的过滤器 “envoy.http_connection_manager” 是内嵌的过滤器之一，Envoy 还有其他几种[过滤器](https://www.envoyproxy.io/docs/envoy/latest/configuration/network_filters/network_filters#config-network-filters)。
 
 ### 路由（Routes）
-第22-34行，为 filter 配置路由规范 "local_route"，申明应该从哪些域接受请求和一个用来与每个请求匹配的路由匹配器，并将请求发送到适当的集群。
+第22-34行，为 filter 配置路由规范 "local_route”，声明应该从哪些域接受请求和一个用来与每个请求匹配的路由匹配器，并将请求发送到适当的集群。
 
 ### 集群（Clusters）
 Clusters 是 Envoy 将流量路由到上游服务的规范。
@@ -119,7 +124,7 @@ Clusters 是 Envoy 将流量路由到上游服务的规范。
 
 如果你注意到第48行，正如我们讨论的，我们不是直接访问 “Service A” ，而是和 “Service A” 中的其中一个实例的 Envoy 代理通信，再把流量路由给本地的实例。
 
-你也可以申明服务名称，如 “Service A”，它将返回服务的所有实例 ，类似Kubernetes中的Headless Service
+你也可以声明服务名称，如 “Service A”，它将返回服务的所有实例 ，类似Kubernetes中的Headless Service。
 
 这里我们使用的是客户端的负载均衡。Envoy 会缓存 “Service A” 所有的 “hosts”，每隔5秒钟刷新一次实例列表。
 
@@ -135,7 +140,7 @@ Envoy 支持主动和被动的负载均衡。如果想启用健康检查功能�
 ### Service A
 以下是 “Service A” 的 Envoy 配置。
 
-```
+```yaml
 admin:
   access_log_path: "/tmp/admin_access.log"
   address: 
@@ -144,7 +149,6 @@ admin:
       port_value: 9901
 static_resources:
   listeners:
-
     -
       name: "service-a-svc-http-listener"
       address:
@@ -278,7 +282,7 @@ static_resources:
 
 服务B 和服务C 都是叶子节点，除了本地主机的服务实例外，不需要和其他上游服务通信。所以配置相对简单些。
 
-```
+```yaml
 admin:
   access_log_path: "/tmp/admin_access.log"
   address: 
@@ -337,7 +341,7 @@ static_resources:
 到此我们完成了所有的配置，我们可以将其部署到 Kubernetes 上或者使用 docker-compose 进行测试。
 
 docker-compose.yaml配置如下：
-```
+```yaml
 version: '3'
 services:
   front-envoy:
@@ -397,8 +401,7 @@ services:
 
 正如我们前面提到的，我们完全可以不用手动配置和加载所有组件，Clusters(CDS), Endpoints(EDS), Listeners(LDS) 和 Routes(RDS) 使用同一个 api server。所以每个 SideCar 都要和 api server 通信以获取配置，并且当一个新的配置在 api server 更新后，它会自动更新到 Envoy 实例中，避免了重启实例。
 
-更多关于[动态配置](https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/v2_overview#dynamic)的内容
-这里还有一个 [xDS 服务器示例](https://github.com/tak2siva/Envoy-Pilot) 
+更多关于[动态配置](https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/v2_overview#dynamic)的内容，这里还有一个 [xDS 服务器示例](https://github.com/tak2siva/Envoy-Pilot) 。
 
 ### Kubernetes
 本节我们可以看到，如果我们把前面的服务配置都部署在 Kubernetes 上，其整个结构如下所示：
@@ -412,7 +415,7 @@ services:
 ### Pod
 通常Pod规范只在一个 Pod 中定义一个容器。但是根据定义，Pod 中可以容纳一个或多个容器。因为我们想要为每个服务实例旁运行一个 SideCar 代理，我们要将 Envoy 容器添加到每个 Pod。所以为了和外界通信，服务容器将通过 localhost 与 Envoy 容器通信。以下是 deployment 文件示例：
 
-```
+```yaml
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
@@ -459,7 +462,7 @@ spec:
 ### Service
 Kubernetes 的 services 负载维护可以路由流量到达的Pod端点的列表。而且通常 kube-proxy 作为这些 pod 端点的负载均衡。但在我们的示例中，我们做的是客户端的负载均衡，所以我们不想使用 kube-proxy 来做负载均衡，我们想获取 Pod 端点列表并自己做负载均衡。因此我们使用headless Service，只用来返回端点列表。
 
-```
+```yaml
 kind: Service
 apiVersion: v1
 metadata:
@@ -482,4 +485,4 @@ spec:
 
 本文是《[使用Envoy实现分布式追踪](https://hackernoon.com/distributed-tracing-with-envoy-service-mesh-jaeger-c365b6191592)》和《[使用Envoy、Prometheus和Grafana监控](https://hackernoon.com/microservices-monitoring-with-envoy-service-mesh-prometheus-grafana-a1c26a8595fc)》这两篇文章的阅读基础，如果有兴趣的话可以都读一下。
 
-本文所有的[配置和代码](https://github.com/dnivra26/envoy_servicemesh)
+查看本文所有的[配置和代码](https://github.com/dnivra26/envoy_servicemesh)。
