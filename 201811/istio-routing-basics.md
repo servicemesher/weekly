@@ -9,9 +9,9 @@ tags: ["Istio","Istio Routing","Istio Gateway","Istio VirtualService","Istio Des
 date: 2018-11-15
 ---
 
-#Istio路由基础
+# Istio路由基础
 
- 当学习像[Istio](istio.io)这样的新技术时，我推荐看一看项目自带的示例。Istio包含了一些[示例程序](https://github.com/istio/istio/tree/master/samples)，但都有各种各样的不足。比如说[BookInfo](https://github.com/istio/istio/tree/master/samples/bookinfo)就是很好的一个应用。但是对我来说，它太冗长，服务太多，而且文档似乎专注于管理BookInfo应用程序，而不是从头构建。另外还有一个小一点的示例-[helleworld](https://github.com/istio/istio/tree/master/samples/helloworld)，但是它仅关注于自动伸缩。
+当学习像[Istio](istio.io)这样的新技术时，我推荐看一看项目自带的示例。Istio包含了一些[示例程序](https://github.com/istio/istio/tree/master/samples)，但都有各种各样的不足。比如说[BookInfo](https://github.com/istio/istio/tree/master/samples/bookinfo)就是很好的一个应用。但是对我来说，它太冗长，服务太多，而且文档似乎专注于管理BookInfo应用程序，而不是从头构建。另外还有一个小一点的示例-[helleworld](https://github.com/istio/istio/tree/master/samples/helloworld)，但是它仅关注于自动伸缩。
 
 在这篇文章中，我想从基础讲起，并向您展示如何从头开始构建支持Istio的“HelloWorld”应用程序。要记住的一点是，Istio只管理您应用的流量，应用程序生命周期由底层平台Kubernetes管理。因此，您需要了解容器和Kubernetes基础知识，并且需要了解Istio 路由原语，例如Gateway，VirtualService，DestinationRule。我假设大多数人都知道容器和Kubernetes基础知识。我将在本文中专注于介绍Istio 路由。
 
@@ -19,23 +19,23 @@ date: 2018-11-15
 
 这些大致是创建Istio“HelloWorld”应用程序的步骤：
 
-\1.     创建一个Kubernetes集群并安装带有自动sidecar注入的Istio。
+1.     创建一个Kubernetes集群并安装带有自动sidecar注入的Istio。
 
-\2.     使用您选择的语言创建一个HelloWorld应用程序，基于这个程序创建一个Docker镜像并将其推送到公共图像存储库。
+2.     使用您选择的语言创建一个HelloWorld应用程序，基于这个程序创建一个Docker镜像并将其推送到公共图像存储库。
 
-\3.     为容器创建Kubernetes  Deployment和Service。
+3.     为容器创建Kubernetes  Deployment和Service。
 
-\4.     创建[Gateway](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#Gateway)以启用到群集的HTTP（S）流量。
+4.     创建[Gateway](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#Gateway)以启用到群集的HTTP（S）流量。
 
-\5.     创建[VirtualService](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#VirtualService)以通过Gateway公开Kubernetes服务。
+5.     创建[VirtualService](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#VirtualService)以通过Gateway公开Kubernetes服务。
 
-\6.     （可选）如果要创建应用程序的多个版本，请创建[DestinationRule](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule)以定义可从VirtualService引用的子集。
+6.     （可选）如果要创建应用程序的多个版本，请创建[DestinationRule](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule)以定义可从VirtualService引用的子集。
 
-\7.     （可选）如果要从服务网格调用外部服务，请创建[ServiceEntry](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#ServiceEntry)。
+7.     （可选）如果要从服务网格调用外部服务，请创建[ServiceEntry](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#ServiceEntry)。
 
 我不会在本文中介绍步骤1和2，因为它们不是Istio特有的。 如果您需要有关这些步骤的帮助，可以查看我在本文末尾提到的codelabs。 第3步也不是Istio特定的，但它是其他一切的先决条件，所以我们从那开始。
 
-##Deployment和Service
+## Deployment和Service
 
 正如我所提到的，应用程序生命周期由Kubernetes管理。 因此，您需要从创建Kubernetes Deployment和Service开始。我有一个容器化的ASP.NET核心应用程序，容器镜像我已经推送到谷歌容器注册表。 让我们从创建一个aspnetcore.yaml文件开始：
 
@@ -86,7 +86,7 @@ deployment.extensions "aspnetcore-v1" created
 
 到现在为止还没有专门讲到Istio。 
 
-##Gateway
+## Gateway
 
 我们现在可以回到Istio路由了。首先，我们需要为服务网格启用HTTP / HTTPS流量。 为此，我们需要创建一个[Gateway](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#Gateway)。 Gateway描述了在网络边缘运行的负载均衡器，用于接收传入或传出的HTTP / TCP连接。
 
@@ -120,7 +120,7 @@ gateway.networking.istio.io "aspnetcore-gateway" created
 
 我们已经为集群启用了HTTP流量。 我们需要将之前创建的Kubernetes服务映射到Gateway。 我们将使用VirtualService执行此操作。
 
-##VirtualService
+## VirtualService
 
 [VirtualService](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#VirtualService)实际上将Kubernetes服务连接到Istio网关。 它还可以执行更多操作，例如定义一组流量路由规则，以便在主机被寻址时应用，但我们不会深入介绍这些细节。
 
@@ -171,7 +171,7 @@ istio-ingressgateway   LoadBalancer   10.31.247.41   35.240.XX.XXX
 
 
 
-##DestinationRule
+## DestinationRule
 
 在某些时候，您希望将应用更新为新版本。 也许你想分割两个版本之间的流量。 您需要创建一个[DestinationRule](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule)来定义那些版本，在Istio中称为子集。
 
@@ -315,7 +315,7 @@ virtualservice.networking.istio.io "aspnetcore-virtualservice" configured
 
 
 
-##ServiceEntry
+## ServiceEntry
 
 最后我大概提一下[ServiceEntry](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#ServiceEntry). 所有外部流量在Istio中都是默认被阻断了的，如果你需要启用外部流量就需要创建一个ServiceEntry来列出所有的已经启用外部流量的协议和主机。你可以从[这里](https://istio.io/docs/reference/config/istio.networking.v1alpha3/#ServiceEntry)了解更多信息，我在这篇文章中就不多做阐述了。 
 
