@@ -1,7 +1,7 @@
 ---
 original: https://solace.com/blog/event-mesh
 translator: kelvinji2009
-reviewer:
+reviewer: ["王凯"]
 title: "当Service Mesh遇见Event Mesh: Event-Driven型企业新的架构层"
 description: "本文主要介绍了 Event Mesh 是什么，Event-Driven 型企业为什么需要 Event Mesh 层。"
 categories: "译文"
