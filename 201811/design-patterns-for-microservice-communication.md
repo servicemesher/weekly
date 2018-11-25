@@ -2,22 +2,24 @@
 original: https://blog.jdriven.com/2018/11/transcoding-grpc-to-http-json-using-envoy/
 translator: malphi
 reviewer: rootsongjc
-title: "使用Envoy转码gRPC到HTTP/JSON"
+title: "微服务通信的设计模式"
 description: "本文用实例讲解了如何利用Envoy将gRPC转码为HTTP/JSON"
 categories: "translation"
 tags: ["Envoy"]
 date: 2018-11-19
 ---
 
-# Design Patterns for Microservice-To-Microservice Communication
-
-### Let's learn about design patterns for synchronous and asynchronous communication between microservices.
+# 微服务通信的设计模式
 
 In my last blog, I talked about [Design Patterns for Microservices](https://dzone.com/articles/design-patterns-for-microservices). Now, I want to deep more deeply into the most important pattern in microservice architecture: inter-communication between microservices. I still remember when we used to develop monolithic applications; communication used be a tough task. In that world, we had to carefully design relationships between database tables and map with object models. Now, in the microservice world, we have broken them down into separate services, and that creates a mesh around them to communicate with each other. Let's talk about all the communication styles and patterns that have evolved so far to resolve this.
 
 Many architects have divided inter-communication between microservices into synchronous and asynchronous interaction. Let's take these one by one.
 
-## Synchronous
+在我的上一篇博客中，我谈到了[微服务的设计模式](https://dzone.com/articles/design-patterns-for-microservices)。现在，我想更深入地探讨微服务体系结构中最重要的模式:微服务之间的相互通信。我仍然记得我们过去开发单一应用程序的时候;通讯是一项艰巨的任务。在那个世界中，我们必须小心的设计数据库表和对象模型映射之间的关系。现在，在微服务世界中，我们已经将它们分解为独立的服务，并在它们周围创建了网格来彼此通信。让我们来谈谈迄今为止为解决这个问题而发展起来的所有沟通方式和模式。
+
+许多架构师已经将微服务之间的通信划分为同步和异步通讯。让我们一个一个来介绍。
+
+## 同步
 
 When we say synchronous, it means the client makes a request to the server and waits for its response. The thread will be blocked until it receives communication back. The most relevant protocol to implement synchronous communication is HTTP. HTTP can be implemented by REST or SOAP. Recently, REST has been picking up rapidly for microservices and winning over SOAP. For me, both are good to use.
 
