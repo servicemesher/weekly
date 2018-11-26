@@ -9,6 +9,8 @@ tags: ["Envoy","服务网格","Service Mesh","Metric"]
 date: 2018-11-02
 ---
 
+# 使用 Istio，Envoy 实践服务网格 GRPC 度量
+
 在这个令人惊奇的时代，我们可以不需要编写一行代码，便可以很智能的集成应用程序，收集应用程序指标。
 
 在这篇文章中，我将演示使用 helm 安装 Istio mtls 环境、必要的 yamls 配置以及安装 Istio 带来的其他收获。另外，在文章最后，我还会展示路由配置的一些例子。
@@ -23,17 +25,17 @@ date: 2018-11-02
 
 通过我们的设置，所有的容器会连同一个 istio-proxy 一起创建并部署到 istio-injected 的命名空间中。应用程序将与 istio-proxy (envoy) 进行通信，然后后者将处理所有的链接、mtls 以及其他应用程序的负载均衡。
 
-# **安装以及配置**
+## **安装以及配置**
 
 开始步骤，下载并解压 istio-1.0.0 安装包
 
-```
+```bash
 wget https://github.com/istio/istio/archive/1.0.0.zip\ && unzip 1.0.0.zip
 ```
 
 修改 istio 目录下的 values.yaml 文件，修改环境需要的设置
 
-```
+```bash
 istio-1.0.0/install/kubernetes/helm/istio/values.yaml
 ```
 
@@ -44,26 +46,26 @@ istio-1.0.0/install/kubernetes/helm/istio/values.yaml
 
 首先，如果使用 2.10.0 之前的 Helm 版本，可以通过 kubectl apply 安装 Istio 的[自定义资源](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions)；如果不是这类版本，请跳过此步。
 
-```
+```bash
 kubectl apply -f istio-1.0.0/install/kubernetes/helm/istio/templates/crds.yaml
 kubectl apply -f istio-1.0.0/install/kubernetes/helm/istio/charts/certmanager/templates/crds.yaml
 ```
 
 安装 Istio (**请使用我们调整过的 values.yaml 文件**)
 
-```
+```bash
 helm install istio-1.0.0/install/kubernetes/helm/istio --name istio --namespace istio-system
 ```
 
 检查你的 istio-system 命名空间，并查看 pods 是否可以展示出来！同时为你的应用程序创建一个命名空间：
 
-```
+```bash
 kubectl create namespace istio-apps
 ```
 
 现在可以为它加上标签，让 Istio 知道在哪里注入 istio-proxies。
 
-```
+```bash
 kubectl label namespace istio-apps istio-injection=enabled
 ```
 
@@ -80,7 +82,7 @@ kubectl label namespace istio-apps istio-injection=enabled
 
 本教程中，我们可以使用下面的 yaml 文件（也可以指定 ips）访问网格中的所有主机：
 
-```
+```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
@@ -105,7 +107,7 @@ spec:
 
 使用下面的 yaml 配置映射你的域名到 istio-ingressgateway，教程中我们使用 *.yourdomain。在生产环境中需要一个个的映射你的主机（这步操作需要花费一些时间才能生效）：
 
-```
+```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -133,7 +135,7 @@ spec:
 
 现在可以准备测试我们的环境了。我已经使用 http(8080)/grpc(8333) 创建了一个应用程序，在测试环境调用第二个应用程序。同时创建了一个部署服务的文件来启动测试。请复制下面的 yaml 文件并应用到你的环境中：
 
-```
+```yaml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -211,13 +213,13 @@ spec:
     name: applicationtwo
 ```
 
-```
+```bash
 use kubectl apply -f applications.yaml -n istio-apps
 ```
 
 现在，我们将创建我们的虚拟服务来映射到我们的应用程序，已便 istio-ingressgateway 可以将流量路由到我们的应用程序中（**修改配置中的 application.yourdomain 修改为你的域名**）
 
-```
+```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -255,7 +257,7 @@ spec:
 
 虚拟服务将主机映射到任何你想匹配的服务上，在示例中，第一条规则是匹配到服务 http 健康端点，如果匹配失败将跳转到 grpc 服务端口上。在重试的部分可以帮助我们知道网络是否有干扰或有不健康的 Pods。你可以添加更多你需要的匹配项，通过这些规则可以将任何形式的请求匹配到主机上：
 
-```
+```yaml
  - match:
      - uri:
          regex: ".+"
@@ -263,7 +265,7 @@ spec:
 
 你可以尝试一下方式访问 /health 端点：
 
-```
+```bash
 curl --request GET \
   --url http://application.yourdomain/health
 ```
@@ -272,7 +274,7 @@ curl --request GET \
 
 请尝试如下方式：
 
-```
+```bash
 curl --request GET \
   --url http://application.yourdomain/health \
   --header 'propagate: yes'
@@ -284,7 +286,7 @@ Istio 也可以使用同样的规则映射 grpc 请求。复制应用程序仓�
 
 [https://github.com/Stocco/istioapplications](https://github.com/Stocco/istioapplications)
 
-# **网格的可视化度量**
+## **网格的可视化度量**
 
 有很多方法来可视化网格中的内容，我将在本节中列举几种。
 
@@ -293,17 +295,17 @@ Istio 也可以使用同样的规则映射 grpc 请求。复制应用程序仓�
 检查应用程序处理健康功能的示例：
 [https://github.com/Stocco/istioapplications/blob/a3c3275a63a0667f870d054ea5940284b8a100af/main.go#L72](https://github.com/Stocco/istioapplications/blob/a3c3275a63a0667f870d054ea5940284b8a100af/main.go#L72)
 
-# **Kiali**
+## **Kiali**
 
 **Kiali** 可以帮助我们了解实时发生的事情。将 kiali 端口暴露到本地，这样就可以查看应用程序：
 
-```
+```bash
 kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=kiali -o jsonpath='{.items[0].metadata.name}') 20001:20001
 ```
 
 点击链接并使用 admin(username)/admin(password) 登录：
 
-```
+```bash
 http://localhost:20001/console/service-graph/istio-apps?layout=cose-bilkent&duration=10800&edges=responseTime95thPercentile&graphType=versionedApp
 ```
 
@@ -313,13 +315,13 @@ http://localhost:20001/console/service-graph/istio-apps?layout=cose-bilkent&dura
 
 这样就成功了，Kiali 还有很多工具有待挖掘。
 
-# **Jaeger**
+## **Jaeger**
 
 Jaeger 是一个功能强大的监控工具，可以用来监听请求到执行情况以及请求在每个部分中执行的时长。但是，你需要注意的是，如果你需要使用它更多的潜在功能，你需要适当的调整你的代码来传播 Istio injected 的头。如果你需要了解更多关于请求的信息，你需要使用一些工具（例如：opentracing）来获取应用程序内部功能调用的度量数据。
 
 暴露 jaeger 端口和访问权限 [http://localhost:16686](http://localhost:16686)
 
-```
+```bash
 kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 16686:16686
 ```
 
@@ -331,13 +333,13 @@ kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=ja
 
 如果在应用程序中安装了 opentracing 并在每个功能调用的地方都使用到了，则会有更好的体验。
 
-# **更多的度量工具**
+## **更多的度量工具**
 
 现在有3个应用程序通过 values.yaml 已经安装好了，并使用 Istio 收集了需要度量的数据。尝试使用 grafana，prometheus和servicegraph 检查应用。
 
 使用一下命令暴露应用程序：
 
-```
+```bash
 kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=prometheus -o jsonpath='{.items[0].metadata.name}') 9090:9090
 
 kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=grafana -o jsonpath='{.items[0].metadata.name}') 3000:3000 &
@@ -349,11 +351,11 @@ kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=se
     http://localhost:8088/force/forcegraph.html?time_horizon=3000s&filter_empty=true
 ```
 
-# **智能路由**
+## **智能路由**
 
 如果你可以管理应用程序的版本？Istio 可以为 virtualservice.yaml 提供微小的修改。让我们来调整我们的虚拟服务（**修改 application.yourdomain 为你的应用程序名**）
 
-```
+```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -400,7 +402,7 @@ spec:
 
 规则遵循优先顺序。现在可以使用前一章节中给的 curl 命令，并将头放到第一条规则中：
 
-```
+```bash
 curl --request GET \
   --url http://application.pismolabs.io/health \
   --header 'myself: yourself'
@@ -414,7 +416,7 @@ curl --request GET \
 
 尝试为你的域名创建服务条目和目标规则，并查看你的非 ssl 应用程序对外部 grpc 服务进行了加密的调用！
 
-```
+```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
@@ -445,11 +447,11 @@ spec:
 
 有很多的服务条目和目标规则选项，你可以将他们结合起来为应用程序创建更丰富的环境。你可以通过下面的地址查看更多的信息。
 
-```
+```bash
 https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule
 ```
 
-# **我们只是初出茅庐**
+## **我们只是初出茅庐**
 
 祝贺你，你已经获得了第一个 Istio 环境应用程序。现在，可以尝试将我的 deployment.yaml 替换成你自己的应用程序并查看它在 Istio 中的运行情况。
 
