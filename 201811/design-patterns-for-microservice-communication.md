@@ -11,65 +11,59 @@ date: 2018-11-19
 
 # 微服务通信的设计模式
 
-In my last blog, I talked about [Design Patterns for Microservices](https://dzone.com/articles/design-patterns-for-microservices). Now, I want to deep more deeply into the most important pattern in microservice architecture: inter-communication between microservices. I still remember when we used to develop monolithic applications; communication used be a tough task. In that world, we had to carefully design relationships between database tables and map with object models. Now, in the microservice world, we have broken them down into separate services, and that creates a mesh around them to communicate with each other. Let's talk about all the communication styles and patterns that have evolved so far to resolve this.
-
-Many architects have divided inter-communication between microservices into synchronous and asynchronous interaction. Let's take these one by one.
-
 在我的上一篇博客中，我谈到了[微服务的设计模式](https://dzone.com/articles/design-patterns-for-microservices)。现在，我想更深入地探讨微服务体系结构中最重要的模式:微服务之间的相互通信。我仍然记得我们过去开发单一应用程序的时候;通讯是一项艰巨的任务。在那个世界中，我们必须小心的设计数据库表和对象模型映射之间的关系。现在，在微服务世界中，我们已经将它们分解为独立的服务，并在它们周围创建了网格来彼此通信。让我们来谈谈迄今为止为解决这个问题而发展起来的所有沟通方式和模式。
 
 许多架构师已经将微服务之间的通信划分为同步和异步通讯。让我们一个一个来介绍。
 
 ## 同步
 
-When we say synchronous, it means the client makes a request to the server and waits for its response. The thread will be blocked until it receives communication back. The most relevant protocol to implement synchronous communication is HTTP. HTTP can be implemented by REST or SOAP. Recently, REST has been picking up rapidly for microservices and winning over SOAP. For me, both are good to use.
+当我们说同步时，它意味着客户机向服务器发出请求并等待其响应。线程将被阻塞，直到它接收到通信返回。实现同步通信最相关的协议是HTTP。HTTP可以通过REST或SOAP实现。最近，REST在微服务方面发展迅速，并赢得了SOAP的支持。对我来说，两者都很好用。
 
-Now let's talk about different flows/use cases in the synchronous style, the issues we face, and how to resolve them.
+现在让我们讨论同步中的不同流/用例、我们面临的问题以及如何解决它们。
 
-1. Let's start with a simple one. You need a Service A calling Service B and waiting for a response for live data. This is a good candidate to implement the synchronous style as there are not many downstream services involved. You would not need to implement any complex design pattern for this use case except load balancing, if using multiple instances.
-2. ![Image title](https://dzone.com/storage/temp/10662645-synflow1.png)
+1. 让我们从一个简单的例子开始。您需要一个服务A调用服务B并等待对在线数据的响应。这是实现同步的一个很好的候选，因为不涉及很多下游服务。如果使用多个实例，除了负载平衡之外，您不需要为这个用例实现任何复杂的设计模式。
+2. ![sync flow](https://ws2.sinaimg.cn/large/006tNbRwly1fxlg5e91x1j30fc04yt8l.jpg)
+3. 现在，让我们把它变得更复杂一点。服务A为实时数据调用多个下游服务，如服务B、服务C和服务D。
 
-3. Now, let's make it little more complicated. Service A is making calls to multiple downstream services like Service B, Service C, and Service D for live data.
+- 服务B、服务C和服务D都必须按顺序调用——当服务相互依赖以检索数据或功能通过这些服务执行一系列事件时，就会出现这种场景。
+- 服务B、服务C和服务D可以并行调用——这种场景将在服务彼此独立或服务A可能扮演协调者角色时使用。
+- ![sync flow2](https://ws1.sinaimg.cn/large/006tNbRwly1fxlgbk5vfbj30g609rwei.jpg)
 
-- Service B, Service C, and Service D all have to be called *sequentially* — this kind of scenario will be there when services are dependent on each other to retrieve data or the functionality has a sequence of events to be executed through these services.
-- Service B, Service C, and Service D can be called in *parallel* — this kind of scenario will be used when services are independent of each other or Service A may be doing an Orchestrator role.
+这个场景在进行通信时带来了复杂性。让我们一个一个地讨论。
 
-![Image title](https://dzone.com/storage/temp/10662680-synflow2.png)
+### **紧密耦合**
 
-This scenario brings the complexity while doing the communication. Let's discuss them one by one.
+服务A将与每个服务B、C和D紧密耦合。它必须知道每个服务的端点（endpoint）和凭据（credentials）。
 
-### **Tight Coupling**
+**解决方案：** [服务发现模式](https://www.rajeshbhojwani.co.in/2018/11/design-patterns-for-microservices.html) 就是用来解决这类问题的。它通过提供查找功能来帮助分离消费者和生产者应用。服务B、C和D可以将它们自己注册为服务。服务发现可以在服务器端实现，也可以在客户端实现。对于服务器端，我们有AWS ALB和NGINX工具，它们接受来自客户机的请求、发现服务并将请求路由到指定位置。
 
-Service A will have tight coupling with each Service B, C, and D. It has to know each service's endpoint and credentials.
+对于客户端，我们有Spring Eureka discovery服务。使用Eureka的真正好处是它在客户端缓存了可用的服务信息，所以即使Eureka服务器宕机一段时间，它也不会成为一个单点故障。除了Eureka, etcd和consul等其他服务发现工具也得到了广泛的应用。
 
-**Solution:** The [Service Discovery Pattern](https://www.rajeshbhojwani.co.in/2018/11/design-patterns-for-microservices.html) is used to solve this kind of issues. It helps to decouple the consumer and producer app by providing a lookup feature. Services B, C, and D can register themselves as services. Service discovery can be implemented server side as well as client-side. For the server side, we have AWS ALB and NGINX tools, which accept requests from the client, discover the service, and route the request to the identified location.
+### **分布式系统**
 
-For the client side, we have Spring Eureka discovery service. The real benefit of using Eureka is that it caches the available services information on the client side, so even if Eureka Server is down for some time, it doesn't become a single point of failure. Other than Eureka, other service discovery tools like etcd and consul are also used widely.
+如果服务B，C，D有多个实例，它们需要知道如何去负载均衡。
 
-### **Distributed Systems**
+**解决方案：** 负载均衡通常与服务发现携手出现。对于服务器端负载平衡，可以使用AWS ALB，对于客户端，可以使用Ribbon或Eureka。
 
-If Service B, C, and D have multiple instances, they need to know how to do the load balancing.
+### **验证/过滤/处理协议**
 
-**Solution:** Load balancing generally goes hand-in-hand with service discovery. For server-side load balancing, AWS ALB can be used and for the client side, Ribbon or Eureka can be used.
+如果服务B、C和D需要保护并需要身份验证，我们只需要过滤这些服务的某些请求，如果服务A和其他服务理解不同的协议。
 
-### **Authenticating/Filtering/Handling Protocols**
+**解决方案：** [API 网关模式](http://www.rajeshbhojwani.co.in/2018/11/design-patterns-for-microservices.html) 有助于解决这些问题。它可以处理身份验证、过滤和将协议从AMQP转换为HTTP或其他协议。它还可以帮助启用分布式日志记录、监视和分布式跟踪等可观察性指标（metrics）。Apigee、Zuul和Kong是一些可以用于此的工具。请注意，如果服务B、C和D是可管理的API的一部分，我建议使用这种模式，否则使用API网关就太过了。进一步阅读服务网格作为替代解决方案。
 
-If Service B, C, and D need to be secured and need authentication, we need to filter through only certain requests for these services and if Service A and other services understand different protocols.
+### **处理失败**
 
-**Solution:** [API Gateway Pattern](http://www.rajeshbhojwani.co.in/2018/11/design-patterns-for-microservices.html) helps to resolve these issues. It can handle authentication, filtering and can convert protocols from AMQP to HTTP or others. It can also help enable observability metrics like distributed logging, monitoring, and distributed tracing. Apigee, Zuul, and Kong are some of the tools which can be used for this. Please note that I suggest this pattern if Service B, C, and D are part of managed APIs, otherwise its overkill to have an API Gateway. Read further down for service mesh as an alternate solution.
+如果任何服务B、C或D宕机，如果服务A仍然可以使用某些特性来响应客户端请求，则必须相应地对其进行设计。另一个问题是：假设服务B宕机，所有请求仍然在调用服务B，并且由于它没有响应而耗尽了资源。这会使整个系统宕机，服务A也无法向C和D发送请求。
 
-### **Handling Failures**
+**Solution:** [熔断器](http://www.rajeshbhojwani.co.in/2018/11/design-patterns-for-microservices.html) and [隔离 ](https://docs.microsoft.com/en-us/azure/architecture/patterns/bulkhead)模式有助于解决这些问题。断路器模式识别下游服务是否停机一段时间，并断开电路以避免向其发送调用。如果服务已经恢复并关闭电路以继续对它的调用，它将在定义的时间段之后再次尝试检查。这确实有助于避免网络阻塞和耗尽资源。隔离壁有助于隔离用于服务的资源，并避免级联故障。Spring Cloud Hystrix也做同样的工作。它适用于断路器和舱壁模式。
 
-If any of Services B, C, or D is down and if Service A can still serve client requests with some of the features, it has to be designed accordingly. Another problem: let's suppose that Service B is down and all the requests are still making calls to Service B and exhausting the resources as it's not responding. This can make whole system go down and Service A will not be able to send requests to C and D as well.
+### **微服务间网络通信**
 
-**Solution:** The [Circuit Breaker](http://www.rajeshbhojwani.co.in/2018/11/design-patterns-for-microservices.html) and [Bulkhead ](https://docs.microsoft.com/en-us/azure/architecture/patterns/bulkhead)pattern helps to address these concerns. The circuit Breaker pattern identifies if a downstream service is down for a certain time and trips the circuit to avoid sending calls to it. It retries to check again after a defined period if the service has come back up and closes the circuit to continue the calls to it. This really helps to avoid network clogging and exhausting resource consumption. The bulkhead helps isolate the resources used for a service and avoid cascading failures. Spring Cloud Hystrix does this same job. It applies both Circuit Breaker and Bulkhead patterns.
+[API Gateway](http://www.rajeshbhojwani.co.in/2018/11/design-patterns-for-microservices.html) 通常用于管理API，它处理来自ui或其他消费者的请求，并对多个微服务进行下游调用并作出响应。但是，当一个微服务想要调用同一组中的另一个微服务时，API网关就没有必要了，它并不是为了这个目的而设计的。最终，单个微服务将负责进行网络通信、进行安全身份验证、处理超时、处理故障、负载平衡、服务发现、监视和日志记录。对于微服务来说，开销太大了。
 
-### **Microservice-to-Microservice Network Communication**
+**解决方案：** 服务网格模式有助于处理此类NFRs。它可以卸载我们前面讨论的所有网络功能。这样，微服务就不会直接调用其他微服务，而是通过这个服务网格，它将处理所有的通信。这种模式的美妙之处在于，现在您可以专注于用任何语言(如Java、NodeJS或Python)编写业务逻辑，而不必担心这些语言是否支持实现所有网络功能。Istio和Linkerd解决了这些需求。我唯一不喜欢Istio的地方是，它目前仅限于Kubernetes。
 
-An [API Gateway](http://www.rajeshbhojwani.co.in/2018/11/design-patterns-for-microservices.html) is generally used for managed APIs where it handles requests from UIs or other consumers and makes downstream calls to multiple microservices and responds back. But when a microservice wants to call to another microservice in the same group, the API Gateway is overkill and not meant for that purpose. It ends up that individual microservice takes the responsibility to make network communications, do security authentication, handle timeouts, handle failures, load balancing, service discovery, monitoring, and logging. It's too much overhead for a microservice.
-
-**Solution:** The service mesh pattern helps to handle these kind of NFRs. It can offload all the network functions we discussed above. With that, microservices will not call directly to other microservicse, but go through this service mesh, and it will handle the communication with all features. The beauty of this pattern is that now you can concentrate on writing business logic in any language — like Java, NodeJS, or Python — without worrying if these languages have the support to implement all network functions or not. Istio and Linkerd address these requirements. The only thing i don't like about Istio is that it is limited to Kubernetes as of now.
-
-## Asynchronous
+## 异步
 
 When we talk about asynchronous communication, it means the client makes a call to the server, receives acknowledgment of the request, and forgets about it. The server will process the request and complete it.
 
