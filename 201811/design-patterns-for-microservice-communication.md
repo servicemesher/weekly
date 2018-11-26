@@ -65,28 +65,28 @@ date: 2018-11-19
 
 ## 异步
 
-When we talk about asynchronous communication, it means the client makes a call to the server, receives acknowledgment of the request, and forgets about it. The server will process the request and complete it.
+当我们谈到异步通信时，它意味着客户端调用服务器，接收到请求的确认，然后忘记它。服务器将处理请求并完成它。
 
-Now let's talk about when you need the asynchronous style. If you have an application which is read-heavy, the synchronous style might be a good fit, especially when it needs live data. However, when you have write-heavy transactions and you can't afford to lose data records, you may want to choose asynchronous because, if a downstream system is down and you keep sending synchronous calls to it, you will lose the requests and business transactions. The rule of thumb is to never ever use async for live data read and never ever use sync for business-critical write transactions unless you need the data immediately after write. You need to choose between availability of the data records and strong consistency of the data.
+现在让我们讨论一下什么时候需要异步。如果您的应用读操作很多，那么同步可能非常适合，尤其是在需要实时数据时。但是，当您处理大量写操作而又不能丢失数据记录时，您可能希望选择异步操作，因为如果下游系统宕机，您继续向其发送同步调用，您将丢失请求和业务事务。经验法则是永远不要对实时数据读取使用异步，永远不要对关键的业务写事务使用同步，除非您在写后立即需要数据。您需要在数据可用性和数据的强一致性之间进行选择。
 
-There are different ways we can implement the asynchronous style:
+有几种不同的方式可以实现异步：
 
-### **Messaging**
+### **消息**
 
-In this approach, the producer will send the messages to a message broker and he consumer can listen to the message broker to receive the message and process it accordingly. There are two patterns within messaing: one-to-one and one-to-many. We talked about some of the complexity synchronous style brings, but some of it is eliminated by default in the messaging style. For example, service discovery becomes irrelevant as the consumer and producer both talk only to the message broker. Load balancing is handled by scaling up the messaging system. Failure handling is in-built, mostly by the message broker. RabbitMQ, ActiveMQ, and Kafka are the best-known solutions in cloud platforms for messaging.
+在这种方法中，生产者将消息发送到消息代理，而消费者可以侦听消息代理来接收消息并相应地处理它。在消息处理中有两种模式:一对一和一对多。我们讨论了同步带来的一些复杂性，但是在消息传递中，缺省情况下会消除一些复杂性。例如，服务发现变得无关紧要，因为使用者和生产者都只与消息代理对话。负载平衡是通过扩展消息传递系统来处理的。失败处理是内建的，主要由message broker进行。RabbitMQ、ActiveMQ和Kafka是云平台中最流行的消息传递解决方案。
 
-![Image title](https://dzone.com/storage/temp/10665685-async-msg.png)
+![msg flow](https://ws2.sinaimg.cn/large/006tNbRwly1fxlhh1zzvuj30kj0coaa7.jpg)
 
-### **Event-Driven**
+### **事件驱动**
 
-The event-driven method looks similar to messaging, but it serves a different purpose. Instead of sending messages, it will send event details to the message broker along with the payload. Consumers will identify what the event is and how to react to it. This enables more loose coupling. There are different types of payloads that can be passed:
+事件驱动方法看起来类似于消息传递，但它的用途不同。它不会发送消息，而是将事件细节连同负载（payload）一起发送到消息代理。消费者将确定事件是什么，以及如何对此作出反应。这会更加松散耦合。可以传递不同类型的有效负载：
 
-- Full payload — This will have all the data related to the event required by the consumer to take further action. However, this makes it more tightly coupled.
-- Resource URL — This will be just a URL to a resource that represents the event.
-- Only event — No payload will be sent. The consumer will know based on on the event name how to retrieve relevant data from other sources, like databases or queues.
+- 全负载 — 这将包含与消费者采取进一步行动所需的事件相关的所有数据。然而，这使得它的耦合更加紧密。
+- 资源 URL — 这只是一个指向代表事件的资源的URL。
+- 仅事件 — 不会发送负载。消费者将基于事件名称知道如何从其他源(如数据库或队列)检索相关数据。
 
-![Image title](https://dzone.com/storage/temp/10665753-async-event.png)
+![event flow](https://ws4.sinaimg.cn/large/006tNbRwly1fxlhpapghaj30ll0a8mx7.jpg)
 
-There are other styles, like choreography style, but I personally don't like that. It is too complicated to be implemented. This can only be done with the synchronous style.
+还有其他一些方式，比如编排（choreography），但我个人不喜欢。它太复杂了几乎无法实现。这只能通过同步来完成。
 
-That's all for this blog. Let me know your experience with microservice-to-microservice communication.
+以上就是本博客的全部内容。请让我知道您在微服务通信方面的经验。
