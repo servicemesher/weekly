@@ -1,10 +1,11 @@
 ---
 original: https://solace.com/blog/event-mesh
+author: Shawn McAllister
 translator: kelvinji2009
-reviewer: ["王凯"]
+reviewer: yiduwangkai
 title: "当Service Mesh遇见Event Mesh: Event-Driven型企业新的架构层"
 description: "本文主要介绍了 Event Mesh 是什么，Event-Driven 型企业为什么需要 Event Mesh 层。"
-categories: "译文"
+categories: "translation"
 tags: ["Service Mesh", "Event Mesh"]
 date: 2018-11-23
 ---
@@ -27,7 +28,7 @@ date: 2018-11-23
 
 事件网格对于事件驱动的应用程序，就好比是服务网格对于 RESTful 应用程序：一个架构层，无论在哪里部署这些应用程序（非云、公有云或者私有云），都可以动态路由某个应用程序的事件并使其被其他应用程序所接收。 事件网格由内部连通的 Event broker(事件代理)网络来创建和启用。
 
-![Screen-Shot-2018-10-23-at-9.56.49-AM.png](https://3yecy51kdipx3blyi37oute1-wpengine.netdna-ssl.com/wp-content/uploads/2018/10/Screen-Shot-2018-10-23-at-9.56.49-AM.png)
+![](https://ws4.sinaimg.cn/large/006tNbRwly1fxmu7vq7crj30kh0cajsy.jpg)
 
 ## Event Mesh vs. Service Mesh
 
