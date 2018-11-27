@@ -1,15 +1,16 @@
 ---
 original: https://medium.com/pismolabs/istio-envoy-grpc-metrics-winning-with-service-mesh-in-practice-d67a08acd8f7
 translator: shaobai
-reviewer: 
+reviewer: rootsongjc
+author: Renato Stoco
 title: "使用 Istio，Envoy 实践服务网格 GRPC 度量"
-description: ""
-categories: "译文"
+description: "本文展示的是如何使用 Istio 和 Envoy 来对 gRPC 做度量。"
+categories: "translation"
 tags: ["Envoy","服务网格","Service Mesh","Metric"]
 date: 2018-11-02
 ---
 
-# 使用 Istio，Envoy 实践服务网格 GRPC 度量
+# 使用 Istio和Envoy 实践服务网格gRPC度量
 
 在这个令人惊奇的时代，我们可以不需要编写一行代码，便可以很智能的集成应用程序，收集应用程序指标。
 
@@ -25,7 +26,7 @@ date: 2018-11-02
 
 通过我们的设置，所有的容器会连同一个 istio-proxy 一起创建并部署到 istio-injected 的命名空间中。应用程序将与 istio-proxy (envoy) 进行通信，然后后者将处理所有的链接、mtls 以及其他应用程序的负载均衡。
 
-## **安装以及配置**
+## 安装以及配置
 
 开始步骤，下载并解压 istio-1.0.0 安装包
 
@@ -286,7 +287,7 @@ Istio 也可以使用同样的规则映射 grpc 请求。复制应用程序仓�
 
 [https://github.com/Stocco/istioapplications](https://github.com/Stocco/istioapplications)
 
-## **网格的可视化度量**
+## 网格的可视化度量
 
 有很多方法来可视化网格中的内容，我将在本节中列举几种。
 
@@ -295,7 +296,7 @@ Istio 也可以使用同样的规则映射 grpc 请求。复制应用程序仓�
 检查应用程序处理健康功能的示例：
 [https://github.com/Stocco/istioapplications/blob/a3c3275a63a0667f870d054ea5940284b8a100af/main.go#L72](https://github.com/Stocco/istioapplications/blob/a3c3275a63a0667f870d054ea5940284b8a100af/main.go#L72)
 
-## **Kiali**
+## Kiali
 
 **Kiali** 可以帮助我们了解实时发生的事情。将 kiali 端口暴露到本地，这样就可以查看应用程序：
 
@@ -333,7 +334,7 @@ kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=ja
 
 如果在应用程序中安装了 opentracing 并在每个功能调用的地方都使用到了，则会有更好的体验。
 
-## **更多的度量工具**
+## 更多的度量工具
 
 现在有3个应用程序通过 values.yaml 已经安装好了，并使用 Istio 收集了需要度量的数据。尝试使用 grafana，prometheus和servicegraph 检查应用。
 
@@ -351,7 +352,7 @@ kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=se
     http://localhost:8088/force/forcegraph.html?time_horizon=3000s&filter_empty=true
 ```
 
-## **智能路由**
+## 智能路由
 
 如果你可以管理应用程序的版本？Istio 可以为 virtualservice.yaml 提供微小的修改。让我们来调整我们的虚拟服务（**修改 application.yourdomain 为你的应用程序名**）
 
@@ -410,7 +411,7 @@ curl --request GET \
 
 你可以从第二个应用程序中查看到日志，而不是在第一个程序！这是因为第一条规则匹配到了。
 
-## **Grpc ssl 目标规则**
+## Grpc ssl 目标规则
 
 如果你在工作中使用过 grpc，你知道将 ssl 应用到 grpc 调用时会存在一个问题。主要是因为你需要将服务服务器的证书放入到代码中才能使 ssl 管道生效。如何在基础设置中设置一些配置达到这样的调用目标呢？
 
@@ -451,7 +452,7 @@ spec:
 https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule
 ```
 
-## **我们只是初出茅庐**
+## 我们只是初出茅庐
 
 祝贺你，你已经获得了第一个 Istio 环境应用程序。现在，可以尝试将我的 deployment.yaml 替换成你自己的应用程序并查看它在 Istio 中的运行情况。
 
