@@ -1,10 +1,10 @@
 ---
 original: https://medium.com/google-cloud/istio-routing-basics-14feab3c040e
 translator: featen
-reviewer: 审阅者的GitHub账号
+reviewer: rootsongjc
 title: "Istio路由基础"
 description: "本文展示了如何从头开始构建Istio应用程序和Istio路由的基础知识。"
-categories: "译文"
+categories: "translation"
 tags: ["Istio","Istio Routing","Istio Gateway","Istio VirtualService","Istio DestinationRule"]
 date: 2018-11-15
 ---
@@ -15,7 +15,7 @@ date: 2018-11-15
 
 在这篇文章中，我想从基础讲起，并向您展示如何从头开始构建支持Istio的“HelloWorld”应用程序。要记住的一点是，Istio只管理您应用的流量，应用程序生命周期由底层平台Kubernetes管理。因此，您需要了解容器和Kubernetes基础知识，并且需要了解Istio 路由原语，例如Gateway，VirtualService，DestinationRule。我假设大多数人都知道容器和Kubernetes基础知识。我将在本文中专注于介绍Istio 路由。
 
-## 基本步骤：
+## 基本步骤
 
 这些大致是创建Istio“HelloWorld”应用程序的步骤：
 
@@ -65,10 +65,7 @@ spec:
         imagePullPolicy: Always #IfNotPresent
         ports:
         - containerPort: 8080
-
 ```
-
-
 
 创建deployment和service:
 
@@ -104,8 +101,6 @@ spec:
 ```
 
 创建Gateway：
-
-
 
 ```bash
 $ kubectl apply -f aspnetcore-gateway.yaml
@@ -144,9 +139,6 @@ spec:
 $ kubectl apply -f aspnetcore-virtualservice.yaml
 virtualservice.networking.istio.io "aspnetcore-virtualservice" created
 ```
-
- 
-
 测试app v1版本
 
 现在可以开始测试我们的应用了，首先需要拿到Istio Ingress Gateway的外部IP地址。
@@ -157,13 +149,9 @@ NAME                   TYPE           CLUSTER-IP     EXTERNAL-IP
 istio-ingressgateway   LoadBalancer   10.31.247.41   35.240.XX.XXX
 ```
 
- 
-
 当我们用浏览器访问外部地址时，我们应该看到HelloWorld ASP.NET Core程序。
 
 ![](http://ww1.sinaimg.cn/large/8af9f4b8ly1fx7ok0aj8lj218g0ly0yt.jpg)
-
-
 
 ## DestinationRule
 
@@ -224,8 +212,6 @@ spec:
         - containerPort: 8080
 ```
 
- 
-
 创建一个新的部署（Deployment）:
 
 ```shell
@@ -234,8 +220,6 @@ service "aspnetcore-service" unchanged
 deployment.extensions "aspnetcore-v1" unchanged
 deployment.extensions "aspnetcore-v2" created
 ```
-
- 
 
 如果刷新浏览器，你可以看到VirtualService 在v1 和v2 版本之间切换:
 
@@ -268,8 +252,6 @@ spec:
       version: v2
 ```
 
- 
-
 创建DestinnationRule:
 
 ```shell
@@ -296,8 +278,6 @@ spec:
          subset: v2
 ```
 
-  
-
 更新VirtualService:
 
 ```shell
@@ -306,8 +286,6 @@ virtualservice.networking.istio.io "aspnetcore-virtualservice" configured
 ```
 
 现在再刷新浏览器，你应该只会看到v2版本的内容了。
-
-
 
 ## ServiceEntry
 
