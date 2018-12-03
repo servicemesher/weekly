@@ -11,7 +11,7 @@ date: 2018-12-03
 
 Jenkins服务来源于创建自2004年的Hudson.在软件行业中，Jenkins已经是家喻户晓的明星产品，并且已经是CI和CD的领头羊。到目前为止有超过2050万的jenkins任务，以及将近20万的jenkins服务在运行中。这真的是非常惊人的增长速度。
 
-[![jenkins的增长变化图](http://ww1.sinaimg.cn/large/5f3e3349gy1fxsw5vx2ooj20jk0c6gmj.jpg"jenkins的增长变化图")](https://stats.jenkins.io/ "jenkins的增长变化图")
+[![jenkins的增长变化图](http://ww1.sinaimg.cn/large/5f3e3349gy1fxsw5vx2ooj20jk0c6gmj.jpg "jenkins的增长变化图")](https://stats.jenkins.io/ "jenkins的增长变化图")
 
 上面的增长图说明在技术领域已经有很大的进步，列如云计算和容器，这些变化说明jenkins在很多方面已经起到了很好的作用，我们应该很好的利用这些影响力。如今，很多公司都开始进行容器化改造，我们希望jenkins能跟上时代的步伐，开始自己的云原生之路。jenkins应当继续成长，提供更多大家需要的自动化，可靠性，以及更好的开发体验。
 jenkins在取得巨大成功的同时，也产生了一些问题。
