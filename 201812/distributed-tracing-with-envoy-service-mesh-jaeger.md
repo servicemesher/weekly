@@ -50,7 +50,7 @@ date: 2018-11-19
 
 
 
-![img](https://ws1.sinaimg.cn/large/006tNbRwly1fxvygc19pfj30o70a6glq.jpg)
+![service setup](https://ws1.sinaimg.cn/large/006tNbRwly1fxvygc19pfj30o70a6glq.jpg)
 
 服务安装
 
@@ -147,43 +147,63 @@ static_resources:
 
 ## Service A
 
-In our setup Service A is going to call Service B and Service C. The very important thing about distributed tracing is, even though Envoy supports and helps you with distributed tracing, **it is upto the services to forward the generated headers to outgoing requests**. So our Service A will forward the request tracing headers while calling Service B and Service C. Service A is a simple go service with just one end point that calls Service B and Service C internally. These are the headers that we need to pass
+在我们的例子中服务A将调用服务B和服务C。关于分布式跟踪非常重要的一点是，尽管Envoy支持进行分布式追踪，但也**依赖于服务把生成的Header传递给流出的请求**。因此，服务A将在调用服务B和C时转发请求头。服务A是一个只有一个端点（endpoint）的简单的go服务，内部调用服务B和服务C。下面是我们需要传递的头信息：
 
+```go
+req, err := http.NewRequest("GET", "http://service_a_envoy:8788/", nil)
+if err != nil {
+	fmt.Printf("%s", err)
+}
 
+req.Header.Add("x-request-id", r.Header.Get("x-request-id"))
+req.Header.Add("x-b3-traceid", r.Header.Get("x-b3-traceid"))
+req.Header.Add("x-b3-spanid", r.Header.Get("x-b3-spanid"))
+req.Header.Add("x-b3-parentspanid", r.Header.Get("x-b3-parentspanid"))
+req.Header.Add("x-b3-sampled", r.Header.Get("x-b3-sampled"))
+req.Header.Add("x-b3-flags", r.Header.Get("x-b3-flags"))
+req.Header.Add("x-ot-span-context", r.Header.Get("x-ot-span-context"))
 
-<iframe width="700" height="250" data-src="/media/a0fc9da7369f41612b9ff4b3dc0b3c59?postId=c365b6191592" data-media-id="a0fc9da7369f41612b9ff4b3dc0b3c59" data-thumbnail="https://i.embed.ly/1/image?url=https%3A%2F%2Favatars3.githubusercontent.com%2Fu%2F2501626%3Fs%3D400%26v%3D4&amp;key=a19fcc184b9711e1b4764040d3dc5c07" class="progressiveMedia-iframe js-progressiveMedia-iframe" allowfullscreen="" frameborder="0" src="https://hackernoon.com/media/a0fc9da7369f41612b9ff4b3dc0b3c59?postId=c365b6191592" style="display: block; position: absolute; margin: auto; max-width: 100%; box-sizing: border-box; transform: translateZ(0px); top: 0px; left: 0px; width: 700px; height: 373px;"></iframe>
+client := &http.Client{}
+resp, err := client.Do(req)
+```
 
-Forward request tracing headers
+您可能惊讶为什么调用Service B时url是service_a_envoy。如果你还记得我们已经讨论过服务之间的所有通信都需要通过envoy代理，所以类似的可以在调用服务C时传递Header。
 
-You might wonder why the url is service_a_envoy while calling Service B. If you remember we already discussed that all the communication between the services will need to go through envoy proxy. So similarly you can pass the headers while calling Service C.
+## 服务B和服务C
 
-## Service B & Service C
+剩下的两个服务不需要对代码进行任何更改，因为它们处于叶子级别。一旦这两个服务要调用其他端点，则必须转发请求跟踪头，也不需要对Envoy进行特殊配置。服务B和C代码如下：
 
-The remaining two services need not specifically do any changes in the code since they are at the leaf level. In case these two service are going to call some other endpoint then you will have to forward the request tracing headers. And no special configurations for Envoy as well. Service B & C would look like this
+```go
+package main
 
+import (
+	"fmt"
+	"log"
 
+	"net/http"
+)
 
-<iframe width="700" height="250" data-src="/media/60f3684fa194e7663e822a21fabed994?postId=c365b6191592" data-media-id="60f3684fa194e7663e822a21fabed994" data-thumbnail="https://i.embed.ly/1/image?url=https%3A%2F%2Favatars3.githubusercontent.com%2Fu%2F2501626%3Fs%3D400%26v%3D4&amp;key=a19fcc184b9711e1b4764040d3dc5c07" class="progressiveMedia-iframe js-progressiveMedia-iframe" allowfullscreen="" frameborder="0" src="https://hackernoon.com/media/60f3684fa194e7663e822a21fabed994?postId=c365b6191592" style="display: block; position: absolute; margin: auto; max-width: 100%; box-sizing: border-box; transform: translateZ(0px); top: 0px; left: 0px; width: 700px; height: 438.984px;"></iframe>
+func handler(w http.ResponseWriter, r *http.Request) {
 
-Service B & C
+	fmt.Fprintf(w, "Hello from service B")
+}
 
-So with all of this done, if you run docker-compose up and hit the Front Envoy endpoint, trace information would have been generated and pushed to Jaeger. Jaeger has a very nice to UI to visualise the traces and the trace for our setup will look like this
+func main() {
+	http.HandleFunc("/", handler)
+	log.Fatal(http.ListenAndServe(":8082", nil))
+}
+```
 
+所有这些完成后，如果您运行`docker-compose up`并访问前端Envoy端点，就会生成跟踪信息并推送到Jaeger。Jaeger有一个非常友好的UI界面来展示追踪信息，我们的信息看上去像这样：
 
+![trace from jaeger](https://ws1.sinaimg.cn/large/006tNbRwly1fxw0rfr8dyj31jk0e8q62.jpg)
 
-![img](https://cdn-images-1.medium.com/max/2000/1*nxmYEIzy8hgoGRNbJDZ5MQ.png)
+正如你看到的，它提供了总体的时间损耗，系统各部分是时间损耗，哪个服务调用哪个服务，服务和服务的关系（服务b和服务c是兄弟关系）。Jaeger的进一步使用留待你自己去探索。
 
-trace from Jaeger
+你可以在[这里](https://github.com/dnivra26/envoy_distributed_tracing)找到所有的Envoy配置、代码和Docker compose文件。
 
-As you can see it provides the overall time taken, time taken in each part of the system, which service is calling which service, service to service relationship (service b and service c are siblings). Ill leave it to you to explore Jaeger.
+就是这些，谢谢，让我知道你的反馈。
 
-You can find all the envoy configurations, code and docker compose file [here](https://github.com/dnivra26/envoy_distributed_tracing)
+如果你在寻找Envoy的xDS服务端我的同事已经搭建了[一个](https://github.com/tak2siva/Envoy-Pilot)。可以直接获取（check out）
 
-[**dnivra26/envoy_distributed_tracing**
-*Demo for distributed tracing with envoy, zipkin|jaeger & open tracing - dnivra26/envoy_distributed_tracing*github.com](https://github.com/dnivra26/envoy_distributed_tracing)
-
-Thats it folks. Thanks. Please let me know your feedback.
-
-If you are looking for an Envoy xDS server, my colleague has built [one](https://github.com/tak2siva/Envoy-Pilot) . Do check it out.
-
-[Here](https://medium.com/@dnivra26/microservices-monitoring-with-envoy-service-mesh-prometheus-grafana-a1c26a8595fc) is the next article(Monitoring with Envoy, Prometheus & Grafana) in series.
+[这里](https://medium.com/@dnivra26/microservices-monitoring-with-envoy-service-mesh-prometheus-grafana-a1c26a8595fc) 是这一系列文章中的下一篇（使用Envoy，Prometheus和Grafana进行监控）
