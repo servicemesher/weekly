@@ -9,42 +9,42 @@ tags: ["Envoy","Jaeger"]
 date: 2018-11-19
 ---
 
-# Distributed Tracing with Envoy Service Mesh & Jaeger
+# 使用Envoy和Jaeger实现分布式追踪
 
-If you are new to “Service Mesh” and “Envoy”, i have a post explaining both of them [here](https://medium.com/@dnivra26/service-mesh-with-envoy-101-e6b2131ee30b).
+如果你还是服务网格和Envoy的新手，我[这里](https://medium.com/@dnivra26/service-mesh-with-envoy-101-e6b2131ee30b)有一篇文章解释它们。
 
-With a micro-services architecture, observability becomes highly important. I would say it is one of the pre-requisite if you even want to take that route. One of my ex-colleagues has made an awesome list of requirements you need to meet if you want to do micro services [here](https://news.ycombinator.com/item?id=12509533).
+在微服务架构中，可观测性变得越加重要。我认为这是选择微服务这条路的必要条件之一。我的一位前同事列出了一份非常棒的[需求清单](https://news.ycombinator.com/item?id=12509533)，如果你想做微服务，你需要满足提到的这些要求。
 
-Well you have many things under observability
+可观测性有许多事要做：
 
-- Monitoring
-- Alerting
-- Centralised Logging
-- Distributed Tracing
+- 监控
+- 报警
+- 日志集中化
+- 分布式追踪
 
-This post will discuss only about Distributed Tracing in the context of Envoy service mesh and i am trying to give an overall picture of how distributed tracing, OpenTracing, Envoy service mesh and Jaeger fit together. In the [next post](https://medium.com/@dnivra26/microservices-monitoring-with-envoy-service-mesh-prometheus-grafana-a1c26a8595fc) we will discuss about monitoring with Envoy service mesh, prometheus & grafana.
+本文只讨论Envoy下的分布式跟踪，我尽量给出一个全貌来描述分布式跟踪、OpenTracing、Envoy和Jaeger是如何整合在一起工作的。在[下一篇文章](https://medium.com/@dnivra26/microservices-monitoring-with-envoy-service-mesh-prometheus-grafana-a1c26a8595fc)中，我们将讨论使用Envoy、prometheus和grafana做监控。
 
-#### Distributed Tracing
+## 分布式追踪
 
-With many number of services and requests flowing to and fro, you need the ability to quickly find out what went wrong and exactly where. Distributed tracing was popularised by [Google’s Dapper](https://ai.google/research/pubs/pub36356). It is essentially the ability to trace a request throughout it’s life cycle within the micro services.
+随着大量的服务和请求的流转，你需要能够快速发现哪里出了问题。分布式跟踪最早由[谷歌的Dapper](https://ai.google/research/pubs/pub36356)普及开来，本质上具有在微服务的整个生命周期中跟踪请求的能力。
 
-So the easiest way to do it would be to generate a unique request id (x-request-id) at the front-proxy and propagate that request id to all the services the request interacts with. You could basically append the unique request id to all the log messages. So if you search for the unique id in a system like kibana, you will get to see logs from all the services for that particular request.
+最简单的实现方法是在前端代理生成一个唯一的请求id（x-request-id），并将该请求id传递给与其交互的所有服务。基本上可以向所有的日志追加这一请求id。因此，如果你在kibana这样的系统中搜索唯一id，你会看到针对该特定请求的所有相关服务的日志。
 
-It is very helpful, but this wouldn’t tell you in which order the requests were done, which requests were done in parallel or the time consumed by each service.
+这非常有用，但是它不能告诉你每个服务中请求完成的顺序，是否是并行完成的或者花费的时间。
 
-Let us see how OpenTracing and Envoy service mesh can help us.
+让我们看看OpenTracing和Envoy如何帮助我们。
 
-#### OpenTracing
+## OpenTracing
 
-Instead of passing around just a single id (x-request-id), if we could pass around more data like which service is at the root level of the request, which service is the child of which service, etc… we could figure out all the answers. And the standard way of doing this is OpenTracing. It is a language neutral specification for distributed tracing. You can read more about the specification [here](https://opentracing.io/specification/).
+与其只传递一个id (x-request-id)，不如传递更多的数据，比如哪个服务位于请求的根级别，哪个服务是哪个服务的子服务等等……这可以帮我们找出所有的答案。标准的做法是使用OpenTracing。它是分布式追踪的规范，和语言无关。你可以在[这里](https://opentracing.io/speciation/)阅读更多关于规范的信息。
 
-#### Envoy Service Mesh
+## Envoy
 
-A service mesh is like a communication layer for micro services. All the communication between the services happens through the mesh. It helps with load balancing, service discovery, traffic shifting, rate limiting, metrics collection, etc… [Envoy](https://www.envoyproxy.io/) is one such service mesh framework. In our case envoy is going to help us with generating the root unique request id (x-request-id), generating child request id’s and sending them to a tracing system like [Jaeger](https://www.jaegertracing.io/)or [Zipkin](https://zipkin.io/) which stores, aggregates and has a view layer for the traces.
+服务网格就像微服务的通信层。服务之间的所有通信都是通过网格进行的。它可以实现负载平衡、服务发现、流量转移、速率限制、指标（metrics）收集等。Envoy就是这样的一个服务网格。在我们的例子中，envoy将帮助我们生成唯一根请求id （x-request-id），生成子请求id，并将它们发送到[Jaeger](https://www.jaegertracing.io/)或[Zipkin](https://zipkin.io/)这样的追踪系统，这些系统存储、聚合追踪数据并为其提供可视化的能力。
 
-In this post we will be using Jaeger as our tracing system. Envoy can generate tracing data based on zipkin’s format or lighstep’s format. We will use Zipkin’s standard and it is compatible with Jaeger.
+这篇文章中我们会使用Jaeger作为追踪系统。Envoy用来生成基于zipkin或lighstep格式的追踪数据。我们会使用zipkin的标准来兼容Jaeger。
 
-#### Just show me the code already…
+## Just show me the code already…
 
 The following diagram shows an overview of what we are trying to build
 
@@ -56,7 +56,7 @@ Service setup
 
 We are going to use docker-compose for this setup. You need to supply Envoy with a configuration file. Am not going to explain how to configure envoy. We will concentrate on the parts which are relevant to tracing. You can find more about configuring envoy [here](https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/v2_overview).
 
-#### Front Envoy
+## Front Envoy
 
 The role of the Front Envoy is to generate the root request id and you can configure envoy to generate it. Here is the configuration file for Front Envoy
 
@@ -76,7 +76,7 @@ line 66–73 configures the Jaeger tracing system.
 
 Enabling the tracing and configuring Jaeger address will be present in all the envoy configurations (front, service a, b &c)
 
-#### Service A
+## Service A
 
 In our setup Service A is going to call Service B and Service C. The very important thing about distributed tracing is, even though Envoy supports and helps you with distributed tracing, **it is upto the services to forward the generated headers to outgoing requests**. So our Service A will forward the request tracing headers while calling Service B and Service C. Service A is a simple go service with just one end point that calls Service B and Service C internally. These are the headers that we need to pass
 
@@ -88,7 +88,7 @@ Forward request tracing headers
 
 You might wonder why the url is service_a_envoy while calling Service B. If you remember we already discussed that all the communication between the services will need to go through envoy proxy. So similarly you can pass the headers while calling Service C.
 
-#### Service B & Service C
+## Service B & Service C
 
 The remaining two services need not specifically do any changes in the code since they are at the leaf level. In case these two service are going to call some other endpoint then you will have to forward the request tracing headers. And no special configurations for Envoy as well. Service B & C would look like this
 
