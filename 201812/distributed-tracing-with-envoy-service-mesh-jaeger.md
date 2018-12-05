@@ -44,37 +44,106 @@ date: 2018-11-19
 
 这篇文章中我们会使用Jaeger作为追踪系统。Envoy用来生成基于zipkin或lighstep格式的追踪数据。我们会使用zipkin的标准来兼容Jaeger。
 
-## Just show me the code already…
+## 只要给我看代码就好...
 
-The following diagram shows an overview of what we are trying to build
-
-
-
-![img](https://cdn-images-1.medium.com/max/1600/1*Y___ehOEuoF6Bh7zAM67LA.png)
-
-Service setup
-
-We are going to use docker-compose for this setup. You need to supply Envoy with a configuration file. Am not going to explain how to configure envoy. We will concentrate on the parts which are relevant to tracing. You can find more about configuring envoy [here](https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/v2_overview).
-
-## Front Envoy
-
-The role of the Front Envoy is to generate the root request id and you can configure envoy to generate it. Here is the configuration file for Front Envoy
+下面的图展示了我们尝试构建的系统全貌：
 
 
 
-<iframe width="700" height="250" data-src="/media/e4169cd63f8714b24ea4b65e64928e0f?postId=c365b6191592" data-media-id="e4169cd63f8714b24ea4b65e64928e0f" data-thumbnail="https://i.embed.ly/1/image?url=https%3A%2F%2Favatars3.githubusercontent.com%2Fu%2F2501626%3Fs%3D400%26v%3D4&amp;key=a19fcc184b9711e1b4764040d3dc5c07" class="progressiveMedia-iframe js-progressiveMedia-iframe" allowfullscreen="" frameborder="0" src="https://hackernoon.com/media/e4169cd63f8714b24ea4b65e64928e0f?postId=c365b6191592" style="display: block; position: absolute; margin: auto; max-width: 100%; box-sizing: border-box; transform: translateZ(0px); top: 0px; left: 0px; width: 700px; height: 1648.98px;"></iframe>
+![img](https://ws1.sinaimg.cn/large/006tNbRwly1fxvygc19pfj30o70a6glq.jpg)
 
-Front Envoy Configuration
+服务安装
 
-lines 1–8 enables tracing and configures the tracing system and the place where the tracing system lives.
+我们将在安装中使用docker-compose。你需要向Envoy提供配置文件。我不打算解释如何配置Envoy，我们将集中讨论与追踪相关的部分。你可以在[这里](https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/v2_overview)找到更多关于配置Envoy的信息。
 
-lines 27–28 specify where this is an outgoing or incoming traffic.
+## 前端Envoy
 
-line 38 mentions that envoy has to generate the root request id.
+前端Envoy的作用是生成根请求id，你可以通过配置去实现。下面是针对它的配置文件：
+```yaml
+---
+tracing:
+  http:
+    name: envoy.zipkin
+    config:
+      collector_cluster: jaeger
+      collector_endpoint: "/api/v1/spans"
+admin:
+  access_log_path: "/tmp/admin_access.log"
+  address: 
+    socket_address: 
+      address: "127.0.0.1"
+      port_value: 9901
+static_resources: 
+  listeners:
+    - 
+      name: "http_listener"
+      address: 
+        socket_address: 
+          address: "0.0.0.0"
+          port_value: 80
+      filter_chains:
+          filters: 
+            - 
+              name: "envoy.http_connection_manager"
+              config:
+                tracing:
+                  operation_name: egress
+                use_remote_address: true
+                add_user_agent: true
+                access_log:
+                - name: envoy.file_access_log
+                  config:
+                    path: /dev/stdout
+                    format: "[ACCESS_LOG][%START_TIME%] \"%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%\" %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% \"%REQ(X-FORWARDED-FOR)%\" \"%REQ(USER-AGENT)%\" \"%REQ(X-REQUEST-ID)%\" \"%REQ(:AUTHORITY)%\" \"%UPSTREAM_HOST%\" \"%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%\"\n"
+                stat_prefix: "ingress_443"
+                codec_type: "AUTO"
+                generate_request_id: true
+                route_config: 
+                  name: "local_route"
+                  virtual_hosts: 
+                    - 
+                      name: "http-route"
+                      domains: 
+                        - "*"
+                      routes: 
+                        - 
+                          match: 
+                            prefix: "/"
+                          route:
+                            cluster: "service_a"
+                http_filters:
+                  - 
+                    name: "envoy.router"
+  clusters:
+    - 
+      name: "service_a"
+      connect_timeout: "0.25s"
+      type: "strict_dns"
+      lb_policy: "ROUND_ROBIN"
+      hosts:
+        - 
+          socket_address: 
+            address: "service_a_envoy"
+            port_value: 8786
+    - name: jaeger
+      connect_timeout: 0.25s
+      type: strict_dns
+      lb_policy: round_robin
+      hosts:
+      - socket_address:
+          address: jaeger
+          port_value: 9411
+```
 
-line 66–73 configures the Jaeger tracing system.
+第1-8行启用追踪并配置追踪系统和它所在的位置。
 
-Enabling the tracing and configuring Jaeger address will be present in all the envoy configurations (front, service a, b &c)
+第27-28行指定流量进出的位置。
+
+第38行指出Envoy必须生成根请求id。
+
+第66-73行配置Jaeger追踪系统。
+
+启用追踪和配置Jaeger地址将出现在所有Envoy的配置中（前端，服务a，b和c）
 
 ## Service A
 
