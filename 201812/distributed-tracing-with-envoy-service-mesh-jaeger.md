@@ -193,6 +193,26 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8082", nil))
 }
 ```
+```go
+package main
+
+import (
+  "fmt"
+  "log"
+
+  "net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+
+  fmt.Fprintf(w, "Hello from service C")
+}
+
+func main() {
+  http.HandleFunc("/", handler)
+  log.Fatal(http.ListenAndServe(":8083", nil))
+}
+```
 
 所有这些完成后，如果您运行`docker-compose up`并访问前端Envoy端点，就会生成追踪信息并推送到Jaeger。Jaeger有一个非常友好的UI界面来展示追踪信息，我们的信息看上去像这样：
 
