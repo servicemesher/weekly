@@ -15,3 +15,4 @@
 - [CentOS7官方Docker发行版现重大Bug可致Kubernetes中的健康检测探针失败并影响容器交互附临时解决方案](https://jimmysong.io/posts/docker-exec-bug-on-centos7/)
 
 本文归档到https://github.com/servicemesher/trans
+

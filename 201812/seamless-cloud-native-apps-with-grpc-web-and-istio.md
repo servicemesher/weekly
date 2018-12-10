@@ -1,11 +1,11 @@
 ---
 original: https://venilnoronha.io/seamless-cloud-native-apps-with-grpc-web-and-istio
 translator: roganw
-reviewer: 
+reviewer: rootsongjc
 title: "云原生应用与gRPC-Web和Istio的无缝集成"
-description: "本文构建了一个简单的Web应用，使用emoji替换用户输入文本中的关键字，并使用gRPC-Web和Istio与gRPC后端进行通信"
+description: "本文构建了一个简单的Web应用，该应用使用emoji替换用户输入文本中的关键字，并使用gRPC-Web和Istio与gRPC后端进行通信。"
 categories: "译文"
-tags: ["gRPC-Web","Istio","云原生应用"]
+tags: ["gRPC-Web”,"istio"]
 date: 2018-11-25
 ---
 
@@ -32,7 +32,7 @@ date: 2018-11-25
 
 ![architecture](https://ws4.sinaimg.cn/large/006tNbRwly1fxnmaqiaqfj30gc08yaax.jpg)
 
-简而言之，只要用户提供一些文本，Web应用就会利用gRPC-Web库向Istio Gatway发送HTTP请求。然后，Istio网关将HTTP请求路由到emoji服务旁运行的Proxy sidecar，后者使用Envoy的[gRPC-Web](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_filters/grpc_web_filter)filter将HTTP调用转换成gRPC调用。
+简而言之，只要用户提供一些文本，Web应用就会利用gRPC-Web库向Istio Gatway发送HTTP请求。然后，Istio网关将HTTP请求路由到emoji服务旁运行的Proxy sidecar，后者使用Envoy的[gRPC-Web](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_filters/grpc_web_filter) filter将HTTP调用转换成gRPC调用。
 
 ## 定义协议格式
 
@@ -90,7 +90,7 @@ $ protoc -I emoji/ emoji/emoji.proto --js_out=import_style=commonjs:emoji \
 
 ## 构建和测试Go后端程序
 
-现在让我们创建一个实现`EmojiService`API的Go程序。为此，我们使用以下内容创建一个名为`main.go`的文件。
+现在让我们创建一个实现`EmojiService` API的Go程序。为此，我们使用以下内容创建一个名为`main.go`的文件。
 
 ```go
 package main
@@ -134,7 +134,7 @@ func main() {
 }
 ```
 
-我已经使用`kyokomi/emoji`库来完成繁重的工作，即将输入文本中的关键字转换为表情符号。
+我已经使用 `kyokomi/emoji` 库来完成繁重的工作，即将输入文本中的关键字转换为表情符号。
 
 启动服务后如下所示：
 
@@ -412,7 +412,7 @@ spec:
       allowCredentials: true
 ```
 
-注意，为了能让gRPC-Web正常工作，我们在这里定义了一个复杂`corsPolicy`。
+注意，为了能让gRPC-Web正常工作，我们在这里定义了一个复杂的`corsPolicy`。
 
 我们现在可以按以下顺序简单地部署上述配置。
 
