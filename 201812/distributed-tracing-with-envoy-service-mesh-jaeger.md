@@ -11,7 +11,7 @@ date: 2018-11-19
 
 # 使用Envoy和Jaeger实现分布式追踪
 
-如果你还是服务网格和Envoy的新手，我[这里](https://medium.com/@dnivra26/service-mesh-with-envoy-101-e6b2131ee30b)有一篇文章解释它们。
+如果你是初次接触服务网格和Envoy，我[这里](https://medium.com/@dnivra26/service-mesh-with-envoy-101-e6b2131ee30b)有一篇文章可以帮助你入门。
 
 在微服务架构中，可观测性变得越加重要。我认为这是选择微服务这条路的必要条件之一。我的一位前同事列出了一份非常棒的[需求清单](https://news.ycombinator.com/item?id=12509533)，如果你想做微服务，那么你需要满足提到的这些要求。
 
@@ -40,7 +40,7 @@ date: 2018-11-19
 
 ## Envoy
 
-服务网格就像微服务的通信层，服务之间的所有通信都是通过网格进行的。它可以实现负载平衡、服务发现、流量转移、速率限制、指标（metrics）收集等功能，Envoy就是这样的一个服务网格。在我们的例子中，Envoy将帮助我们生成唯一根请求id （x-request-id），生成子请求id，并将它们发送到[Jaeger](https://www.jaegertracing.io/)或[Zipkin](https://zipkin.io/)这样的追踪系统，这些系统存储、聚合追踪数据并为其提供可视化的能力。
+服务网格就像微服务的通信层，服务之间的所有通信都是通过网格进行的。它可以实现负载均衡、服务发现、流量转移、速率限制、指标（metrics）收集等功能，Envoy就是这样的一个服务网格。在我们的例子中，Envoy将帮助我们生成唯一根请求id （x-request-id），生成子请求id，并将它们发送到[Jaeger](https://www.jaegertracing.io/)或[Zipkin](https://zipkin.io/)这样的追踪系统，这些系统存储、聚合追踪数据并为其提供可视化的能力。
 
 这篇文章中我们会使用Jaeger作为追踪系统，Envoy用来生成基于zipkin或lighstep格式的追踪数据。我们会使用zipkin的标准来兼容Jaeger。
 
@@ -54,7 +54,7 @@ date: 2018-11-19
 
 服务安装
 
-我们将在安装中使用docker-compose。你需要向Envoy提供配置文件。我不打算解释如何配置Envoy，我们将集中讨论与追踪相关的部分。你可以在[这里](https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/v2_overview)找到更多关于配置Envoy的信息。
+我们将使用docker-compose来部署Envoy。你需要向Envoy提供一份配置文件。这里我不打算解释如何配置Envoy，只集中讨论与追踪相关的部分。。你可以在[这里](https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/v2_overview)找到更多关于配置Envoy的信息。
 
 ## 前端Envoy
 
@@ -143,7 +143,7 @@ static_resources:
 
 第66-73行配置Jaeger追踪系统。
 
-启用追踪和配置Jaeger地址将出现在所有Envoy的配置中（前端，服务a，b和c）
+所有Envoy的配置中（前端，服务a，b和c）都需要启用追踪和配置Jaeger地址
 
 ## Service A
 
@@ -171,7 +171,7 @@ resp, err := client.Do(req)
 
 ## 服务B和服务C
 
-剩下的两个服务不需要对代码进行任何更改，因为它们处于叶子级别。一旦这两个服务要调用其他端点，则必须转发请求追踪头，也不需要对Envoy进行特殊配置。服务B和C代码如下：
+剩下的两个服务不需要对代码进行任何更改，因为它们处于叶子级别。一旦这两个服务要调用其他端点，则必须转发请求追踪头，除此之外不需要对Envoy进行任何特殊配置。服务B和C代码如下：
 
 ```go
 package main
