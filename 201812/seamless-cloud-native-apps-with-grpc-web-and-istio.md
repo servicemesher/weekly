@@ -3,9 +3,9 @@ original: https://venilnoronha.io/seamless-cloud-native-apps-with-grpc-web-and-i
 translator: roganw
 reviewer: 
 title: "云原生应用与gRPC-Web和Istio的无缝集成"
-description: "本文使用C++构建了客户端/服务端应用，通过Envoy代理和gPRC协议进行通信，然后使用Go语言实现了Envoy速率限制服务。"
+description: "本文构建了一个简单的Web应用，使用emoji替换用户输入文本中的关键字，并使用gRPC-Web和Istio与gRPC后端进行通信"
 categories: "译文"
-tags: ["Envoy","gRPC","速率限制"]
+tags: ["gRPC-Web","Istio","云原生应用"]
 date: 2018-11-25
 ---
 
@@ -16,7 +16,7 @@ date: 2018-11-25
 
 ## 介绍
 
-在这篇文章中，我将引导你构建一个简单的Web应用，使用emoji替换用户输入文本中的关键字，使用gRPC-Web和Istio与gRPC后端进行通信。
+在这篇文章中，我将引导你构建一个简单的Web应用，使用emoji替换用户输入文本中的关键字，并使用gRPC-Web和Istio与gRPC后端进行通信。
 
 以下是我们创建emoji应用的步骤大纲：
 1. 使用[Protobuf](https://developers.google.com/protocol-buffers/)定义协议格式；
