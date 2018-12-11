@@ -1,9 +1,10 @@
 ---
 original: https://hackernoon.com/distributed-tracing-with-envoy-service-mesh-jaeger-c365b6191592
+author: Arvind Thangamani
 translator: malphi
-reviewer: rootsongjc
+reviewer: yangchuansheng
 title: "使用Envoy和Jaeger实现分布式追踪"
-description: "本文用实例讲解了如何利用Envoy和Jaeger实现分布式追踪"
+description: "本文用实例讲解了如何利用Envoy和Jaeger实现分布式追踪。"
 categories: "translation"
 tags: ["Envoy","Jaeger"]
 date: 2018-11-19
