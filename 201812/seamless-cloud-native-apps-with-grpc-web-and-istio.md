@@ -2,7 +2,7 @@
 original: https://venilnoronha.io/seamless-cloud-native-apps-with-grpc-web-and-istio
 translator: roganw
 reviewer: rootsongjc
-title: "云原生应用与gRPC-Web和Istio的无缝集成"
+title: "构建无缝集成的gRPC-Web和Istio的云原生应用教程"
 description: "本文构建了一个简单的Web应用，该应用使用emoji替换用户输入文本中的关键字，并使用gRPC-Web和Istio与gRPC后端进行通信。"
 categories: "译文"
 tags: ["gRPC-Web”,"istio"]
