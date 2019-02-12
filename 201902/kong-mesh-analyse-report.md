@@ -57,11 +57,13 @@ Target定义的是具体的服务节点实例，可定义权重，一个target�
 我们继续看看，kong-mesh本身如何根据这些规则进行路由。  
 ![image](http://wx4.sinaimg.cn/mw690/aedae0ffgy1g03qur5l2gj20wz09dgm2.jpg)  
 Kong的路由及负载均衡能力是构建于openresty的access_by_lua以及balancer_by_lua这2个phase之上的。Servicea发送的请求通过iptables将流量导入到客户端侧（servicea-kong），kong收到后，根据请求消息进行route_match，找出匹配的目标service，然后再根据service的可用target进行负载均衡，找到目标serviceb节点实例进行发送。  
-服务端serviceb-kong收到请求后，根据启动时配置好的本地路由规则:  
+服务端serviceb-kong收到请求后，由于启动前通过环境变量配置好了本地路由规则:  
 ```
-KONG_ORIGINS=”tcp://serviceb:8080=tcp://127.0.0.1:8080”
+env:
+  - name: KONG_ORIGINS
+	value: "tcp://serviceb:8080=tcp://127.0.0.1:8080"
 ```
-该规则直接把target为serviceb:8080的请求直接投递给serviceb。最终完成整个请求路由过程。  
+根据该规则，kong直接把target为serviceb:8080的请求直接投递给serviceb。最终完成整个请求路由过程。  
  <br/>
 接下来，我们再看看，kong基于上述的配置模型，可以提供什么样的功能，以及与其他mesh产品的差异点。  
 
