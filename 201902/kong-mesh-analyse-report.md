@@ -34,16 +34,18 @@ Kong社区提供了kong mesh的demo (<span>https://github.com/Kong/kong-mesh-dis
 
 kong mesh的配置集中存储在DB中，当前仅支持Postgre以及cassandra。控制面kong-admin会把配置规则写入到DB中，数据面的Kong会定期从数据库读取配置规则并更新缓存。  
 在demo中，我们通过k8s Job向kong-admin写入了两条数据：  
+```
 http --ignore-stdin put kong-admin:8001/services/service-b host=serviceb port=8080 protocol=tcp -f  
-http --ignore-stdin post kong-admin:8001/services/service-b/routes name=service-b sources[1].ip=0.0.0.0/0 protocols=tcp -f  
+http --ignore-stdin post kong-admin:8001/services/service-b/routes name=service-b sources[1].ip=0.0.0.0/0 protocols=tcp -f 
+``` 
 第一条语句是添加一个名字叫service-b的服务；  
 第二条语句是为service-b的服务添加路由规则，允许源ip在0.0.0.0/0网段的tcp包可以转发到service-b。  
 规则添加后，分别在services和routes表中可以查询到相关的记录：  
 ![image](http://wx3.sinaimg.cn/mw690/0060lm7Tly1g03qgawo0zj31a1059gm6.jpg)  
-![image](7.png)  
+![image](http://wx3.sinaimg.cn/mw690/0060lm7Tly1g03qgawofzj319m057js4.jpg)  
 那么问题来了，kong的规则模型具体是什么含义？这些规则是怎么组合工作的呢？  
 首先，我们先看看kong的规则模型：  
-![image](http://wx3.sinaimg.cn/mw690/0060lm7Tly1g03qgawofzj319m057js4.jpg)  
+![image](http://wx2.sinaimg.cn/mw690/0060lm7Tly1g03qgd8vt3j30ih0e93z7.jpg)  
 从图上可见，Service是规则模型的核心，一个Service代表一个目标服务URL。  
 Route代表的是Service的细粒度路由规则，定义了根据不同的客户端请求属性来选择目标端Service，一个Service可关联多个Route规则。可类比istio中的VirtualService。  
 Upstream定义的是针对具体的目标Service，所采取的负载均衡策略，以及健康检查相关配置，一个Service可关联0-1个Upstream。可类比istio中的DestinationRule。  
@@ -53,10 +55,13 @@ Target定义的是具体的服务节点实例，可定义权重，一个target�
 在k8s环境下部署，如果直接使用k8s平台所提供的kube-dns的域名解析能力以及ClusterIP/NodePort的负载均衡的话，那么原则上只需要配置Service以及Route规则就可以进行工作。Upstream和Target属于可选配置。  
 <br/>
 我们继续看看，kong-mesh本身如何根据这些规则进行路由。  
-![image](http://wx2.sinaimg.cn/mw690/0060lm7Tly1g03qgd8vt3j30ih0e93z7.jpg)  
+![image](http://wx4.sinaimg.cn/mw690/aedae0ffgy1g03qur5l2gj20wz09dgm2.jpg)  
 Kong的路由及负载均衡能力是构建于openresty的access_by_lua以及balancer_by_lua这2个phase之上的。Servicea发送的请求通过iptables将流量导入到客户端侧（servicea-kong），kong收到后，根据请求消息进行route_match，找出匹配的目标service，然后再根据service的可用target进行负载均衡，找到目标serviceb节点实例进行发送。  
-服务端serviceb-kong收到请求后，根据启动时配置好的本地路由规则，KONG_ORIGINS=
-”tcp://serviceb:8080=tcp://127.0.0.1:8080”，直接把target为serviceb:8080的请求直接投递给serviceb。最终完成整个请求路由过程。  
+服务端serviceb-kong收到请求后，根据启动时配置好的本地路由规则:  
+```
+KONG_ORIGINS=”tcp://serviceb:8080=tcp://127.0.0.1:8080”
+```
+该规则直接把target为serviceb:8080的请求直接投递给serviceb。最终完成整个请求路由过程。  
  <br/>
 接下来，我们再看看，kong基于上述的配置模型，可以提供什么样的功能，以及与其他mesh产品的差异点。  
 
