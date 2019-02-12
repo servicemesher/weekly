@@ -12,20 +12,20 @@ Kong社区提供了kong mesh的demo (<span>https://github.com/Kong/kong-mesh-dis
 通过ncat将当前server的时间发往serviceb。Demo的运行效果如下：<br/>
 
 在客户端节点，每隔两秒会发送一次时间戳到服务端  
-![image](1.png)  
+![image](http://wx4.sinaimg.cn/mw690/0060lm7Tly1g03qgawtcyj30mw06r3ze.jpg)  
 服务端节点，每隔两秒打印一次时间戳  
-![image](2.png)
+![image](http://wx3.sinaimg.cn/mw690/0060lm7Tly1g03qho3l22j30b305baae.jpg)
 
 接下来，我们详细了解一下该demo背后的技术原理。<br/>
 首先，我们来分析一下kong-mesh业务整体组网：
-![image](3.png)  
+![image](http://wx2.sinaimg.cn/mw690/0060lm7Tly1g03qgawnjnj30hv0fz756.jpg)  
 从组网中可以看出，kong mesh也分控制面与数据面。  
 控制面为图中kong-admin的POD，3副本实例独立部署，对外提供Admin API供用户设置各种规则配置。  
 数据面为图中servicea及serviceb的POD，每个POD中会启动一个kong容器作为sidecar，通过iptables规则将外发以及到达的流量劫持到kong容器中，然后kong会根据路由规则将流量转发到对应的实例。下面我们看看POD的部署配置：  
-![image](4.png)  
+![image](http://wx4.sinaimg.cn/mw690/0060lm7Tly1g03qgawi1oj30nl0fiq3e.jpg)  
 部署配置关键点在于流量接管的设置，POD在启动应用前，会使用istio/proxy_init镜像来初始化环境，图中的参数的含义是，使用TProxy（透明代理）的流量接管模式，将发往8080端口（业务serviceb监听端口）的流量通过7000端口（kong监听端口）来进行代理。  
 了解清楚该部署配置后，我们就可以比较容易地使用kong来代理http服务了。主要改动点还是在于POD的部署配置的修改。如下图所示：  
-![image](5.png)  
+![image](http://wx4.sinaimg.cn/mw690/0060lm7Tly1g03qgawfnij30oc0g4jru.jpg)  
 值得注意的是，代理HTTP服务和代替TCP不一样，属于7层转发，不能使用上文的透明代理方式来进行接管。因此在setup_network的启动参数中，需要指定流量接管模式为REDIRECT，通过iptables显式将报文导入到kong，kong再根据报文内容进行匹配后，再路由到目标服务（大家如果需要http demo的代码，可以到<span>https://github.com/andrewshan/kong-mesh-http-demo</span>下载）。  
 <br/>
 那么，kong又是根据什么规则去路由的呢？下面我们会继续体验kong mesh的配置规则。  
@@ -39,11 +39,11 @@ http --ignore-stdin post kong-admin:8001/services/service-b/routes name=service-
 第一条语句是添加一个名字叫service-b的服务；  
 第二条语句是为service-b的服务添加路由规则，允许源ip在0.0.0.0/0网段的tcp包可以转发到service-b。  
 规则添加后，分别在services和routes表中可以查询到相关的记录：  
-![image](6.png)  
+![image](http://wx3.sinaimg.cn/mw690/0060lm7Tly1g03qgawo0zj31a1059gm6.jpg)  
 ![image](7.png)  
 那么问题来了，kong的规则模型具体是什么含义？这些规则是怎么组合工作的呢？  
 首先，我们先看看kong的规则模型：  
-![image](8.png)  
+![image](http://wx3.sinaimg.cn/mw690/0060lm7Tly1g03qgawofzj319m057js4.jpg)  
 从图上可见，Service是规则模型的核心，一个Service代表一个目标服务URL。  
 Route代表的是Service的细粒度路由规则，定义了根据不同的客户端请求属性来选择目标端Service，一个Service可关联多个Route规则。可类比istio中的VirtualService。  
 Upstream定义的是针对具体的目标Service，所采取的负载均衡策略，以及健康检查相关配置，一个Service可关联0-1个Upstream。可类比istio中的DestinationRule。  
@@ -53,7 +53,7 @@ Target定义的是具体的服务节点实例，可定义权重，一个target�
 在k8s环境下部署，如果直接使用k8s平台所提供的kube-dns的域名解析能力以及ClusterIP/NodePort的负载均衡的话，那么原则上只需要配置Service以及Route规则就可以进行工作。Upstream和Target属于可选配置。  
 <br/>
 我们继续看看，kong-mesh本身如何根据这些规则进行路由。  
-![image](9.png)  
+![image](http://wx2.sinaimg.cn/mw690/0060lm7Tly1g03qgd8vt3j30ih0e93z7.jpg)  
 Kong的路由及负载均衡能力是构建于openresty的access_by_lua以及balancer_by_lua这2个phase之上的。Servicea发送的请求通过iptables将流量导入到客户端侧（servicea-kong），kong收到后，根据请求消息进行route_match，找出匹配的目标service，然后再根据service的可用target进行负载均衡，找到目标serviceb节点实例进行发送。  
 服务端serviceb-kong收到请求后，根据启动时配置好的本地路由规则，KONG_ORIGINS=
 ”tcp://serviceb:8080=tcp://127.0.0.1:8080”，直接把target为serviceb:8080的请求直接投递给serviceb。最终完成整个请求路由过程。  
