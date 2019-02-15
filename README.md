@@ -40,8 +40,9 @@
 ```yaml
 ---
 original: 原文链接或者原创作者的GitHub账号
+author: 作者姓名
 translator: 译者的GitHub账号
-reviewer: 审阅者的GitHub账号
+reviewer: ["审阅者A的GitHub账","审阅者B的GitHub账号"]
 title: "标题"
 description: "文章摘要"
 categories: "译文或原创"
@@ -121,4 +122,4 @@ Mac用户可以直接到App Store中搜索**iPic**就可以免费下载和使用
 
 ---
 
-[ServiceMesher](http:/www.servicemesher.com)
+© [ServiceMesher](http:/www.servicemesher.com)
