@@ -8,8 +8,6 @@ categories: "translation"
 tags: ["cilium","encryption","multi-cluster","multi-mesh","dns","kubernetes"]
 date: 2019-02-12
 ---
-2019年2月12日
-
 # Cilium 1.4：多集群服务路由，DNS授权，IPVLAN支持，透明加密，Flannel集成，与其他CNI的基准测试，......
 
 [通告](https://cilium.io/blog/categories/Announcements)
@@ -20,44 +18,42 @@ date: 2019-02-12
 
 像往常一样，感谢过去4个月中在版本1.3和1.4之间贡献了1048次提交的Cilium开发人员及整个社区。
 
-## 什么是Cilium？
+## Cilium是什么？
 
-Cilium是一个开源软件，用于透明地提供和保护使用Kubernetes，Docker和Mesos等Linux容器管理平台部署的应用程序服务之间的网络和API连接。
+Cilium是一个开源软件，用于透明地提供和保护使用Kubernetes、Docker和Mesos等Linux容器管理平台部署的应用程序服务之间的网络和API连接。
 
-Cilium的基础是一种名为BPF的新Linux内核技术，它可以在Linux本身内动态插入强大的安全性、可见性和网络控制逻辑。 BPF用于提供诸如多集群路由，负载平衡以取代kube\-proxy，使用X.509证书的透明加密以及网络和服务安全性等功能。 除了提供传统的网络级安全性之外，BPF的灵活性还可以通过应用程序协议和DNS请求/响应的上下文实现安全性。 Cilium与Envoy紧密集成，并提供基于Go的扩展框架。 由于BPF在Linux内核中运行，因此可以应用所有Cilium功能，而无需对应用程序代码或容器配置进行任何更改。
+Cilium的基础是一种名为BPF的新Linux内核技术，它可以在Linux本身内动态插入强大的安全性、可见性和网络控制逻辑。BPF用于提供诸如多集群路由，负载均衡以取代kube\-proxy，使用X.509证书的透明加密以及网络和服务安全性等功能。除了提供传统的网络级安全性之外，BPF的灵活性还可以通过应用程序协议和DNS请求/响应的上下文实现安全性。Cilium与Envoy紧密集成，并提供基于Go的扩展框架。由于BPF在Linux内核中运行，因此可以应用所有Cilium功能，而无需对应用程序代码或容器配置进行任何更改。
 
 有关 **[Cilium](https://cilium.readthedocs.io/en/stable/intro/)** 的更详细的介绍， 请参阅**[Cilium简介](https://cilium.readthedocs.io/en/stable/intro/)** 一节。
 
 ## 多集群服务路由
 
-Cilium 1.3在多个集群之间引入了基本的pod IP路由功能。 Cilium 1.4引入了基于标准Kubernetes服务的全局服务概念。 全局服务允许用户指定Kubernetes服务在多个集群中可用。 然后，该服务可以在多个集群中具有后端pod。
+Cilium 1.3在多个集群之间引入了基本的pod IP路由功能。Cilium 1.4引入了基于标准Kubernetes服务的全局服务概念。全局服务允许用户指定Kubernetes服务在多个集群中可用。然后，该服务可以在多个集群中具有后端pod。
 
-用户体验就像在每个集群中定义具有相同名称和命名空间的Kubernetes服务并添加注释以将其标记为全局一样简单。
+用户体验就像在每个集群中定义具有相同名称和命名空间的Kubernetes服务并添加注释以将其标记为全局一样简单。 ![多集群服务](https://ws1.sinaimg.cn/large/61411417ly1g05xmkdyp1j21fk0mggly.jpg)
 
- ![多集群服务](https://ws1.sinaimg.cn/large/61411417ly1g05xmkdyp1j21fk0mggly.jpg)
+当pod向上或向下扩展或变得不健康时，Kubernetes运行状态检查信息可用于自动添加和删除后端服务。
 
-当pods向上或向下扩展或变得不健康时，Kubernetes运行状态检查信息可用于自动添加和删除后端服务。
+![多集群故障转移](https://ws1.sinaimg.cn/large/61411417ly1g05xmk3324j21g80hkwev.jpg)
 
- ![多集群故障转移](https://ws1.sinaimg.cn/large/61411417ly1g05xmk3324j21g80hkwev.jpg)
-
-控制平面建立在etcd之上，类似于Kubernetes本身的操作方式，具有弹性和简单性作为其基本设计模式。 每个集群继续运行其自己的etcd集群，并且复制以只读方式进行，这可确保集群中的故障不会影响其他集群。
+控制平面建立在etcd之上，类似于Kubernetes原生的操作方式，具有弹性和简单性作为其基本设计模式。每个集群继续运行其自己的etcd集群，并且复制以只读方式进行，这可确保集群中的故障不会影响其他集群。
 
  ![集群控制平面](https://ws1.sinaimg.cn/large/61411417ly1g05xmjzw1jj20jg09ljrn.jpg)
 
-将集群连接在一起就像使用云供应商的标准路由API或基于常规IP地址的VPN网关和隧道的本地基础设施在VPC之间提供路由，然后通过内部Kubernetes负载均衡器暴露Cilium控制平面以将其暴露给内部VPC一样简单。 TLS用于使用作为Kubernetes Secret管理的证书和密钥对客户端和服务器进行身份验证。
+将集群连接在一起就像使用云供应商的标准路由API或基于常规IP地址的VPN网关和隧道的本地基础设施在VPC之间提供路由，然后通过内部Kubernetes负载均衡器暴露Cilium控制平面以将其暴露给内部VPC一样简单。TLS用于使用作为Kubernetes Secret管理的证书和密钥对客户端和服务器进行身份验证。
 
 ## IPVLAN支持（测试版）
 
-添加了一种新的基于IPVLAN的数据路径模式。 与基于veth的体系结构相比，IPVLAN具有低延迟优势。 使用netperf在3.40Ghz Xeon上的两个本地容器之间测量了以下基准测试，并使用单核禁用超线程。 与veth相比，IPVLAN的第99百分位延迟相对较低（越低越好）：
+添加了一种新的基于IPVLAN的数据路径模式。与基于veth的体系结构相比，IPVLAN具有低延迟优势。使用netperf在3.40Ghz Xeon上的两个本地容器之间测量了以下基准测试，并使用单核禁用超线程。与veth相比，IPVLAN的P99延迟相对较低（越低越好）：
 
 ![IPVLAN性能（延迟）](https://ws1.sinaimg.cn/large/61411417ly1g05ygz1tuxj20wa0iu3yo.jpg)
 
 
-IPVLAN和veth之间的最大吞吐量（越高越好）非常相似，但是通过从内核编译netfilter/iptables可以实现非常显着的性能提升。 如果您不使用NodePort服务并且在离开Kubernete worker node时不需要伪装网络流量，则已经可以完全运行您的Kubernetes集群。 我们将在接下来的几周内提供有关如何免费运行iptables和kube\-proxy的指南。
+IPVLAN和veth之间的最大吞吐量（越高越好）非常相似，但是通过从内核编译netfilter/iptables可以实现非常显着的性能提升。如果您不使用NodePort服务并且在离开Kubernete worker node时不需要伪装网络流量，则已经可以完全运行您的Kubernetes集群。我们将在接下来的几周内提供有关如何运行iptables和kube\-proxy的指南。
 
  ![IPVLAN性能](https://ws1.sinaimg.cn/large/61411417ly1g05xmkwgobj20gs0abdfq.jpg)
 
-IPVLAN是1.4中的beta级功能， 有关如何启用和配置该功能的说明 ，请参阅 [IPVLAN入门指南](https://docs.cilium.io/en/v1.4/gettingstarted/ipvlan/) 。
+IPVLAN是1.4中的beta级功能，有关如何启用和配置该功能的说明，请参阅 [IPVLAN入门指南](https://docs.cilium.io/en/v1.4/gettingstarted/ipvlan/) 。
 
 ## DNS请求/响应的安全性和可见性
 
@@ -127,13 +123,9 @@ spec:
 
 正如[在KubeCon上宣布的那样](https://www.youtube.com/watch?v=ER9eIXL2_14) ，我们正在使用Cilium 1.4进行本地进程通信加速。
 
-Sockmap加速本地进程通信主要用于sidecar代理和本地进程之间的通信，但适用于所有本地进程。
+Sockmap加速本地进程通信主要用于sidecar代理和本地进程之间的通信，但适用于所有本地进程。 ![SockMap加速了延迟](https://ws1.sinaimg.cn/large/61411417ly1g05xmkn6wfj20vs0j0glt.jpg)
 
- ![SockMap加速了延迟](https://ws1.sinaimg.cn/large/61411417ly1g05xmkn6wfj20vs0j0glt.jpg)
-
-启用sockmap时，请求数/s和最大吞吐量都加倍：
-
- ![SockMap加速了请求处​​理](https://ws1.sinaimg.cn/large/61411417ly1g05xmkb7mbj20w20j00su.jpg)
+启用sockmap时，请求数/s和最大吞吐量都加倍： ![SockMap加速了请求处​​理](https://ws1.sinaimg.cn/large/61411417ly1g05xmkb7mbj20w20j00su.jpg)
 
  ![SockMap加速了吞吐量](https://ws1.sinaimg.cn/large/61411417ly1g05xmkrc2cj20g309jgli.jpg)
 
@@ -143,7 +135,7 @@ Sockmap加速是1.4中的alpha级别功能。 可以使用该 `--sockops-enable`
 
 ## 新Grafana仪表板
 
- ![Grafana](https://ws1.sinaimg.cn/large/61411417ly1g05xmjnwpaj22fu0jywfi.jpg)
+![Grafana](https://ws1.sinaimg.cn/large/61411417ly1g05xmjnwpaj22fu0jywfi.jpg)
 
 添加了几个新的Prometheus指标，并且可以使用单个命令将新的Grafana仪表板部署到任何Kubernetes集群中：
 
@@ -206,13 +198,13 @@ Flannel集成主要用于在现有集群中尝试Cilium功能或用于迁移目�
 这些基准测试的典型敌人是：
 
 *   上下文在内核和用户空间之间切换。 这些数字会由于 **很多** 当L4/L7代理会现实的更糟。
-*   任何每个数据包开销都会产生巨大影响。 冷缓存和数据结构也会产生负面影响。 必须遍历的代码越少越好。
+*   任何每个数据包开销都会产生巨大影响。 冷缓存和数据结构也会产生负面影响。 必须遍历的代码越少越好。 
 
- ![CNI RR](https://ws1.sinaimg.cn/large/61411417ly1g05xmkn6wfj20vs0j0glt.jpg)
+![CNI RR](https://ws1.sinaimg.cn/large/61411417ly1g05xmkn6wfj20vs0j0glt.jpg)
 
 上图显示了执行相同基准测试的每秒请求数。 每秒请求与延迟相当重叠。 对于之前的测试，这些数字是按CPU核心测量的。
 
- ![CNI Stream](https://ws1.sinaimg.cn/large/61411417ly1g05xmjsdpnj20wk0iuaa4.jpg)
+![CNI Stream](https://ws1.sinaimg.cn/large/61411417ly1g05xmjsdpnj20wk0iuaa4.jpg)
 
 最后一张图说明了频谱的相反情况。 TCP\_STREAM测试试图通过单个TCP连接抽取尽可能多的字节。 这是内存带宽可以发挥作用的地方，网络硬件或云供应商限制通常可以人为地限制基准。
 
