@@ -86,7 +86,7 @@ spec:
 
 说实话，自定义编写Adapter是一个上手门槛较为陡峭的一件事情。我在这里因为篇幅原因不能完全一步步细说自定义Adapter的步骤。在这里我推荐对自定义编写Adapter有兴趣的人可以根据官网的[自定义Mixer Adapter开发指南](https://github.com/istio/istio/wiki/Mixer-Out-Of-Process-Adapter-Dev-Guide)和[自定义Mixer Adapter详细步骤](https://github.com/istio/istio/wiki/Mixer-Out-Of-Process-Adapter-Walkthrough)来进行学习和尝试。在这里我给出在我的JWT-Adapter中的关键函数来进行描述。
 
-```golang
+```go
 
 func (s *JwtAdapter) HandleAuthorization(ctx context.Context, r *authorization.HandleAuthorizationRequest) (*v1beta1.CheckResult, error) {
   

@@ -2,7 +2,7 @@
 author: "andrewshan"
 reviewer: ["rootsongjc"]
 title: "Kong mesh深度分析报告"
-description: “本文试用了 kong mesh 并与 istio + envoy 做了功能对比。"
+description: "本文试用了 kong mesh 并与 istio + envoy 做了功能对比。"
 categories: "translation"
 tags: ["kong","service mesh","istio","envoy"]
 date: 2019-02-12
