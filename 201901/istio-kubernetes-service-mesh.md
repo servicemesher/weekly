@@ -2,9 +2,9 @@
 original: https://blog.aquasec.com/istio-kubernetes-service-mesh
 author: "Luke Bond"
 translator: "saberuster"
-reviewer: ["审阅者A的GitHub账", "审阅者B的GitHub账号"]
+reviewer: ["rootsongjc"]
 title: "企业级微服务解决方案：Istio"
-description: "本文介绍了什么是Istio，并详细分析了Istio的优势，最后分享了关于Istio的一些落地经验"
+description: "本文介绍了什么是Istio，并详细分析了Istio的优势，最后分享了关于Istio的一些落地经验。"
 categories: "translation"
 tags: ["istio", "microservices"]
 date: 2018-09-28
