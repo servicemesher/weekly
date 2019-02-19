@@ -13,7 +13,7 @@ date: 2019-2-19
 
 ### Threading overview
 
-![](https://oscimg.oschina.net/oscnet/72e548d5beaf644dacab2463409742b7e43.jpg)
+![](http://ww1.sinaimg.cn/large/5f3e3349gy1g0c5di41ayj218g10ewm0.jpg)
 
 Envoy使用三种不同类型的线程，如图1所示。
 
@@ -53,7 +53,7 @@ Envoy使用三种不同类型的线程，如图1所示。
 
 由于Envoy将主线程职责与工作线程职责分开，因此需要在主线程上完成复杂处理，然后以高度并发的方式使每个工作线程可用。 本节介绍了Envoy的高级线程本地存储（TLS）系统。 在下一节中，我将描述如何使用它来处理集群管理。
 
-![](https://oscimg.oschina.net/oscnet/c3a95e500e0a1da10765e8141db4e3f91ec.jpg)
+![](http://ww1.sinaimg.cn/large/5f3e3349gy1g0c5bd3l63j218g0n1wjh.jpg)
 
 如已经描述的那样，主线程基本上处理Envoy过程中的所有管理/控制平面功能。 （控制平面在这里有点过载但是当在特使过程中考虑并与工人做的转发进行比较时，似乎是合适的）。 主线程进程执行某些工作是一种常见模式，然后需要使用该工作的结果更新每个工作线程，并且工作线程不需要在每次访问时获取锁定。
 
@@ -75,7 +75,7 @@ Envoy的TLS系统的工作原理如下：
 
 在本节中，我将描述TLS如何用于集群管理。 群集管理包括xDS API处理和/或DNS以及运行状况检查。
 
-![](https://oscimg.oschina.net/oscnet/ca71fd500583db4d961e2ee9991fc45259d.jpg)
+![](http://ww1.sinaimg.cn/large/5f3e3349gy1g0c5dx3j34j20ir0agwgn.jpg)
 
 图3显示了涉及以下组件和步骤的总体流程：
 
