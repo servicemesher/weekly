@@ -134,3 +134,4 @@ Envoy的线程模型旨在支持编程的简单性和大规模并行性，但如
 -   [https://github.com/lyft/envoy/blob/master/source/common/thread\_local/thread\_local_impl.h](https://github.com/lyft/envoy/blob/master/source/common/thread_local/thread_local_impl.h)
 -   [https://github.com/lyft/envoy/blob/master/include/envoy/upstream/cluster_manager.h](https://github.com/lyft/envoy/blob/master/include/envoy/upstream/cluster_manager.h)
 -   [https://github.com/lyft/envoy/blob/master/source/common/upstream/cluster\_manager\_impl.h](https://github.com/lyft/envoy/blob/master/source/common/upstream/cluster_manager_impl.h)
+
