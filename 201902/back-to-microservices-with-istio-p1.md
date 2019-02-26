@@ -1,7 +1,7 @@
 ---
 author: "Rinor Maloku"
 translator: "loverto"
-reviewer: ["rootsongjc"]
+reviewer: ["haiker2011"]
 title: "使用Istio打造微服务（第1部分）"
 description: “使用Istio打造微服务（第1部分）"
 categories: "translation"
