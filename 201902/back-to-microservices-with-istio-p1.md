@@ -2,13 +2,13 @@
 author: "Rinor Maloku"
 translator: "loverto"
 reviewer: ["rootsongjc"]
-title: "后端微服务使用Istio（第1部分）"
-description: “后端微服务使用Istio（第1部分）"
+title: "使用Istio打造微服务（第1部分）"
+description: “使用Istio打造微服务（第1部分）"
 categories: "translation"
 tags: ["istio","microservices","kubernetes","vs","tracing","monitor"]
 date: 2019-02-12
 ---
-# 后端微服务使用Istio（第1部分）
+# 使用Istio打造微服务（第1部分）
 
 2月20日
 
@@ -79,7 +79,7 @@ Istio拦截所有网络流量，并通过在每个pod中注入智能代理作为
 
 你最终低声说了这个问题：“这是可配置的吗？”
 
-欢迎来到我的朋友巡航，让我们介绍一下控制平面。
+欢迎我的朋友来巡航，让我们介绍一下控制平面。
 
 ### 控制平面
 
@@ -103,7 +103,7 @@ Envoy（即数据平面）使用由Istio定义的 [Kubernetes自定义资源定�
 
 ### Istio实践
 
-Istio至少需要一个具有至少4个vCPU和8 GB RAM的Kubernetes集群。要快速设置集群并跟进本文，我建议使用Google云端平台，它为新用户提供 [300美元的免费试用版](https://console.developers.google.com/billing/freetrial?hl=en) 。
+Istio至少需要一个具有4个vCPU和8 GB RAM的Kubernetes集群。要快速设置集群并跟进本文，我建议使用Google云端平台，它为新用户提供 [300美元的免费试用版](https://console.developers.google.com/billing/freetrial?hl=en) 。
 
 使用Kubernetes命令行工具创建集群并配置访问后，我们已准备好使用Helm Package管理器安装Istio。
 
