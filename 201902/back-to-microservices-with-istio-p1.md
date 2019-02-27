@@ -8,17 +8,12 @@ categories: "translation"
 tags: ["istio","microservices","kubernetes","vs","tracing","monitor"]
 date: 2019-02-12
 ---
-# 使用Istio打造微服务（第1部分）
-
-2月20日
-
-![](https://ws1.sinaimg.cn/large/61411417ly1g0exu1gyo9j20m80bq754.jpg)
 
 **Istio** 是一个由Google，IBM和Lyft团队合作开发的开源项目，它提供了基于微服务的应用程序复杂性的解决方案，仅举几例：
 
-*   **流量管理** ：超时，重试，负载均衡，
-*   **安全性：** 最终用户身份验证和授权，
-*   **可观察性：** 跟踪，监控和记录。
+- **流量管理** ：超时，重试，负载均衡，
+- **安全性：** 最终用户身份验证和授权，
+- **可观察性：** 跟踪，监控和记录。
 
 所有这些都可以在应用程序层中解决，但是您的服务不再是“微型”，相对于提供业务价值的资源，实现这些的所有额外工作都是公司资源的压力。我们来举个例子：
 
@@ -46,11 +41,11 @@ date: 2019-02-12
 
 为了解决这个问题，Istio通过与服务完全分离，并通过拦截所有网络通信来提供一种巧妙的解决方案。这样做可以实现：
 
-*   **Fault Tolerance**  \- 使用响应状态代码，它可以在请求失败并重试时理解。
-*   **Canary Rollouts**  \- 仅将指定百分比的请求转发到新版本的服务。
-*   **监控和指标**  \- 服务响应所花费的时间。
-*   **跟踪和可观察性**  \- 它在每个请求中添加特殊header，并在集群中跟踪它们。
-*   **安全性**  \- 提取JWT令牌并对用户进行身份验证和授权。
+- **Fault Tolerance**  \- 使用响应状态代码，它可以在请求失败并重试时理解。
+- **Canary Rollouts**  \- 仅将指定百分比的请求转发到新版本的服务。
+- **监控和指标**  \- 服务响应所花费的时间。
+- **跟踪和可观察性**  \- 它在每个请求中添加特殊header，并在集群中跟踪它们。
+- **安全性**  \- 提取JWT令牌并对用户进行身份验证和授权。
 
 仅举几例（仅举几例），让您感兴趣！ 我们来看一些技术细节吧！
 
@@ -68,10 +63,10 @@ Istio拦截所有网络流量，并通过在每个pod中注入智能代理作为
 
 总结一下：
 
-1.  Envoy将请求发送到服务B的第一个实例，但它失败了。
-2.  Envoy sidecar重试。（1）
-3.  返回对调用代理的失败请求。
-4.  这将打开熔断器并在后续请求中调用下一个服务。（2）
+1. Envoy将请求发送到服务B的第一个实例，但它失败了。
+2. Envoy sidecar重试。（1）
+3. 返回对调用代理的失败请求。
+4. 这将打开熔断器并在后续请求中调用下一个服务。（2）
 
 这意味着您不必使用另一个重试库，您不必在编程语言X，Y或Z中开发自己的Circuit Breaking和Service Discovery实现。所有这些都是开箱即用的。这些功能都是通过Istio来实现，你不需要更改代码。
 
@@ -95,7 +90,7 @@ Envoy（即数据平面）使用由Istio定义的 [Kubernetes自定义资源定�
 
 坦率地说，我们的服务对Istio的存在有着尽可能多的了解，就像鱼对水一样，他们会问自己“这到底是什么水？”。
 
-![由 [Victoria Dimitrakopoulos](https://fityourself.club/@victoriadimitrakopoulos) 绘制[](https://fityourself.club/@victoriadimitrakopoulos)](https://ws1.sinaimg.cn/large/61411417ly1g0exu1l39rj20m809tqd9.jpg)
+![Victoria Dimitrakopoulos](https://ws1.sinaimg.cn/large/61411417ly1g0exu1l39rj20m809tqd9.jpg)
 
 这意味着您可以选择一个工作集群，在部署了Istio的组件后，其中的服务将继续工作，并且以相同的方式，您可以删除组件，一切都会很好。可以理解的是，您将失去Istio提供的功能。
 
@@ -134,10 +129,10 @@ $ helm template install/kubernetes/helm/istio \
 
 上面的命令将Istio的核心组件输出到文件 `istio.yaml` 中。我们使用以下参数自定义模板：
 
-*   **global.mtls.enabled** 设置为false以保持引入的重点。
-*   **tracing.enabled** 允许使用jaeger跟踪请求。
-*   **kiali.enabled** 在我们的集群中安装Kiali以实现服务和流量的可视化
-*   **grafana.enabled** 安装Grafana，为了收集指标的可视化。
+- **global.mtls.enabled** 设置为false以保持引入的重点。
+- **tracing.enabled** 允许使用jaeger跟踪请求。
+- **kiali.enabled** 在我们的集群中安装Kiali以实现服务和流量的可视化
+- **grafana.enabled** 安装Grafana，为了收集指标的可视化。
 
 通过执行以下命令应用生成的资源
 
@@ -159,11 +154,10 @@ $ kubectl get pods -n istio-system
 
 该应用程序由四个微服务组成：
 
-*   **SA\-Frontend服务** ：提供前端Reactjs应用程序。
-*   **SA\-WebApp服务** ：处理对Sentiment Analysis的请求。
-*   **SA\-Logic服务** ：执行sentiment Analysis。
-*   **SA反馈服务** ：接收用户关于分析准确性的反馈。
-
+- **SA\-Frontend服务** ：提供前端Reactjs应用程序。
+- **SA\-WebApp服务** ：处理对Sentiment Analysis的请求。
+- **SA\-Logic服务** ：执行sentiment Analysis。
+- **SA反馈服务** ：接收用户关于分析准确性的反馈。
 
 ![图6情感分析微服务](https://ws1.sinaimg.cn/large/61411417ly1g0exu2q2ppj20m80apmxy.jpg)
 
@@ -233,6 +227,7 @@ istio-ingressgateway   LoadBalancer   10.0.132.127   13.93.30.120
 $ EXTERNAL_IP=$(kubectl get svc -n istio-system \
   -l app=istio-ingressgateway \
   -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}')
+
 ```
 
 如果您在浏览器中访问此IP并且您将收到服务不可用错误，则 **默认情况下Istio将阻止任何传入流量**， 直到我们定义网关。
@@ -258,6 +253,7 @@ spec:
       protocol: HTTP
     hosts:
     - "*"
+
 ```
 
 除了选择器`istio：ingressgateway`之外，所有配置都是不需要说明的。使用此选择器，我们可以指定应用配置的Ingress Gateway，在我们的示例中，它是安装在Istio设置上的默认入口网关控制器。
@@ -267,6 +263,7 @@ spec:
 ```bash
 $ kubectl apply -f resource-manifests/istio/http-gateway.yaml
 gateway.networking.istio.io/http-gateway created
+
 ```
 
 网关现在允许在端口80中进行访问，但它不知道在何处路由请求。这需要使用**Virtual Service**来实现。
@@ -281,9 +278,9 @@ VirtualService指示Ingress Gateway如何路由允许进入集群的请求。
 
 让我们分解以下路由到SA\-Frontend的请求：
 
-*   `**/**` 应将**精确路径** 路由到SA\-Frontend以获取Index.html
-*   `**/static/***` 应将**前缀路径** 路由到SA\-Frontend以获取前端所需的任何静态文件，如Css和JavaScript文件。
-*   **匹配正则表达式的路径**`'^.*\.(ico|png|jpg)$'` 应该路由到SA\-Frontend，我们应该把图像资源路由到前端。
+- `**/**` 应将**精确路径** 路由到SA\-Frontend以获取Index.html
+- `**/static/***` 应将**前缀路径** 路由到SA\-Frontend以获取前端所需的任何静态文件，如Css和JavaScript文件。
+- **匹配正则表达式的路径**`'^.*\.(ico|png|jpg)$'` 应该路由到SA\-Frontend，我们应该把图像资源路由到前端。
 
 这是通过以下配置实现的：
 
@@ -311,12 +308,13 @@ spec:
         host: sa-frontend             # 2
         port:
           number: 80
+
 ```
 
 这里的重点是：
 
-1.  此VirtualService适用于通过**http网关** 发出的请求
-2.  Destination定义请求路由到的服务。
+1. 此VirtualService适用于通过**http网关** 发出的请求
+2. Destination定义请求路由到的服务。
 
 **注意**： 上面的配置位于文件中 `sa-virtualservice-external.yaml`，它还包含用于路由到SA\-WebApp和SA\-Feedback的配置，但为简洁起见，已缩短。
 
@@ -325,6 +323,7 @@ spec:
 ```bash
 $ kubectl apply -f resource-manifests/istio/sa-virtualservice-external.yaml
 virtualservice.networking.istio.io/sa-external-services created
+
 ```
 
 **注意**： 当我们应用Istio资源时，Kubernetes API服务器会创建一个由Istio控制平面接收的事件，然后将新配置应用于每个pod的Envoy代理。Ingress Gateway控制器是另一个由控制平面配置的Envoy，如图9所示。
@@ -369,8 +368,8 @@ $ kubectl -n istio-system port-forward \
 ```bash
 $ while true; do \
     curl -i http://$EXTERNAL_IP/sentiment \
-    -H “Content-type: application/json” \
-    -d ‘{“sentence”: “I love yogobella”}’; \
+    -H "Content-type: application/json" \
+    -d '{"sentence": "I love yogobella"}'; \
     sleep .8; done
 ```
 
@@ -396,6 +395,7 @@ Istio使用Jaeger Tracer实现OpenTracing API，这是一个独立于供应商�
 $ kubectl port-forward -n istio-system \
     $(kubectl get pod -n istio-system -l app=jaeger \
     -o jsonpath='{.items[0].metadata.name}') 16686
+
 ```
 
 然后在 [http://localhost:16686](http://localhost:16686/) 中打开UI，选择 **sa\-web\-app** 服务， *如果下拉列表中未显示该*服务，*则在页面上生成一些活动并点击刷新* 。随后单击该按钮 **查找痕迹**， 这显示最近的痕迹，选择任何和所有的痕迹的详细分类将会显示 ，如图14所示。
@@ -404,16 +404,16 @@ $ kubectl port-forward -n istio-system \
 
 跟踪显示：
 
-1.  请求来到 **istio\-ingressgateway** （它是第一次与其中一个服务联系，因此对于生成跟踪ID的请求）然后网关将请求转发给 `sa-web-app` 服务。
-2.  在 `sa-web-app` 服务中，请求由Envoysidecar拾取并创建一个span（这就是我们在跟踪中看到它的原因）并转发到 `sa-web-app` 容器实例。
-3.  这里方法 **sentimentAnalysis** 处理请求。这些跟踪由应用程序生成，这意味着需要更改代码）。
-4.  从POST请求`sa-logic`开始的位置。跟踪ID需要`sa-web-app`传递  。
+1. 请求来到 **istio\-ingressgateway** （它是第一次与其中一个服务联系，因此对于生成跟踪ID的请求）然后网关将请求转发给 `sa-web-app` 服务。
+2. 在 `sa-web-app` 服务中，请求由Envoysidecar拾取并创建一个span（这就是我们在跟踪中看到它的原因）并转发到 `sa-web-app` 容器实例。
+3. 这里方法 **sentimentAnalysis** 处理请求。这些跟踪由应用程序生成，这意味着需要更改代码）。
+4. 从POST请求`sa-logic`开始的位置。跟踪ID需要`sa-web-app`传递  。
 
 5\. ...
 
 **注意** ：在第4点，我们的应用程序需要获取Istio生成的header，并在下一个请求时将其传递下来，如下图所示。
 
-![图15.（A）Istio传递头， **（B）服务传递头**](https://ws1.sinaimg.cn/large/61411417ly1g0exu1odduj20m8055q3r.jpg)
+![图15.(A)Istio传递头， **(B)服务传递头**](https://ws1.sinaimg.cn/large/61411417ly1g0exu1odduj20m8055q3r.jpg)
 
 Istio做主要的繁重工作，因为它在传入的请求上生成header，在每个sidecar上创建新的span，传递它们，但是如果没有我们的服务传递header，我们将失去请求的完整跟踪。
 
@@ -439,10 +439,10 @@ x-ot-span-context
 
 使用Envoy的Istio为您的集群提供了许多新功能，从而实现：
 
-*   **动态请求路由** ：Canary部署，A/B测试，
-*   **负载均衡：** 简单和一致的哈希平衡，
-*   **故障恢复** ：超时，重试，熔断器，
-*   **故障注入** ：延迟，中止请求等
+- **动态请求路由** ：Canary部署，A/B测试，
+- **负载均衡：** 简单和一致的哈希平衡，
+- **故障恢复** ：超时，重试，熔断器，
+- **故障注入** ：延迟，中止请求等
 
 在本文的序列中，我们将在我们的应用程序中展示这些功能，并在此过程中介绍一些新概念。我们将研究的第一个概念是DestinationRules，并使用那些我们将启用A/B测试的概念。
 
@@ -455,12 +455,13 @@ x-ot-span-context
 ```bash
 $ kubectl apply -f resource-manifests/kube/ab-testing/sa-frontend-green-deployment.yaml
 deployment.extensions/sa-frontend-green created
+
 ```
 
 绿色版本的部署清单有两点不同：
 
-1.  该image基于不同的标签： `istio-green` 
-2.  pod标有 `version: green` 。
+1. 该image基于不同的标签： `istio-green` 
+2. pod标有 `version: green` 。
 
 而作为双方部署在标签 `app: sa-frontend` 通过虚拟服务路由的请求 `sa-external-services`  的服务 `sa-frontend` 会被转发到所有的实例，并将于负载采用循环算法，这将导致在图16中提出的负载均衡问题。
 
@@ -475,6 +476,7 @@ $ curl --silent http://$EXTERNAL_IP/ | tr '"' '\n' | grep main
 $ curl --silent http://$EXTERNAL_IP/ | tr '"' '\n' | grep main
 /static/css/main.f87cd8c9.css
 /static/js/main.f7659dbb.js
+
 ```
 
 这意味着请求一个版本的静态文件的`index.html`可以被负载均衡到提供另一个版本的pod，其中可以理解的是其他文件不存在。
@@ -506,7 +508,7 @@ spec:
         httpHeaderName: version   # 1
 ```
 
-1.  根据“version”标头的内容生成一致的哈希。
+1. 根据“version”标头的内容生成一致的哈希。
 
 通过执行以下命令应用配置并尝试一下！
 
@@ -529,7 +531,7 @@ DestinationRules具有更多LoadBalancing功能，所有详细信息都可以查
 
 ```bash
 $ kubectl delete -f resource-manifests/kube/ab-testing/sa-frontend-green-deployment.yaml
-deployment.extensions “sa-frontend-green” deleted
+deployment.extensions "sa-frontend-green" deleted
 $ kubectl delete -f resource-manifests/istio/ab-testing/destinationrule-sa-frontend.yaml
 destinationrule.networking.istio.io “sa-frontend” deleted
 ```
@@ -586,9 +588,9 @@ spec:
       version: v2  
 ```
 
-1.  主机定义此规则仅在向 `sa-logic` 服务发生路由时适用
-2.  路由到子集实例时使用的子集名称。
-3.  Label定义了需要匹配的键值对，以使实例成为子集的一部分。
+1. 主机定义此规则仅在向 `sa-logic` 服务发生路由时适用
+2. 路由到子集实例时使用的子集名称。
+3. Label定义了需要匹配的键值对，以使实例成为子集的一部分。
 
 应用执行以下命令的配置：
 
@@ -599,8 +601,8 @@ $ kubectl apply -f resource-manifests/istio/shadowing/sa-logic-subsets-destinati
 
 通过定义子集，我们可以继续并配置VirtualService以应用于请求 `sa-logic` 所在的请求：
 
-1.  路由到名为v1的子集，
-2.  镜像到名为v2的子集。
+1. 路由到名为v1的子集，
+2. 镜像到名为v2的子集。
 
 这是通过以下清单实现的：
 
@@ -631,11 +633,10 @@ virtualservice.networking.istio.io/sa-logic created
 
 通过执行以下命令添加一些负载：
 
-
 ```bash
 $ while true; do curl -v http://$EXTERNAL_IP/sentiment \
-    -H “Content-type: application/json” \
-    -d ‘{“sentence”: “I love yogobella”}’; \
+    -H "Content-type: application/json" \
+    -d '{"sentence": "I love yogobella"}'; \
     sleep .8; done
 ```
 
@@ -675,7 +676,7 @@ spec:
       weight: 20         # 1
 ```
 
-1.  权重指定要转发到目标或目标子集的请求的百分比。
+1. 权重指定要转发到目标或目标子集的请求的百分比。
 
 `sa-logic` 使用以下命令 更新以前的 虚拟服务配置：
 
@@ -690,8 +691,8 @@ $ kubectl apply -f resource-manifests/istio/canary/sa-logic-subsets-canary-versu
 $ while true; do \
    curl -i http://$EXTERNAL_IP/sentiment \
    -H “Content-type: application/json” \
-   -d ‘{“sentence”: “I love yogobella”}’ \
-   --silent -w “Time: %{time_total}s \t Status: %{http_code}\n” \
+   -d '{"sentence": "I love yogobella"}' \
+   --silent -w "Time: %{time_total}s \t Status: %{http_code}\n" \
    -o /dev/null; sleep .1; done
 Time: 0.153075s Status: 200
 Time: 0.137581s Status: 200
@@ -711,8 +712,8 @@ VirtualServices启用了Canary Deployments，通过这种方法，我们将潜�
 
 为了缓解这些问题并改善用户体验，我们可以：
 
-1.  如果服务时间超过8秒，则超时
-2.  重试失败的请求。
+1. 如果服务时间超过8秒，则超时
+2. 重试失败的请求。
 
 这是通过以下资源定义实现的：
 
@@ -740,9 +741,9 @@ spec:
       perTryTimeout: 3s   # 3
 ```
 
-1.  请求的超时时间为8秒，
-2.  它尝试了3次，
-3.  如果尝试时间超过3秒，则尝试将请求标记为失败。
+1. 请求的超时时间为8秒，
+2. 它尝试了3次，
+3. 如果尝试时间超过3秒，则尝试将请求标记为失败。
 
 这是一种优化，因为用户不会等待超过8秒，并且我们在发生故障时重试三次，从而增加了导致响应成功的机会。
 
@@ -761,7 +762,7 @@ virtualservice.networking.istio.io/sa-logic configured
 
 ```bash
 $ kubectl delete deployment sa-logic-buggy
-deployment.extensions “sa-logic-buggy” deleted
+deployment.extensions "sa-logic-buggy" deleted
 $ kubectl delete virtualservice sa-logic
 virtualservice.networking.istio.io “sa-logic” deleted
 ```
@@ -780,11 +781,11 @@ virtualservice.networking.istio.io “sa-logic” deleted
 
 在本文中，我们在Kubernetes集群中部署了Istio，并使用其自定义资源定义（如 **网关**， **VirtualServices**， **DestinationRules** 及其组件）启用了以下功能：
 
-*   使用 **Kiali**，通过查看正在运行的服务，它们如何执行，以及它们关系，来观察我们的服务 。
-*   使用 **Prometheus** 和 **Grafana** 进行收集和可视化 。
-*   请求 **Jaeger** 跟踪 （Hunter的德语）。
-*   对网络流量进行全面细粒度控制，实现 **Canary Deployments**， **A/B测试和Shadowing** 。
-*   轻松实现 **重试，超时和CircuitBreakers** 。
+- 使用 **Kiali**，通过查看正在运行的服务，它们如何执行，以及它们关系，来观察我们的服务 。
+- 使用 **Prometheus** 和 **Grafana** 进行收集和可视化 。
+- 请求 **Jaeger** 跟踪 （Hunter的德语）。
+- 对网络流量进行全面细粒度控制，实现 **Canary Deployments**， **A/B测试和Shadowing** 。
+- 轻松实现 **重试，超时和CircuitBreakers** 。
 
 所有这些都可以在没有代码更改或任何其他依赖性的情况下实现，从而使您的服务保持小巧，易于操作和维护
 
