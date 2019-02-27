@@ -1,7 +1,7 @@
 ---
 author: "BRIAN MCCLAIN"
 translator: "haiker2011"
-reviewer: ["rootsongjc"]
+reviewer: ["fleeto"]
 title: "Knative：编写更少的代码"
 description: "本文介绍如何利用Knative提供的功能，减少自己需要编写的代码"
 categories: "translation"
