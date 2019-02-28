@@ -11,7 +11,7 @@ date: 2019-02-13
 
 # Knative：编写更少的代码
 
-对我来说，2018年最好的开源项目是**Knative**，这是一个建立在Kubernetes之上的serverless平台。不仅是为了平台本身，也是为了它所鼓励的整个开发范式。事件驱动开发并不新鲜，但Knative为围绕事件构建生态系统奠定了基础。
+对我来说，2018年最好的开源项目是**Knative**，这是一个建立在Kubernetes之上的serverless平台。不仅是为了serverless平台本身，也是为了它所倡导的整个开发范式。事件驱动开发并不新鲜，但Knative为围绕事件构建生态系统奠定了基础。
 
 如果您不熟悉Knative，那么您读到的任何文档都将它分为三个不同的类别：
 
@@ -29,7 +29,7 @@ date: 2019-02-13
 
 ## 预构建（Prebuilt）的Docker容器
 
-我们将看到的第一个场景是为Knative提供一个预先构建的容器镜像，该镜像已经上载到我们选择的容器镜像库。您将在Knative中看到的大多数[Hello World](https://github.com/knative/docs/tree/master/serving/samples/helloworld-nodejs)示例都采用直接构建和管理容器的方式。这是有意义的，因为它很容易理解，而且没有引入很多新概念，这是一个很好的起点。这个概念非常直接：传给Knative一个暴露端口的容器，它将处理剩余的所有事情。它不关心你的代码是用[Go](https://github.com/knative/docs/tree/master/serving/samples/helloworld-go)、[Ruby](https://github.com/knative/docs/tree/master/serving/samples/helloworld-ruby)还是[Java](https://github.com/knative/docs/tree/master/serving/samples/helloworld-java)写的;它会接收传入的请求并将它们发送到你的应用程序。
+我们将看到的第一个场景是为Knative提供一个预构建的容器镜像，该镜像已经上传到我们选择的容器镜像库。您将在Knative中看到的大多数[Hello World](https://github.com/knative/docs/tree/master/serving/samples/helloworld-nodejs)示例都采用直接构建和管理容器的方式。这是有意义的，因为它很容易理解，而且没有引入很多新概念，这是一个很好的起点。这个概念非常简单直接：传给Knative一个暴露端口的容器，它将处理剩余的所有事情。它不关心你的代码是用[Go](https://github.com/knative/docs/tree/master/serving/samples/helloworld-go)、[Ruby](https://github.com/knative/docs/tree/master/serving/samples/helloworld-ruby)还是[Java](https://github.com/knative/docs/tree/master/serving/samples/helloworld-java)写的;它会接收传入的请求并将它们发送到你的应用程序。
 
 让我们从一个使用[Express web](https://expressjs.com/)框架的基本node.js hello world应用程序开始。
 
@@ -50,7 +50,7 @@ app.listen(port, function() {
 });
 ```
 
-是不是漂亮且简洁。这段代码将设置一个web服务器，监听端口8080(除非端口已被占用)，并通过返回Hello来响应HTTP POST请求。当然，还需要package.json文件，它定义了一些东西(如何启动应用程序，依赖关系等)，但这有点超出了我们所看到的范围。另一部分是Dockerfile，它描述如何将所有内容打包到一个容器中。
+是不是漂亮且简洁。这段代码将启动一个web服务器，监听端口8080(除非端口已被占用)，并通过返回Hello来响应HTTP POST请求。当然，还需要package.json文件，它定义了一些东西(如何启动应用程序，依赖关系等)，但这有点超出了我们所看到的范围。另一部分是Dockerfile，它描述如何将所有内容打包到一个容器中。
 
 ```dockerfile
 FROM node:10.15.1-stretch-slim
@@ -112,7 +112,7 @@ Hello, Prebuilt!
 
 顾名思义，它基于谷歌的[Kaniko](https://github.com/GoogleContainerTools/kaniko), Kaniko是在容器中构建容器镜像的工具，不依赖于正在运行的Docker守护进程。向Kaniko容器镜像提供Dockerfile和一个上传结果的位置，它就可以据此构建镜像。我们无需拉取代码、在本地构建镜像、上传到 Docker Hub，然后从 Knative 拉取镜像，我们可以让Knative为我们做这些，只需要多做一点配置。
 
-但是，在执行此操作之前，我们需要告诉Knative如何根据容器注册中心进行身份验证。为此，我们首先需要在Kubernetes中创建一个secret，这样我们就可以对Docker Hub进行身份验证，然后创建一个服务帐户来使用该secret并运行构建。让我们从创造Secret开始：
+但是，在执行此操作之前，我们需要告诉Knative如何根据容器注册中心进行身份验证。为此，我们首先需要在Kubernetes中创建一个Secret，这样我们就可以对Docker Hub进行身份验证，然后创建一个服务帐户来使用该Secret并运行构建。让我们从创造Secret开始：
 
 ```yaml
 apiVersion: v1
@@ -200,7 +200,7 @@ Hello, Kaniko!
 
 如果您来自PaaS背景，那么您可能已经习惯了简单地向上推代码，然后发生了一些神奇的事情，然后您就有了一个正常工作的应用程序。你不在乎这是怎么做到的。我们所知道的是，您不必编写Dockerfile来将其放入容器中，而且它可以正常工作。在[Cloud Foundry](https://www.cloudfoundry.org/)，这是通过名为[buildpacks](https://docs.cloudfoundry.org/buildpacks/)的框架实现的，该框架为应用程序提供运行时和依赖项。
 
-实际上我们走了两次运。不仅有一个使用buildpacks的Build Template，还有一个用于Node.js的buildpacks。就像Kaniko Build Template一样，我们将在Knative中安装buildpack Build Template：
+实际上给我们带来两大好处。不仅有一个使用buildpacks的Build Template，还有一个用于Node.js的buildpacks。就像Kaniko Build Template一样，我们将在Knative中安装buildpack Build Template：
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/knative/build-templates/master/buildpack/buildpack.yaml
@@ -271,7 +271,7 @@ Hello, Buildpacks!
 module.exports = x => "Hello, " + x + "!";
 ```
 
-就是这样。没有Dockerfile，没有YAML。只要一行代码。当然，像所有优秀的节点开发人员一样，我们仍然有自己的package.json文件，尽管它不依赖于Express。一旦部署完毕，riff将使用这一行代码并将其封装在自己的托管基容器镜像中。它将把它与调用[代码所需的逻辑](https://github.com/projectriff/riff-buildpack)打包在一起，并像运行在Knative上的任何其他函数一样提供服务。
+就是这样，没有Dockerfile，没有YAML。只要一行代码。当然，像所有优秀的节点开发人员一样，我们仍然需要有自己的package.json文件，尽管它不依赖于Express。一旦部署完毕，riff将使用这一行代码并将其封装在自己的托管容器镜像中。它将把它与调用[代码所需的逻辑](https://github.com/projectriff/riff-buildpack)打包在一起，并像运行在Knative上的任何其他函数一样提供服务。
 
 PFS CLI使得部署我们的函数变得非常容易。我们将给函数命名为pfs-hello-world，为它提供到代码所在的GitHub存储库的链接，并告诉它将生成的容器映像上传到我们的私有容器镜像库中。
 
