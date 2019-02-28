@@ -42,16 +42,23 @@
 original: 原文链接或者原创作者的GitHub账号
 author: 作者姓名
 translator: 译者的GitHub账号
+original: 原文地址
 reviewer: ["审阅者A的GitHub账","审阅者B的GitHub账号"]
 title: "标题"
 description: "文章摘要"
 categories: "译文或原创"
 tags: ["taga","tagb","tagc"]
-date: 2018-09-28
+originalPublishDate: 2018-09-28
+publishDate: 2019-02-28
 ---
 ```
 
 注：若提交原创文章可以直接在 `original` 中添加作者的GitHub ID。
+
+- originalPublishDate：所翻译的文章原文的发布日期
+- publishDate：原创文章或译文的PR 合并日期
+
+对于译文，建议译者在文章首段加上”编者按”一段，该段落主要内容是译者对原文的理解和解读，以帮助读者领会文章中的精神。
 
 ## 周报
 

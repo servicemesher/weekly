@@ -1,12 +1,14 @@
 ---
-author: "BRIAN MCCLAIN"
+author: “Brian McClain"
 translator: "haiker2011"
 reviewer: ["fleeto","loverto"]
+original: "https://content.pivotal.io/blog/knative-whittling-down-the-code"
 title: "Knative：编写更少的代码"
 description: "本文介绍如何利用Knative提供的功能，减少自己需要编写的代码"
 categories: "translation"
 tags: ["Knative","serverless","Kubernetes","Kaniko","Buildpack Build Template"]
-date: 2019-02-13
+originalPublishDate: 2019-02-13
+publishDate: 2019-02-28
 ---
 
 # Knative：编写更少的代码
