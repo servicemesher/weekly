@@ -1,5 +1,5 @@
 ---
-author: “Brian McClain"
+author: "Brian McClain"
 translator: "haiker2011"
 reviewer: ["fleeto","loverto"]
 original: "https://content.pivotal.io/blog/knative-whittling-down-the-code"
