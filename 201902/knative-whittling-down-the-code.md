@@ -1,7 +1,7 @@
 ---
 author: "BRIAN MCCLAIN"
 translator: "haiker2011"
-reviewer: ["fleeto"]
+reviewer: ["fleeto","loverto"]
 title: "Knative：编写更少的代码"
 description: "本文介绍如何利用Knative提供的功能，减少自己需要编写的代码"
 categories: "translation"
@@ -21,7 +21,7 @@ date: 2019-02-13
 
 * 事件(Eventing) —— 我的代码如何被各种事件触发？
 
-事实上这并不是一篇“Knative入门”的文章(在不久的将来会有更多关于这方面的[内容](https://twitter.com/BrianMMcClain/status/1086006073503481864?s=20))，但是我最近一直在思考的是，随着开发人员越来越多地利用Knative提供的功能，他们如何减少自己需要编写的代码。这是最近Twitter上一个特别热门的话题，尤其是在KubeCon时代。我注意到的一个常见问题是，“如果您正在编写Dockerfile，它真的是一个serverless的平台吗?” 但是，其他人认为将代码打包为容器可能是最合理的解决方案，因为它是可移植的、全面的，并且具有所有依赖项。不乏强烈持有的这种观点的人们，他们非常渴望争辩。
+事实上这并不是一篇“Knative入门”的文章(在不久的将来会有更多关于这方面的[内容](https://twitter.com/BrianMMcClain/status/1086006073503481864?s=20))，但是我最近一直在思考的是，随着开发人员越来越多地利用Knative提供的功能，他们如何减少自己需要编写的代码。这是最近Twitter上一个特别热门的话题，尤其是在KubeCon时代。我注意到的一个常见问题是，“如果您正在编写Dockerfile，它真的是一个serverless的平台吗?” 但是，其他人认为将代码打包为容器可能是最合理的解决方案，因为它是可移植的、全面的，并且具有所有依赖项。不乏强烈持有这种观点的人们，他们非常渴望争辩。
 
 与其火上浇油，不如让我们看看Knative给开发人员提供了哪些选项来逐渐减少我们编写的代码量。我们将从最冗长的示例开始—我们自己构建的预构建容器（prebuilt container）。从这里开始，我们将逐渐减少基准代码量，减少构建自己的容器的需要，减少编写自己的Dockerfile的需要，最后减少编写自己的配置的需要。最重要的是，我们将看到Pivotal Function Service (PFS)的强大功能，以及它如何允许开发人员关注代码而不是配置。
 
@@ -31,7 +31,7 @@ date: 2019-02-13
 
 我们将看到的第一个场景是为Knative提供一个预构建的容器镜像，该镜像已经上传到我们选择的容器镜像库。您将在Knative中看到的大多数[Hello World](https://github.com/knative/docs/tree/master/serving/samples/helloworld-nodejs)示例都采用直接构建和管理容器的方式。这是有意义的，因为它很容易理解，而且没有引入很多新概念，这是一个很好的起点。这个概念非常简单直接：传给Knative一个暴露端口的容器，它将处理剩余的所有事情。它不关心你的代码是用[Go](https://github.com/knative/docs/tree/master/serving/samples/helloworld-go)、[Ruby](https://github.com/knative/docs/tree/master/serving/samples/helloworld-ruby)还是[Java](https://github.com/knative/docs/tree/master/serving/samples/helloworld-java)写的;它会接收传入的请求并将它们发送到你的应用程序。
 
-让我们从一个使用[Express web](https://expressjs.com/)框架的基本node.js hello world应用程序开始。
+让我们从一个使用[Express web](https://expressjs.com/)框架基于node.js实现的 hello world应用程序开始。
 
 ```js
 const express = require("express");
@@ -198,7 +198,7 @@ Hello, Kaniko!
 
 所以，这个博客的重点是我们如何编写更少的代码。虽然我们已经使用Kaniko Build Template删除了部署的一个操作组件，但是我们仍然在代码之上维护一个Dockerfile和一个配置文件。但是如果我们可以抛弃Dockerfile呢?
 
-如果您来自PaaS背景，那么您可能已经习惯了简单地向上推代码，然后发生了一些神奇的事情，然后您就有了一个正常工作的应用程序。你不在乎这是怎么做到的。我们所知道的是，您不必编写Dockerfile来将其放入容器中，而且它可以正常工作。在[Cloud Foundry](https://www.cloudfoundry.org/)，这是通过名为[buildpacks](https://docs.cloudfoundry.org/buildpacks/)的框架实现的，该框架为应用程序提供运行时和依赖项。
+ 如果您具有使用PaaS的习惯，那么您可能已经习惯了简单地向上推代码，然后发生了一些神奇的事情，然后您就有了一个正常工作的应用程序。你不在乎这是怎么做到的。我们所知道的是，您不必编写Dockerfile来将其放入容器中，而且它可以正常工作。在[Cloud Foundry](https://www.cloudfoundry.org/)，这是通过名为[buildpacks](https://docs.cloudfoundry.org/buildpacks/)的框架实现的，该框架为应用程序提供运行时和依赖项。
 
 实际上给我们带来两大好处。不仅有一个使用buildpacks的Build Template，还有一个用于Node.js的buildpacks。就像Kaniko Build Template一样，我们将在Knative中安装buildpack Build Template：
 
