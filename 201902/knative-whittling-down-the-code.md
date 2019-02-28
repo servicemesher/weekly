@@ -11,11 +11,15 @@ originalPublishDate: 2019-02-13
 publishDate: 2019-02-28
 ---
 
+[**编者案**]
+
+> Knative 作为 Google 发起开源的 serverless 项目，给我们提供给了一套简单易用的 serverless 开源解决方案。本文作者直观地向我们展示了如何使用Knative来一步一步逐渐精简我们的代码，来更加简单容易的开发云原生应用。作者使用实例来逐步向我们讲述如何使用 Knative 提供的 Build、Serving 和 Eventing 三大组件来发挥威力，组件精简代码。如果您对 Knative 有兴趣，本文对于你通过 Knative 实践 serverless 一定会有所启发，希望您能喜欢。
+
 # Knative：编写更少的代码
 
 对我来说，2018年最好的开源项目是**Knative**，这是一个建立在Kubernetes之上的serverless平台。不仅是为了serverless平台本身，也是为了它所倡导的整个开发范式。事件驱动开发并不新鲜，但Knative为围绕事件构建生态系统奠定了基础。
 
-如果您不熟悉Knative，那么您读到的任何文档都将它分为三个不同的类别：
+如果您不熟悉Knative，那么您读到的任何文档都将它分为三大组件：
 
 * 构建(Build) —— 我如何构建代码和打包代码？
 
