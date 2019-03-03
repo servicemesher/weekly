@@ -1,17 +1,23 @@
 ---
 author: "Christian Posta"
 translator: "loverto"
-reviewer: ["rootsongjc"]
+reviewer: ["haiker2011"]
 title: "Envoy Proxy构建控制平面指南"
-description: “构建控制平面在边缘、网关或网格中管理Envoy Proxy"
+description: “Envoy Proxy构建控制平面指南"
 categories: "translation"
 tags: ["envoy","gloo","kubernetes","xds"]
+originalPublishDate: 2019-02-18
+publishDate:
 date: 2019-02-28
 ---
 
-# 构建控制平面在边缘、网关或网格中管理Envoy Proxy
+\[**编者案**\]
 
-[Envoy](https://www.envoyproxy.io/) 最近成为一个受欢迎的网络组成部分。 几年前 Matt Klein [写了一篇博客](https://blog.envoyproxy.io/the-universal-data-plane-api-d15cec7a) ，讨论了Envoy的动态配置API，以及Envoy发展的历史和动机。 他称该博客为“通用数据平面API”。 由于许多其他项目采用[Envoy](https://www.envoyproxy.io/community) 作为其产品的核心组件，因此对于应用程序/L7网络解决方案而言，“Envoy已成为云原生架构中的通用数据平面”并不是一件容易的事情，因为不仅仅是简单建立标准化API 。
+> Envoy 作为最受欢迎的早期网络组件，现在已经已经可以说是云原生架构中的通用数据平面。本文作者指引我们更方便的使用Envoy，及其定制控制平面，作者通过收集到的数据给出定制控制平面不同的意见，非常中肯，后续系列会更深入，欢迎关注改系列文章。
+
+# Envoy Proxy构建控制平面指南
+
+[Envoy](https://www.envoyproxy.io/) 最近成为一个受欢迎的网络组件。 几年前 Matt Klein [写了一篇博客](https://blog.envoyproxy.io/the-universal-data-plane-api-d15cec7a) ，讨论了Envoy的动态配置API，以及Envoy发展的历史和动机。 他称该博客为“通用数据平面API”。 由于许多其他项目采用[Envoy](https://www.envoyproxy.io/community) 作为其产品的核心组件，因此对于应用程序/L7网络解决方案而言，毫不夸张地说，“Envoy已成为云原生架构中的通用数据平面”，而不仅仅是简单建立了API标准。
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1g0mfoc0c9yj20dm07faap.jpg)
 
@@ -27,16 +33,16 @@ date: 2019-02-28
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1g0mforyrc1j20go0digsn.jpg)
 
-若是因为一些早期采用者建立了他们自己的定制控制平面，并不意味着你现在也要自己重新开发控制平面。 因为Envoy构建控制平面的项目在去年已经成熟了很多，若你决定重新开发另一个控制平面前你应该探索使用它们。 其次，正如Datawire的人们发现的那样，丹尼尔布莱 [恩特](https://twitter.com/danielbryantuk) 最近明确表示， [为Envoy建造一个控制平面并不适合胆小的人](https://www.infoq.com/articles/ambassador-api-gateway-kubernetes) 。
+若是因为一些早期采用者建立了他们自己的定制控制平面，并不意味着你现在也要自己重新开发控制平面。 因为Envoy构建控制平面的项目在去年已经成熟了很多，若你决定重新开发另一个控制平面前你应该探索使用它们。 其次，正如Datawire的人们发现的那样，[丹尼尔布莱 恩特](https://twitter.com/danielbryantuk) 最近明确表示， [为Envoy建造一个控制平面并不适合胆小的人](https://www.infoq.com/articles/ambassador-api-gateway-kubernetes) 。
 
-[我参与](https://www.solo.io/) 了 [几个](https://github.com/istio/istio)为Envoy构建控制平面的[开源项目](https://github.com/solo-io/gloo) 。 例如， [Gloo](https://gloo.solo.io/) 是 [一个功能网关](https://medium.com/solo-io/announcing-gloo-the-function-gateway-3f0860ef6600) ，可以充当非常强大的Kubernetes入口，API网关或功能网关，以简化单体应用到微服务的过渡。 Gloo [有一个Envoy的控制平面](https://gloo.solo.io/introduction/architecture/) ，我们可以在这一系列的帖子中作为一个例子来说明如何构建一个简单的抽象，允许在你需要的控制点上实现可插拔性和可扩展性。 您可以用作参考的其他实体控制平面实现是 [Istio](https://istio.io/) 和 [Heptio Contour](https://github.com/heptio/contour) 我们将在整个系列博客中使用这些作为很好的例子。 如果不出意外，您可以了解Envoy控制平面存在哪些选项，并使用它来指导您的实施，如果您必须走这条路。
+[我参与](https://www.solo.io/) 了 [几个](https://github.com/istio/istio)为Envoy构建控制平面的[开源项目](https://github.com/solo-io/gloo) 。 例如， [Gloo](https://gloo.solo.io/) 是 [一个功能网关](https://medium.com/solo-io/announcing-gloo-the-function-gateway-3f0860ef6600) ，可以充当非常强大的Kubernetes入口，API网关或功能网关，以简化单体应用到微服务的过渡。 Gloo [有一个Envoy的控制平面](https://gloo.solo.io/introduction/architecture/) ，我们可以在这一系列的帖子中作为一个例子来说明如何构建一个简单的抽象，允许在你需要的控制点上实现可插拔性和可扩展性。 您可以用作参考的其他可靠的控制平面实现是 [Istio](https://istio.io/) 和 [Heptio Contour](https://github.com/heptio/contour) 我们将在整个系列博客中使用这些作为很好的例子。 如果不出意外，您可以了解Envoy控制平面存在哪些选项，并使用它来指导您的实施，如果您必须走这条路。
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1g0mfpbj0hgj21200a840t.jpg)
 
 在这个博客系列中，我们将看看以下几个方面：
 
 *   采用动态更新机制的Envoy路由、服务发现和其他配置
-*   确定构成控制平面的组件，包括后备存储、服务发现API、安全组件等。
+*   确定构成控制平面的组件，包括后端存储、服务发现API、安全组件等。
 *   为您和组织最适合的用例，建立任何特定于域的配置对象和API
 *   考虑如何最好地将控制平面插入您需要的地方
 *   部署各种控制平面组件的选项
@@ -63,9 +69,9 @@ API使用 [proto3 Protocol Buffers](https://www.envoyproxy.io/docs/envoy/v1.9.0/
 *   [go控制平面](https://github.com/envoyproxy/go-control-plane)
 *   [java的控制平面](https://github.com/envoyproxy/java-control-plane)
 
-虽然这些区域（LDS/EDS/RDS/CDS/SDS，一起“xDS”）中的每一个都是动态可配置的，但这并不意味着您必须动态配置所有内容。 您可以拥有静态定义的部分组合以及动态更新的部分组合。 例如，要实现一种 `endpoints` 预期为动态但 `clusters` 在部署时众所周知 的服务发现类型 ，您可以静态定义 `clusters` 并使用 Envoy中 的 [端点发现服务](https://www.envoyproxy.io/docs/envoy/v1.9.0/api-v2/api/v2/eds.proto#envoy-api-file-envoy-api-v2-eds-proto) 。 如果您不确定在部署时将使用哪些 [上游群集，](https://www.envoyproxy.io/docs/envoy/v1.9.0/intro/arch_overview/terminology) 则可以使用 [群集发现服务](https://www.envoyproxy.io/docs/envoy/v1.9.0/configuration/cluster_manager/cds#config-cluster-manager-cds) 动态地找到那些。 关键是，您可以构建一个工作流程和流程，静态配置您需要的部分，同时使用动态xDS服务来发现运行时所需的部分。 您看到不同的控制平面实现的原因之一并不是每个人都有一个完全动态和可互换的环境，其中所有部分都应该是动态的。 在给定现有约束和可用工作流程的情况下，采用最适合您系统的动态水平。
+虽然这些领域（LDS/EDS/RDS/CDS/SDS，一起“xDS”）中的每一个都是动态可配置的，但这并不意味着您必须动态配置所有内容。 您可以拥有静态定义的部分组合以及动态更新的部分组合。 例如，要实现一种 `endpoints` 预期为动态但 `clusters` 在部署时众所周知 的服务发现类型 ，您可以静态定义 `clusters` 并使用 Envoy中 的 [端点发现服务](https://www.envoyproxy.io/docs/envoy/v1.9.0/api-v2/api/v2/eds.proto#envoy-api-file-envoy-api-v2-eds-proto) 。 如果您不确定在部署时将使用哪些 [上游群集，](https://www.envoyproxy.io/docs/envoy/v1.9.0/intro/arch_overview/terminology) 则可以使用 [群集发现服务](https://www.envoyproxy.io/docs/envoy/v1.9.0/configuration/cluster_manager/cds#config-cluster-manager-cds) 动态地找到那些。 关键是，您可以构建一个工作流程和流程，静态配置您需要的部分，同时使用动态xDS服务来发现运行时所需的部分。 您看到不同的控制平面实现的原因之一并不是每个人都有一个完全动态和可互换的环境，其中所有部分都应该是动态的。 在给定现有约束和可用工作流程的情况下，采用最适合您系统的动态级别。
 
-在Gloo的情况下，我们使用 [基于go\-control\-plane的控制平面](https://github.com/solo-io/gloo/blob/ac3bddf202423b297fb909eb6eff498745a8c015/projects/gloo/pkg/xds/envoy.go#L76) 来实现xDS API以服务Envoy的动态配置。 与Heptio Contour一样，Istio也使用此实现。 此控制平面API利用 [gRPC流式](https://grpc.io/docs/guides/concepts.html#server-streaming-rpc) 调用和存根API，因此您可以使用实现填充它。 [ Turbine Labs’ Rotor项目](https://github.com/turbinelabs/rotor) 是另一个不幸被弃用但可以用来学习的[项目](https://github.com/turbinelabs/rotor) 。 这是将Envoy的数据平面API与控制平面集成的高效方法。
+在Gloo的情况下，我们使用[基于go\-control\-plane的控制平面](https://github.com/solo-io/gloo/blob/ac3bddf202423b297fb909eb6eff498745a8c015/projects/gloo/pkg/xds/envoy.go#L76) 来实现xDS API以服务Envoy的动态配置。 与Heptio Contour一样，Istio也使用此实现。 此控制平面API利用 [gRPC流](https://grpc.io/docs/guides/concepts.html#server-streaming-rpc) 调用和存根API，因此您可以使用实现填充它。 [ Turbine Labs’ Rotor项目](https://github.com/turbinelabs/rotor) 是另一个不幸被弃用但可以用来学习的[项目](https://github.com/turbinelabs/rotor) 。 这是将Envoy的数据平面API与控制平面集成的高效方法。
 
 gRPC流不是更新Envoy配置的唯一方式。 在[以前版本的Envoy xDS API中](https://www.envoyproxy.io/docs/envoy/v1.5.0/api-v1/api) ，轮询是确定新配置是否可用的唯一选项。 虽然这是可以接受的，并且符合“最终一致”配置更新的标准，但它在网络和计算使用方面效率都较低。 也可能难以适当地调整轮询配置以减少浪费的资源。
 
