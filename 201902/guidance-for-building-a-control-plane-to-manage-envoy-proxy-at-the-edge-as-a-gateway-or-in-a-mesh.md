@@ -7,8 +7,7 @@ description: “Envoy Proxy构建控制平面指南"
 categories: "translation"
 tags: ["envoy","gloo","kubernetes","xds"]
 originalPublishDate: 2019-02-18
-publishDate:
-date: 2019-02-28
+publishDate: 2019-03-04
 ---
 
 \[**编者案**\]
@@ -60,7 +59,7 @@ date: 2019-02-28
 *   [端点发现服务API\-](https://www.envoyproxy.io/docs/envoy/v1.9.0/api-v2/api/v2/eds.proto#envoy-api-file-envoy-api-v2-eds-proto) 用于服务发现的 [EDS](https://www.envoyproxy.io/docs/envoy/v1.9.0/api-v2/api/v2/eds.proto#envoy-api-file-envoy-api-v2-eds-proto) ，
 *   [路由发现服务API\-RDS](https://www.envoyproxy.io/docs/envoy/v1.9.0/configuration/http_conn_man/rds#config-http-conn-man-rds) 用于流量路由决策
 *   [集群发现服务 \-](https://www.envoyproxy.io/docs/envoy/v1.9.0/configuration/cluster_manager/cds#config-cluster-manager-cds) 用于后端服务的 [CDS](https://www.envoyproxy.io/docs/envoy/v1.9.0/configuration/cluster_manager/cds#config-cluster-manager-cds) ，我们可以将流量路由到该服务
-*   [secret发现服务 \-](https://www.envoyproxy.io/docs/envoy/v1.9.0/configuration/secret) 用于分发秘密的 [SDS](https://www.envoyproxy.io/docs/envoy/v1.9.0/configuration/secret) （证书和密钥）
+*   [secret发现服务 \-](https://www.envoyproxy.io/docs/envoy/v1.9.0/configuration/secret) 用于分发Secret的 [SDS](https://www.envoyproxy.io/docs/envoy/v1.9.0/configuration/secret) （证书和密钥）
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1g0mfpqxtkyj20p00gm0yz.jpg)
 
