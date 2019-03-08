@@ -1,24 +1,19 @@
 ---
 original: https://www.exoscale.com/syslog/istio-vs-hystrix-circuit-breaker/
 author: Nicolas Frankel
-translator: https://github.com/GuangmingLuo
-reviewer: []
+translator: "guangmingluo"
+reviewer: ["rootsongjc"]
 title: "微服务断路器模式实现：Istio vs Hystrix"
 description: "由微服务同步通信的核心问题引入，讨论断路器模式，再深入阐述Istio与Hystrix两种断路器的实现原理，最后比较二者的优缺点和选型建议"
 categories: "译文"
 tags: ["istio","hystrix","microservices"]
 originalPublishDate: 2018-12-13
 publishDate: 2019-03-07
-
 ---
-
-
 
 ## 编者按
 
 本文作者由浅及深，从核心问题的引入到具体模式的代码实现，阐述了微服务两种断路器模式的实现原理、优缺点以及二者的比较。
-
-
 
 ## 前言
 
@@ -29,8 +24,6 @@ publishDate: 2019-03-07
 断路器模式是微服务体系结构中广泛采用的模式之一。我们将比较使用两种不同方法实现它的优缺点: Hystrix和Istio。
 
 ![istio-vs-hystrix.jpg](https://ws1.sinaimg.cn/large/bf8f1836ly1g0vdlvuhijj20xc0hggnu.jpg)
-
-
 
 ## 微服务同步通信的核心问题
 
@@ -57,8 +50,6 @@ publishDate: 2019-03-07
 
 在这个场景中，唯一合理的解决方案是*fail-fast*: 前端应该意识到后端出现了问题，并立即将故障返回给自己的客户端。
 
-
-
 ## 断路器模式
 
 在电路领域中，断路器是为保护电路而设计的一种自动操作的电气开关。它的基本功能是在检测到故障后中断电流。然后可以重置(手动或自动)，以在故障解决后恢复正常操作。
@@ -77,8 +68,6 @@ publishDate: 2019-03-07
 这可以用下图来总结:
 
 ![state-diagram.jpg](https://ws1.sinaimg.cn/large/bf8f1836ly1g0vdvft88xj21gk0qiwih.jpg)
-
-
 
 ## Istio断路器
 
@@ -118,8 +107,6 @@ Istio的控制平面在底层集群管理平台(如Kubernetes、Mesos等)上提�
 
 Istio实现断路器的方法是一种黑盒方法。它的视角很高，只有出了问题才能打开电路。另一方面，它的设置非常简单，不需要任何底层代码的知识，并且可以作为事后配置。
 
-
-
 ## Hystrix断路器
 
 [Hystrix](https://github.com/Netflix/Hystrix)是一个最初由Netflix提供的开源Java库。它是一个延迟容忍和容错的库，用于隔离对远程系统、服务和第三方库的访问点，停止级联故障，并在不可避免出现故障的复杂分布式系统中启用弹性。
@@ -134,13 +121,9 @@ Hystrix有很多特点，包括:
 
 当然，断路器的模式体现了这些特点。因为Hystrix是一个库，它以**白盒方式**实现它。
 
-```
-Resilience4J
-
-Netflix最近宣布，它已经停止开发Hystrix库，转而开发目前知名度较低的 [Resilience4J](https://github.com/resilience4j/resilience4j) 项目。
-
-即使客户端代码可能稍有不同，Hystrix和Resilience4J的实现方法也是相似的。
-```
+> **Resilience4J**
+> Netflix最近宣布，它已经停止开发Hystrix库，转而开发目前知名度较低的 [Resilience4J](https://github.com/resilience4j/resilience4j) 项目。
+> 即使客户端代码可能稍有不同，Hystrix和Resilience4J的实现方法也是相似的。
 
 ### 一个Hystrix断路器的例子
 
@@ -254,8 +237,6 @@ public class FetchQuoteService {
 
 无论是独立的还是由Spring Boot Cloud封装的，Hystrix都需要在代码级处理断路器。因此，需要提前计划，更改需要部署更新后的二进制文件。然而，当事情出错时，这允许有一个非常好的自定制的行为。
 
-
-
 ## Istio vs Hystrix: battle of circuit breakers
 
 如果存在失败的可能性，给定时间，就会出现失败，严重依赖网络的微服务需要针对失败进行设计。断路器模式是处理服务缺乏可用性的一种方法: 它不会对请求进行排队并阻塞调用者，而是快速失败(fail-fast)并立即返回。
@@ -274,9 +255,7 @@ public class FetchQuoteService {
 
 当然，没有什么能阻止你同时使用它们。
 
-
-
-## References
+## 参考
 
 - [CircuitBreaker](https://martinfowler.com/bliki/CircuitBreaker.html)
 - [Pattern: Circuit Breaker](https://Microservices.io/patterns/reliability/circuit-breaker.html)
