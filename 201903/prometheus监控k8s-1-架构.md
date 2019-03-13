@@ -1,11 +1,4 @@
 ---
-title: "Prometheus监控k8s(一)——监控框架调研"
-date: 2019-03-12T22:11:13+08:00
-tags:
-  - prometheus
-  - kubernetes
----
----
 original: https://xianyuluo.com/post/prometheus%E7%9B%91%E6%8E%A7k8s1.html
 author: "xianyuLuo"
 translator: "xianyuLuo"
