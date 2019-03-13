@@ -31,7 +31,7 @@ publishDate: 2019-03-13
 - **cAdvisor**:
 来自 Google 的容器监控工具，也是 Kubelet 内置的容器资源收集工具。它会自动收集本机容器 CPU、内存、网络和文件系统的资源占用情况，并对外提供 cAdvisor 原生的 API。随 kubelet 启动   --cadvisor-port = 1
 
-![cadvisor架构](dl-blog.laoxianyu.cn/cadvisor.png)
+![cadvisor架构](http://dl-blog.laoxianyu.cn/cadvisor.png)
 
 - **Heapster**:
 由于 cAdvisor 只提供了单机的容器资源占用情况，而 Heapster 则提供了整个集群的资源监控（kubernetes 1.11 之前，hpa都是从heapster获取数据），并支持持久化数据存储到 InfluxDB
