@@ -36,12 +36,12 @@ publishDate: 2019-03-13
 - **Heapster**:
 由于 cAdvisor 只提供了单机的容器资源占用情况，而 Heapster 则提供了整个集群的资源监控（kubernetes 1.11 之前，hpa都是从heapster获取数据），并支持持久化数据存储到 InfluxDB
 
-![heapster架构](dl-blog.laoxianyu.cn/heapster.png)
+![heapster架构](http://dl-blog.laoxianyu.cn/heapster.png)
 
 - **Promethues**:
 提供强大的数据采集、数据存储、数据展示、告警等，天生完美支持kubernetes，CNCF基金会的第二个成员，第一个是Kubernetes。而且Prometheus里面很多思想都来源于Google内部的监控系统Borgmon，可以说是Google的干儿子。
 
-![Prometheus架构](dl-blog.laoxianyu.cn/prometheus.png)
+![Prometheus架构](http://dl-blog.laoxianyu.cn/prometheus.png)
 
 - **kube-state-metrics**在这里作为prometheus的一个exporter来使用，提供deployment、daemonset、cronjob等服务的监控数据，由kubernestes官方提供，与prometheus紧密结合。
 更多关于kube-state-metrics的信息：https://github.com/kubernetes/kube-state-metrics
@@ -68,7 +68,7 @@ Prometheus对于应用层的监控，定义了一个良好的规范，只需要�
 
 好在这些问题对Prometheus来说都不是难事，最终，我们采取 Prometheus + kube-state-metrics + Alertmanager + Grafana 架构来做Kubernetes集群监控。监控系统具体架构如下
 
-![k8s监控架构](dl-blog.laoxianyu.cn/prometheus-monitor.png)
+![k8s监控架构](http://dl-blog.laoxianyu.cn/prometheus-monitor.png)
 
 使用这个架构，那上面所提到的三个问题将不再是问题。
 ## 详解
