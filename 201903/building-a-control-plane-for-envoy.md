@@ -1,7 +1,7 @@
 ---
 author: "Idit Levine"
 translator: "haiker2011"
-reviewer: []
+reviewer: ["wujunze", "fleeto"]
 original: "https://medium.com/solo-io/building-a-control-plane-for-envoy-7524ceb09876"
 title: "为 Envoy 赋能——如何基于 Envoy 构建一个多用途控制平面"
 description: "本文介绍如何利用 Gloo 提供的功能，减少自己需要编写的代码"
@@ -13,7 +13,9 @@ publishDate: 2019-03-13
 
 [**编者案**]
 
-> Idit Levine 作为 solo.io 创始人兼首席执行官，在本系列博客中介绍了他们的产品 Gloo。这篇博客是系列中的其中一篇，主要介绍了如何基于 Envoy 构建一个控制平面的话，我们需要作出哪些考虑，对于每一个考虑，应该采用怎样的解决方案来解决。对于我们自己在设计和做软件构架方面有一些借鉴意义。作者在本文章阐述了 Envoy 的工作原理、为什么要选择 Envoy 以及在构建一个控制平面过程中要做出的技术体系结构的抉择
+> Idit Levine 作为 solo.io 创始人兼首席执行官，在本系列博客中介绍了她们的产品 Gloo。这篇博客是系列中的其中一篇，这一篇的主要内容是，如果要基于 Envoy 构建一个控制平面的话，我们需要考虑哪些问题；要用什么样的解决方案来应对这些问题。作者在本文章阐述了 Envoy 的工作原理、为什么要选择 Envoy 以及在构建一个控制平面过程中要做出的技术体系结构的抉择。
+
+这一篇的主要内容是，如果要基于 Envoy 构建一个控制平面的话，我们需要考虑哪些问题；要用什么样的解决方案来应对这些问题
 
 **在本系列博客中，我们将分享如何为 [Envoy Proxy](https://www.envoyproxy.io/) 构建一个多用途控制平面 [Gloo](https://gloo.solo.io/) 的经验。本系列的第一个博客关注于 Envoy 的设计，以及在构建控制平面的第一层时需要做出的技术体系结构抉择。**
 
@@ -67,7 +69,7 @@ Envoy 的许多特性以前已经详细地描述过(例如，[这里](https://bl
 
 ## 管理
 
-可以实时动态配置 Envoy ，而不需要停机。为了实现这一点，Envoy 定义了一组通常称为 xDS 协议的 api。从 Envoy 的 v2 开始，这是一个 gRPC 流通道，Envoy 将监听来自控制平面的配置更新。这样可以配置 Envoy 的绝大多数方面。这些动态资源包括：
+可以在不停机的情况下实现对 Envoy 的动态配置。为了实现这一点，Envoy 定义了一组通常称为 xDS 协议的 api。从 Envoy 的 v2 开始，这是一个 gRPC 流通道，Envoy 将监听来自控制平面的配置更新。这样可以配置 Envoy 的绝大多数方面。这些动态资源包括：
 
 * Listener Discovery Service （监听器发现服务）——配置 Envoy 监听的端口以及对传入连接采取操作。
 
@@ -83,7 +85,7 @@ Gloo 实现了聚合服务发现功能，称为 ADS 。 ADS 将所有 xDS 资源
 
 ## 可观察性和故障排查
 
-Envoy 提供许多统计信息，包括一个连接统计，它指示是否连接到其管理的服务器。这些数据可以被 Prometheus 收集，或者发送到 statsd。 Envoy 还可以发出 Zipkin 跟踪（以及其他跟踪，如 Datadog 和 OpenTracing ）。在 Gloo 的企业版本中，我们利用了这些功能，包括使用预先配置的仪表板部署 Prometheus 和 Grafana。
+Envoy 提供许多统计信息，包括一个连接统计，它指示是否连接到其管理的服务器。这些数据可以被 Prometheus 收集，或者发送到 StatsD。 Envoy 还可以发出 Zipkin 跟踪（以及其他跟踪，如 Datadog 和 OpenTracing ）。在 Gloo 的企业版本中，我们利用了这些功能，包括使用预先配置的仪表板部署 Prometheus 和 Grafana。
 
 使用 gRPC API （与以前版本的 Envoy 中可用的 REST API 相比）有很多优点，但有一个缺点：为了调试目的而手动查询比较困难。为了解决这个问题，我们开发了一个实用程序来查询管理服务器，并在将 xDS 配置提交给 Envoy 时打印出来。
 
@@ -93,7 +95,7 @@ Envoy 提供许多统计信息，包括一个连接统计，它指示是否连�
 
 可以通过向过滤器链添加新的过滤器来扩展 Envoy 行为，如上所述。这些过滤器可以修改请求、影响路由和发出指标。一些有趣的 Envoy 过滤器包括：
 
-* Ratelimit——速率限制请求。一旦速率超过限制，envoy 就不会向上传递请求，而是返回429给调用者。
+* Ratelimit——速率限制请求。一旦速率超过限制，Envoy 就不会向上传递请求，而是返回429给调用者。
 
 * Gzip——支持 Gzip 编码，动态压缩响应。
 
@@ -105,7 +107,7 @@ Envoy 提供许多统计信息，包括一个连接统计，它指示是否连�
 
 Envoy 的可扩展设计允许我们使用上游 Envoy ，并通过提供我们内部开发的一系列过滤器来扩展它。我们开发的[一些过滤器](https://github.com/solo-io/envoy-gloo)包括：
 
-* AWS——允许使用 AWS v4 签名调用 AWS lambda 函数进行身份验证。
+* AWS——允许使用 AWS v4 签名调用 AWS Lambda 函数进行身份验证。
 
 * NATS Streaming——将 http 请求转换为 NATS Streaming 发布。
 
