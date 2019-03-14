@@ -82,7 +82,7 @@ k8s集群-1/-2/-3为需要被监控的集群，就是业务集群。每个集群
 prometheus-server：使用一个带RBAC权限的账号采集集群中现有监控信息（其实是从cadvisor获取）和节点信息。
 
 kube-state-metrics：这里作为prometheus的exporter使用。因为prometheus不能获取集群中Deployment, Job, CronJob的监控信息。
-部署kube-state-metrics的时候，svc一定要带一个annotations：prometheus.io/scrape: 'true'（==这非常重要==）
+部署kube-state-metrics的时候，svc一定要带一个annotations：prometheus.io/scrape: 'true'（**这非常重要**）
 
 ### 监控汇总
 监控汇总其实就是一个Prometheus-server，用于将各个散落在各地的监控数据汇总起来，统一管理。
@@ -91,7 +91,7 @@ kube-state-metrics：这里作为prometheus的exporter使用。因为prometheus�
 
 Prometheus官方Federation示例
 
-```
+```yaml
 - job_name: 'federate'
   scrape_interval: 15s
 
@@ -109,7 +109,7 @@ Prometheus官方Federation示例
       - 'source-prometheus-2:9090'
       - 'source-prometheus-3:9090'
 ```
-这段配置所属的Prometheus将从source-prometheus-1 ~ 3这3个Prometheus的/federate端点拉取监控数据。 match[]参数指定了只拉取带有job=”prometheus标签的指标，或者名称以prometheus_job开头的指标。
+这段配置所属的Prometheus将从source-prometheus-1 ~ 3这3个Prometheus的/federate端点拉取监控数据。 match[]参数指定了只拉取带有job="prometheus"标签的指标，或者名称以prometheus_job开头的指标。
 
 
 ### 展示面板
