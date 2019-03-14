@@ -8,14 +8,12 @@ description: "本文介绍如何利用 Gloo 提供的功能，减少自己需要
 categories: "translation"
 tags: ["Gloo", "Envoy Proxy", "Api Gateway", "Service Mesh", "Kubernetes", "Ingress"]
 originalPublishDate: 2019-03-12
-publishDate: 2019-03-13
+publishDate: 2019-03-14
 ---
 
 [**编者案**]
 
 > Idit Levine 作为 solo.io 创始人兼首席执行官，在本系列博客中介绍了她们的产品 Gloo。这篇博客是系列中的其中一篇，这一篇的主要内容是，如果要基于 Envoy 构建一个控制平面的话，我们需要考虑哪些问题；要用什么样的解决方案来应对这些问题。作者在本文章阐述了 Envoy 的工作原理、为什么要选择 Envoy 以及在构建一个控制平面过程中要做出的技术体系结构的抉择。
-
-这一篇的主要内容是，如果要基于 Envoy 构建一个控制平面的话，我们需要考虑哪些问题；要用什么样的解决方案来应对这些问题
 
 **在本系列博客中，我们将分享如何为 [Envoy Proxy](https://www.envoyproxy.io/) 构建一个多用途控制平面 [Gloo](https://gloo.solo.io/) 的经验。本系列的第一个博客关注于 Envoy 的设计，以及在构建控制平面的第一层时需要做出的技术体系结构抉择。**
 
