@@ -2,7 +2,7 @@
 original: https://venilnoronha.io/hand-crafting-a-sidecar-proxy-like-istio
 author: "Venil Noronha"
 translator: "SataQiu"
-reviewer: ["rootsongjc"]
+reviewer: ["haiker2011"]
 title: "手工打造像Istio一样的Sidecar代理"
 description: "本文介绍了一种实现简单HTTP流量嗅探代理的基本步骤，并进行了相关实验验证，生动展现了Istio实现流量管理的核心原理与概念。"
 categories: "translation"
@@ -28,7 +28,7 @@ sidecar代理模式是一个重要的概念，它允许[Istio](https://istio.io/
 
 Istio依靠[Envoy](https://www.envoyproxy.io/)来代理网络流量。Envoy代理被打包为一个容器，并部署在一个Pod中的服务容器旁边。在这篇文章中，我们将使用Golang来构建一个可以嗅探HTTP流量的微型代理。
 
-我们的代理需要在TCP端口上侦听传入的HTTP请求，然后将它们转发到目标地址。因为在我们的例子中，代理和服务都驻留在同一个容器中，所以目标主机可以通过环回IP地址（即，127.0.0.1）进行寻址。但是，我们仍然需要一个端口号来标识目标服务。
+我们的代理需要在TCP端口上侦听传入的HTTP请求，然后将它们转发到目标地址。因为在我们的例子中，代理和服务都驻留在同一个Pod中，所以目标主机可以通过环回IP地址（即，127.0.0.1）进行寻址。但是，我们仍然需要一个端口号来标识目标服务。
 
 ```go
 const (
@@ -130,7 +130,7 @@ func (p *Proxy) printStats(req *http.Request, res *http.Response, duration time.
 
 ## 为代理构建容器镜像
 
-Istio打包了Envoy并将其作为服务容器旁边的容器运行。让我们构建一个代理容器镜像，运行上面的Go代码来模仿Istio的运行模式。
+Istio打包了Envoy并将其作为sidecar容器运行在服务容器旁边。让我们构建一个代理容器镜像，运行上面的Go代码来模仿Istio的运行模式。
 
 ```Dockerfile
 # Use the Go v1.12 image for the base.
