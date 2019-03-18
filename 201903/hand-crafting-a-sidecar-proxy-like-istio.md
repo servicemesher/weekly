@@ -3,7 +3,7 @@ original: https://venilnoronha.io/hand-crafting-a-sidecar-proxy-like-istio
 author: "Venil Noronha"
 translator: "SataQiu"
 reviewer: ["haiker2011"]
-title: "手工打造像Istio一样的Sidecar代理"
+title: "手工打造像Istio中一样的Sidecar代理"
 description: "本文介绍了一种实现简单HTTP流量嗅探代理的基本步骤，并进行了相关实验验证，生动展现了Istio实现流量管理的核心原理与概念。"
 categories: "translation"
 tags: ["istio", "sidecar", "iptables"]
