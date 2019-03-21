@@ -1,9 +1,10 @@
 ---
 author: "Christian Posta"
-translator: "loverto"
+translator: "loverto”
+original: "https://medium.com/solo-io/guidance-for-building-a-control-plane-to-manage-envoy-proxy-at-the-edge-as-a-gateway-or-in-a-mesh-badb6c36a2af"
 reviewer: ["haiker2011"]
 title: "Envoy Proxy构建控制平面指南"
-description: “Envoy Proxy构建控制平面指南"
+description: "Envoy Proxy构建控制平面指南"
 categories: "translation"
 tags: ["envoy","gloo","kubernetes","xds"]
 originalPublishDate: 2019-02-18
