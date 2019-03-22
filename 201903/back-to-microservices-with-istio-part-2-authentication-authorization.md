@@ -232,7 +232,7 @@ $ kubectl apply -f resource-manifests/istio/security/enable-rbac.yaml
 rbacconfig.rbac.istio.io/default created
 ```
 
-现在，所有服务都需要基于角色的访问控制，换句话说，拒绝访问所有服务，并将导致响应“RBAC：访问被拒绝”。启用对授权用户的访问权限将成为下一节的主题。
+现在，所有服务都需要基于角色的访问控制，换句话说，对所有服务的访问都会被拒绝，并响应“RBAC: access denied”。启用对授权用户的访问权限将成为下一节的主题。
 
 ### 配置常规用户访问
 
