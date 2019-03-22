@@ -1,25 +1,25 @@
 ---
 author: "Rinor Maloku"
 translator: "loverto"
-reviewer: 
+reviewer: "SataQiu"
 original: "https://medium.com/google-cloud/back-to-microservices-with-istio-part-2-authentication-authorization-b079f77358ac"
 title: "使用Istio打造微服务（第2部分）"
 description: "使用Istio打造微服务（第2部分）"
 categories: "translation"
 tags: ["istio","microservices","kubernetes","vs","tracing","monitor"]
 originalPublishDate: 2019-02-26
-publishDate: 2019-03-04
+publishDate: 2019-03-22
 ---
 
 # 使用Istio打造微服务（第2部分） \- 认证和授权
 
 ![](https://ws1.sinaimg.cn/large/61411417ly1g1bke0q1bnj20m80bqwm6.jpg)
 
-*这篇文章是使用Istio打造微服务*得第二部分，如果没有看第一篇的话，请先看[第一部分内容](http://www.servicemesher.com/blog/back-to-microservices-with-istio-p1/)，因为这篇博客是以第一篇博客为基础进行进一步深入
+*这篇文章是使用Istio打造微服务*的第二部分，如果没有看第一篇的话，请先看[第一部分内容](http://www.servicemesher.com/blog/back-to-microservices-with-istio-p1/)，因为这篇博客是以第一篇博客为基础进行进一步深入的。
 
 在第一篇文章中，我们建立了一个Kubernetes集群，并且在上面部署了 **Istio** 和示例微服务应用程序“Sentiment Analysis”，用来展示Istio的功能。
 
-使用Istio后，我们可以把应用层中得重试、超时、断路器、跟踪、监控内容抛弃，以保持我们的应用在一个简单，专注的微型状态，（如图1所示），此外，我们还启用了高级测试和部署技术，如A/B测试，镜像和金丝雀部署。
+使用Istio后，我们可以把应用层中的重试、超时、断路器、跟踪、监控内容抛弃，以保持我们的服务应用保持在一个简单专注的微型状态，（如图1所示）。此外，我们还启用了高级测试和部署技术，如A/B测试，镜像和金丝雀部署。
 
 ![图1.微服务的形式构成](https://ws1.sinaimg.cn/large/61411417ly1g1bkei4aehj20aj082wf1.jpg)
 
@@ -27,7 +27,7 @@ publishDate: 2019-03-04
 
 ### Istio中的认证和授权
 
-我永远不会相信认证和授权会让我兴奋！但是Istio可以让这个话题变得有趣，那么为什么你不感到兴奋么？
+我永远不会相信认证和授权会让我感到兴奋！但是Istio可以让这个话题变得有趣，这种情况下难道你不感到兴奋么？
 
 **答案很简单**： Istio将这些职责从我们的服务下沉到Envoy代理，当请求到达我们的服务时，它们已经经过身份验证和授权，我们只需编写提供业务价值的代码。
 
