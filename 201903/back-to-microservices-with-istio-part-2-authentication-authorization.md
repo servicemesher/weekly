@@ -270,7 +270,7 @@ servicerole.rbac.istio.io/regular-user created
 servicerolebinding.rbac.istio.io/regular-user-binding created
 ```
 
-### 配置主持人用户访问权限
+### 配置版主用户访问权限
 
 对于我们的版主，我们希望启用对所有服务的访问：
 
@@ -333,4 +333,5 @@ servicerolebinding.rbac.istio.io/mod-user-binding created
 
 本文为您提供了在实际项目中开始使用Istio的知识和实践。
 
-我借此机会感谢你加入我这次Istio航行，这肯定不容易，你坚持下去就太棒了。我很乐意在下面的评论中听到您的想法，并随时在 [Twitter](https://twitter.com/rinormaloku) 或我的主页 [rinormaloku.com](https://rinormaloku.com) 上与我 [联系](https://rinormaloku.com)。
+借此机会，我很感谢你加入我的这次Istio探索之旅，这肯定不容易，你坚持下去就已经很棒了。我十分希望在下面的评论中看到您的想法，你可以随时在 [Twitter](https://twitter.com/rinormaloku) 或我的主页 [rinormaloku.com](https://rinormaloku.com) 上与我联系。
+
