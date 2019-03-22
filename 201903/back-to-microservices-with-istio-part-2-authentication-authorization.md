@@ -191,7 +191,7 @@ function (user, context, callback) {
 *   auth0授权扩展
 *   添加组声明
 
-顺序很重要，因为 `**auth0-authorization-extension**` 规则会 异步检索组字段 ，然后由第二个规则将其添加为命名空间声明，从而产生以下访问令牌：
+顺序很重要，因为 `**auth0-authorization-extension**` 规则会异步检索组字段 ，然后由第二个规则将其添加为命名空间声明，从而产生以下访问令牌：
 
 ```json
 {
