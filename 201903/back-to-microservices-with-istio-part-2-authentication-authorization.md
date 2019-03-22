@@ -35,7 +35,7 @@ publishDate: 2019-03-22
 
 ### 使用Auth0进行身份验证
 
-作为身份和访问管理服务器，我们将使用Auth0，它有一个试用选项，直观易用，我只是喜欢它！ 也就是说，相同的原则可以用于任何 [OpenID Connect实现，](https://openid.net/developers/certified/) 如KeyCloak，IdentityServer等等。
+作为身份和访问管理服务器，我们将使用Auth0，它有一个试用选项，直观易用，我只是喜欢它！ 也就是说，相同的原则可以用于任何 [OpenID Connect实现](https://openid.net/developers/certified/)， 如KeyCloak、IdentityServer等等。
 
 要开始使用，请使用您的帐户导航到[Auth0 Portal](https://manage.auth0.com)，在Applications> Default App下创建租户并选择Domain，如下图所示：
 
@@ -43,8 +43,23 @@ publishDate: 2019-03-22
 
 更新文件 `resource-manifests/istio/security/auth-policy.yaml` 以使用您的域名：
 
+```yaml
+apiVersion: authentication.istio.io/v1alpha1
+kind: Policy
+metadata:
+  name: auth-policy
+spec:
+  targets:
+  - name: sa-web-app
+  - name: sa-feedback
+  origins:
+  - jwt:
+      issuer: "https://{YOUR_DOMAIN}/"
+      jwksUri: "https://{YOUR_DOMAIN}/.well-known/jwks.json"
+  principalBinding: USE_ORIGIN
+```
 
-有了这个资源，pilot会配置envoy在将请求转发给服务之前对其进行身份验证： `sa-web-app` 和 `sa-feedback`。同时，这不适用于`sa-frontend`服务的envoy，前端服务需要能够获得未经认证服务。要应用策略，请执行以下命令：
+有了这个资源，pilot会配置envoy在将请求转发给服务`sa-web-app` 和 `sa-feedback`之前对其进行身份验证。同时，这个策略不会应用到运行`sa-frontend`服务的envoy上，这使得我们能够未经认证就访问前端服务。要应用这些策略，请执行以下命令：
 
 ```bash
 $ kubectl apply -f resource-manifests/istio/security/auth-policy.yaml
@@ -63,18 +78,19 @@ policy.authentication.istio.io "auth-policy" created
 
 *   **观众：** {YOUR\_AUDIENCE}
 
-其余所需的详细信息位于Auth0 Portal中的 **Applications** 下 ，然后选择自动创建的 **Test** API，其名称与API相同。
+其余所需的详细信息位于Auth0 Portal中的 **Applications** 下 ，然后选择自动创建的与API同名的 **Test Application**。
+
 
 请记下：
 
 *   **域名：** {YOUR\_DOMAIN}
 *   **客户ID：** {YOUR\_CLIENT\_ID}
 
-在“测试应用程序”中向下滚动到“ **允许的回调URL”** 文本字段，在此字段中我们指定在完成身份验证后应转发呼叫的URL，在我们的示例中，它是：
+在Test Application中向下滚动到**Allowed Callback URLs**文本位置，在此字段中我们指定请求在完成身份验证后应被转发到的目的URL。在我们的示例中，它是：
 
 `[http://{EXTERNAL_IP}/callback](http://%7BEXTERNAL_IP%7D/callback)`
 
-添加 **允许的注销URL** 添加以下URL：
+向**Allowed Logout URLs**添加以下URL：
 
 `[http://{EXTERNAL_IP}/logout](http://%7BEXTERNAL_IP%7D/logout)`
 
@@ -99,7 +115,8 @@ body: JSON.stringify({ sentence: this.textField.getValue() })
 }
 ```
 
-要更新前端以使用租户的详细信息，请导航到该文件 `sa-frontend/src/services/Auth.js` 并使用我们之前记下的值替换以下值：
+为了更新前端以使用你的租户的详细信息，请导航到该文件 `sa-frontend/src/services/Auth.js` 并使用我们之前记下的值替换以下值：
+
 
 ```js
 const Config = {
@@ -121,7 +138,7 @@ $ kubectl set image deployment/sa-frontend \
  sa-frontend=$DOCKER_USER_ID/sentiment-analysis-frontend:istio-auth0
 ```
 
-试一试应用吧！ 您将被转发到Auth0，您必须登录（或注册）并转发回页面并进行身份验证请求。同时，如果您尝试使用早期的curl命令，您将获得401状态代码，表明该请求是未授权的。
+试一试应用吧！ 您将被转发到Auth0，在那里您必须登录（或注册），然后跳转回原页面，以后就可以发出经过身份验证的请求了。同时，如果您尝试使用早期的curl命令，您将获得401状态代码，表明该请求是未授权的。
 
 让我们进行下一步，授权请求。
 
@@ -129,10 +146,10 @@ $ kubectl set image deployment/sa-frontend \
 
 身份验证使我们能够知道用户是谁，但我们需要授权才能知道他们可以访问的内容。Istio也为此提供了工具！
 
-例如，我们将创建两组用户（如图24所示）：
+作为示例，我们将创建两组用户（如图24所示）：
 
 *   **用户** ：只能访问SA\-WebApp和SA\-Frontend服务。
-*   **版主** ：谁可以访问所有三项服务。
+*   **版主** ：可以访问所有三项服务。
 
 ![图4.授权概念](https://ws1.sinaimg.cn/large/61411417ly1g1bki3dbfij20m80dcdhb.jpg)
 
