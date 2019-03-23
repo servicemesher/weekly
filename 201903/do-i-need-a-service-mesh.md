@@ -1,3 +1,16 @@
+---
+original: https://www.nginx.com/blog/do-i-need-a-service-mesh/
+author: "Owen Garrett"
+translator: "malphi"
+reviewer: ["rootsongjc"]
+title: "我需要服务网格吗？"
+description: "本文对当前的服务网格发展状况进行了分析和预测，建议在适当的时机开始使用服务网格来替代现有解决方案"
+categories: "translation"
+tags: ["service mesh"]
+originalPublishDate: 2019-03-13
+publishDate: 2019-03-23
+---
+
 # 我需要服务网格吗？
 
 “服务网格”是一个热点话题。似乎去年每一个与容器相关的大会都包含了一个“服务网格”议题，世界各地有影响力的业内人士都在谈论这项革命性的技术带来的好处。
