@@ -2,7 +2,7 @@
 
 “服务网格”是一个热点话题。似乎去年每一个与容器相关的大会都包含了一个“服务网格”议题，世界各地有影响力的业内人士都在谈论这项革命性的技术带来的好处。
 
-然而，截至2019年初，服务网格技术仍不成熟。主要的实现产品Istio还没有准备好进行广泛的企业级部署，只有少数成功的生产环境在运行。也存在其他的服务网格产品，但并没有得到业界专家所说的广泛关注。
+然而，截至2019年初，服务网格技术仍不成熟。主要的实现产品Istio还没有准备好进行广泛的企业级部署，只有少数成功的案例运行在生产环境中。也存在其他的服务网格产品，但并没有得到业界专家所说的广泛关注。
 
 我们如何协调这种不匹配呢？一方面，我们听到“你需要一个服务网格”的声音，而另一方面，企业和公司多年来一直在没有服务网格的容器平台上成功地运行着它们的应用。
 
@@ -10,9 +10,9 @@
 
 *服务网格是你旅途中的一个里程碑，但它不是起点。*
 
-在容器应用的生产环境部署中，Kubernetes已经被证明是一个可以胜任的平台。它提供了一个丰富的网络层，提供了[服务发现](https://kubernetes.io/docs/concepts/services-networking/service/#discovering-services), [负载均衡](https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies), [健康检查](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes) 和[访问控制](https://kubernetes.io/docs/concepts/services-networking/network-policies/) 的能力以支持复杂的分布式系统。
+在容器应用的生产环境部署中，Kubernetes已经被证明是一个可以胜任的平台。它提供了一个丰富的网络层，提供了[服务发现](https://kubernetes.io/docs/concepts/services-networking/service/#discovering-services)， [负载均衡](https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies)， [健康检查](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes) 和[访问控制](https://kubernetes.io/docs/concepts/services-networking/network-policies/) 的能力，以支持复杂的分布式系统。
 
-这些功能对于简单的和易于理解的应用程序来说已经足够了， [遗留的应用已经被容器化](https://www.docker.com/solutions/MTA). 它们允许你满怀信心地部署应用，根据需要扩容，避免意外故障，并实现简单的访问控制。
+这些功能对于简单和易于理解的应用程序来说已经足够了， [遗留的应用已经被容器化](https://www.docker.com/solutions/MTA)。 它们允许你满怀信心地部署应用，根据需要扩容，避免意外故障，并实现简单的访问控制。
 
 ![1](https://ws1.sinaimg.cn/large/006tKfTcly1g1byouk0a6j30sg0da3zi.jpg)① Kubernetes 提供了带有服务发现和负载均衡的4层网络。② NGINX入口控制器负责把外部连接负载均衡到运行在Kubernetes集群的服务。
 
@@ -20,43 +20,45 @@ Kubernetes在它的API中提供了一个入口（Ingress）资源对象。 这�
 
 对很多线上应用而言，Kubernetes和入口控制器提供了所有需要的功能，不需要任何更复杂的演进。
 
-## Next Steps for More Complex Applications
+## 下一步：更复杂的应用
 
-*Add security, monitoring, and traffic management to improve control and visibility.*
+*添加安全，监控和流量管理来提升控制和可视化。*
 
-When operations teams manage applications in production, they sometimes need deeper control and visibility. Sophisticated applications might exhibit complex network behavior, and frequent changes in production can introduce more risk to the stability and consistency of the app. It might be necessary to encrypt traffic between the components when running on a shared Kubernetes cluster.
+当运维团队管理生产环境中的应用时，有时候需要更深入的控制和可见性。复杂的应用可能会表现出复杂的网络行为，在生产环境频繁的变化会给应用的稳定性和一致性带来更多的风险。在共享的Kubernetes集群上运行时，可能需要加密组件之间的通信。
 
-Each requirement can be met using well‑understood techniques:
+每一项需求都可以使用易于理解的技术来满足：
 
-- To secure traffic between services, you can implement mutual TLS (mTLS) on each microservice, using [SPIFFE](https://spiffe.io/spiffe/)or an equivalent method.
-- To identify performance and reliability issues, each microservice can export [Prometheus‑compliant metrics](https://prometheus.io/docs/instrumenting/exporters/) for analysis with tools such as Grafana.
-- To debug those issues, you can embed [OpenTracing Tracers](https://opentracing.io/docs/overview/tracers/) into each microservice (multiple languages and frameworks are supported).
-- To implement advanced load‑balancing policies, blue/green and canary deployments, and circuit breakers, you can tactically deploy proxies and load balancers.
+- 要保护服务间的通信，你可以使用SPIFFE或等效的方法在每个服务间实现双向TLS。
+- 为了识别性能和可靠性的问题，每个微服务可以导出[兼容Prometheus的指标](https://prometheus.io/docs/instrumenting/ters/)，并使用Grafana等工具进行分析。
+- 要调试这些问题，可以将[分布式追踪](https://opentracing.io/docs/overview/tracers/)嵌入到每个微服务中（支持多种语言和框架）。
+- 为实现高级的负载均衡策略、蓝绿部署、金丝雀发布和熔断器，你可以选择性的部署代理和负载均衡器。
 
-![img](https://www.nginx.com/wp-content/uploads/2019/03/service-mesh_POTS.png)Individual microservices can be extended using **P**rometheus Exporters, **O**penTracing Tracers, mutual **T**LS, and **S**PIFFE (**POTS**). Proxies can be deployed ① to load balance individual services, or ② to provide a central Router Mesh.
+![2](https://ws2.sinaimg.cn/large/006tKfTcly1g1d0pnxtybj30sg0brdgp.jpg)独立的微服务可以使用**Prometheus导出器， 分布式追踪器， 双向TLS和SPIEE进行扩展**。代理可以被部署为独立的服务如①，或者像②一样提供中央路由网格。
 
-Some of these techniques require a small change to each service – for example, burning certificates into containers or adding modules for Prometheus and OpenTracing. NGINX Plus can provide dedicated load balancing for critical services, with service discovery and API‑driven configuration for orchestrating changes. The [Router Mesh](https://www.nginx.com/blog/microservices-reference-architecture-nginx-router-mesh-model/) pattern in the NGINX Microservices Reference Architecture implements a cluster‑wide control point for traffic.
+其中一些技术需要对每个服务做一些小的修改——例如，将证书注入到容器中，或者为Prometheus和OpenTracing添加模块。NGINX Plus可以为关键服务提供专用的负载平衡，通过服务发现和API驱动的配置来编排更改。NGINX微服务参考架构中的[Router Mesh](https://www.nginx.com/blog/microservices- Reference - Architecture - NGINX - Router - mes-model/)模式实现了一个集群范围的流量控制点.
 
-Almost every containerized application running in production today uses techniques like these to improve control and visibility.
+现在，几乎所有在生产环境中运行的容器化应用都使用类似的技术来提高控制和可见性。
 
-## Why Then Do I Need a Service Mesh?
+## 为什么我还需要一个服务网格？
 
-*If the techniques above are proven in production, what does a service mesh add?*
+*如果上面的技术在生产环境已经被验证，服务网格增加了什么？*
 
-Each step described in the previous section puts a burden on the application developer and operations team to accommodate it. Individually, the burdens are light because the solutions are well understood, but the weight accumulates. Eventually, organizations running large‑scale, complex applications might reach a tipping point where enhancing the application service-by-service becomes too difficult to scale.
+上一节中描述的每个步骤都给应用程序开发人员和运维团队带来了适应它的负担。单独来说，这些负担很轻，因为解决方案很好理解，但是重量会累积。最终，运行大规模、复杂应用的企业组织可能会达到一个临界点，在这个临界点上，提高服务到服务的应用将变得难以扩展。
 
-This is the core problem service mesh promises to address. The goal of a service mesh is to deliver the required capabilities in a standardized and transparent fashion, completely invisible to the application.
+这是服务网格承诺要解决的核心问题。服务网格的目标是以标准化和透明的方式交付所需的功能，对应用透明。
 
-Service mesh technology is still new, with very few production deployments. Early deployments have been built on complex, home‑grown solutions, specific to each adopter’s needs. A more universal approach is emerging, described as the “sidecar proxy” pattern. This approach deploys Layer 7 proxies alongside every single service instance; these proxies capture all network traffic and provide the additional capabilities – mutual TLS, tracing, metrics, traffic control, and so on – in a consistent fashion.
+服务网格技术仍然是一项新技术，只有很少的生产环境的部署。早期的部署建立在复杂的、自主开发的解决方案之上，具体到每个采用者的需求。一种更为普遍的方法正在出现，称为“sidecar代理”模式。该方法在每个服务实例边部署一个7层代理；这些代理捕获所有的网络流量，并以一致的方式提供额外的功能——双向TLS、追踪、度量、流量控制等。
 
-![img](https://www.nginx.com/wp-content/uploads/2019/03/service-mesh_Nsidecars.png)In a service mesh, every container includes an embedded proxy which intercepts all ingress and egress traffic. The proxy handles encryption, monitoring and tracing on behalf of the service, and implements advanced traffic management.
+![3](https://ws3.sinaimg.cn/large/006tKfTcly1g1d19j3xxqj30sg0e0wg0.jpg)
 
-Service mesh technology is still very new, and vendors and open source projects are rushing to make stable, functional, and easy-to-operate implementations. 2019 will almost certainly be the “[year of the service mesh](https://businesscomputingworld.co.uk/t/the-year-of-the-service-mesh-what-s-to-come-in-2019/1345)”, where this promising technology will reach the point where some implementations are truly production‑ready for general‑purpose applications.
+在服务网格中，每个容器都包含一个嵌入式代理，它拦截所有的进出流量。代理代替服务处理加密、监视和跟踪，并实现高级的流量管理。
 
-## What Should I Do Now?
+服务网格技术仍然是一个非常新的技术，供应商和开源项目都急于实现稳定、功能强大且易于操作的产品。2019年几乎肯定会是[“服务网格年”](https://businesscomputingworld.co.uk/t/year-of-service-mesh-what-to-in-2019/1345)，在这个充满希望的技术中，一些实现将真正为通用应用程序的生产环境部署做好准备。
 
-As of early 2019, it’s probably premature to jump forward to one of the early service mesh implementations, unless you have firmly hit the limitations of other solutions and need an immediate, short‑term solution. The immaturity and rapid pace of change in current service mesh implementations make the cost and risk of deploying them high. As the technology matures, the cost and risks will go down, and the tipping point for adopting service mesh will get closer.
+## 现在我应该做什么?
 
-![img](https://www.nginx.com/wp-content/uploads/2019/03/service-mesh_cost-to-operate.png)As the complexity of the application increases, service mesh becomes a realistic alternative to implementing capabilities service-by-service.
+2019年初，除非你还没有充分认识到其他解决方案的局限性，并且需要一个即时的、短期的解决方案，那么现在就跳到早期的服务网格实现中去可能还为时过早。当前服务网格实现的不成熟和快速变化使得部署它们的成本和风险很高。随着技术的成熟，成本和风险将会降低，采用服务网格的时间点将会越来越近。
 
-Do not let the lack of a stable, mature service mesh delay any initiatives you are considering today, however. As we have seen, Kubernetes and other orchestration platforms provide rich functionality, and adding more sophisticated capabilities can follow well‑trodden, well‑understood paths. Proceed down these paths now, using proven solutions such as ingress routers and internal load balancers. You will know when you reach the tipping point where it’s time to consider bringing a service mesh implementation to bear.
+![4](https://ws2.sinaimg.cn/large/006tKfTcly1g1d1iior8kj30sg0fxjs0.jpg)随着应用程序复杂性的增加，服务网格将成为实现服务到服务的能力的现实选择。
+
+但是，不要让缺乏稳定成熟的服务网格延误你今天正在考虑的任何计划。正如我们所看到的，Kubernetes和其他编排平台提供了丰富的功能，使得添加更复杂的功能可以遵循熟悉的、易于理解的途径。现在继续沿着这些路径前进，使用经过验证的解决方案，如入口路由器和内部负载平衡器。当你到达临界点时，将会知道是时候考虑使用服务网格去实现它们了。
