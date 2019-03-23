@@ -16,6 +16,8 @@ publishDate: 2019-03-19
 
 此文章是Prometheus监控系列的第二篇，基于上一篇讲解了怎么对Kubernetes集群实施Prometheus监控。
 
+编排文件可参考 https://github.com/xianyuLuo/prometheus-monitor-kubernetes
+
 # Prometheus部署
 
 在k8s上部署Prometheus十分简单，下面给的例子中将Prometheus部署到prometheus命名空间。
