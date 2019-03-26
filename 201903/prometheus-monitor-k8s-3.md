@@ -36,7 +36,7 @@ traefik_entrypoint_requests_total{code="404",entrypoint="http",method="POST",pro
 
 2、运维侧部署的时候，在svc上带上3个标签
 
-```
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -65,7 +65,7 @@ metadata:
 
 1、业务侧实现接口，返回格式化监控数据。traefik本身自带监控接口，只需要在启动的时候加上 **--web.metrics.prometheus** 选项就行了
 
-```
+```yaml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -119,7 +119,7 @@ spec:
 
 2、部署svc的时候加上
 
-```
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -155,7 +155,7 @@ Grafana监控Traefik面板：https://grafana.com/dashboards/9682
 
 2、修改Prometheus-Server配置文件，新增加一个job_name静态配置。
 
-```
+```yaml
 - job_name: "alertmanager"
     static_configs:
     - targets: ['alertmanager.xxxx.com:80']
