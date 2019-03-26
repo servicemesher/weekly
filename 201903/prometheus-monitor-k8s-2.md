@@ -1,7 +1,6 @@
 ---
 original: http://xianyuluo.com/post/prometheus%E7%9B%91%E6%8E%A7k8s%E4%BA%8C%E7%9B%91%E6%8E%A7%E9%83%A8%E7%BD%B2/
 author: "xianyuLuo"
-translator: ""
 reviewer: [""]
 title: "Prometheus监控k8s(二)——监控部署"
 description: "本文旨在于寻找一套能够胜任kubernetes集群监控的架构"
@@ -12,18 +11,18 @@ publishDate: 2019-03-19
 ---
 
 # 背景
-由于容器化和微服务的大力发展，Kubernetes基本已经统一了容器管理方案，当我们使用Kubernetes来进行容器化管理的时候，全面监控Kubernetes也就成了我们第一个需要探索的问题。我们需要监控kubernetes的ingress、service、deployment、pod......等等服务，已达到随时掌握Kubernetes集群的内部状况。
+由于容器化和微服务的大力发展，Kubernetes基本已经统一了容器管理方案，当我们使用Kubernetes来进行容器化管理的时候，全面监控Kubernetes也就成了我们第一个需要探索的问题。我们需要监控kubernetes的ingress、service、deployment、pod......等等服务，以达到随时掌握Kubernetes集群的内部状况。
 
 此文章是Prometheus监控系列的第二篇，基于上一篇讲解了怎么对Kubernetes集群实施Prometheus监控。
 
-编排文件可参考 https://github.com/xianyuLuo/prometheus-monitor-kubernetes
+K8s编排文件可参考 https://github.com/xianyuLuo/prometheus-monitor-kubernetes
 
 # Prometheus部署
 
 在k8s上部署Prometheus十分简单，下面给的例子中将Prometheus部署到prometheus命名空间。
-## 部署——监控数据采集
-#### Prometheus
+## 部署——数据采集
 将kube-state-metrics和prometheus分开部署，先部署prometheus。
+#### Prometheus
 
 prometheus-rbac.yaml
 
@@ -310,7 +309,7 @@ spec:
   selector:
     app: prometheus-dep
 ```
-prometheus-svc.yaml定义Prometheus的Servic，需要将Prometheus以NodePort、LoadBalancer或Ingress暴露到集群外部，这样外部的Prometheus才能访问它。这里采用的NodePort，所以只需要访问集群中有外网地址的任意一台服务器的30090端口就可以使用prometheus。
+prometheus-svc.yaml定义Prometheus的Service，需要将Prometheus以NodePort、LoadBalancer或Ingress暴露到集群外部，这样外部的Prometheus才能访问它。这里采用的NodePort，所以只需要访问集群中有外网地址的任意一台服务器的30090端口就可以使用prometheus。
 
 #### kube-state-metrics
 prometheus部署成功后，接着再部署kube-state-metrics作为prometheus的一个exporter来使用，提供deployment、daemonset、cronjob等服务的监控数据。
@@ -517,30 +516,30 @@ kube-state-metrics-svc.yaml定义了kube-state-metrics的暴露方式，这里�
 **k8s集群中的prometheus监控到这儿就已经全部OK了，接下来还需要做的是汇总数据、展示数据及告警规则配置。**
 
 
-## 部署——监控汇总
+## 部署——数据汇总
 
 
 
 #### prometheus-server
 prometheus-server和前面prometheus的步骤基本相同，需要针对configmap、数据存储时间（一般为30d）、svc类型做些许改变，同时增加 rule.yaml。
 
-prometheus-server可以部署在任意k8s集群，或者部署在K8s集群外部都可以。
+prometheus-server不需要kube-state-metrics。prometheus-server可以部署在任意k8s集群，或者部署在K8s集群外部都可以。
 
 
-prometheus-rbac.yaml (和上面的一致)
+prometheus-rbac.yaml (内容和上面的一致，namespace为prometheus-server)
 ```yaml
 ......
 ```
 ---
 
-prometheus-server-config.yaml
+prometheus-server-config-configmap.yaml
 
 ```yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-server-config
-  namespace: prometheus
+  namespace: prometheus-server
 data:
   prometheus.yml: |
     global:
@@ -588,18 +587,18 @@ alerting：告警配置。指定了prometheus将满足告警规则的信息发�
 
 rule_files：定义的告警规则文件
 
-scrape_configs：监控数据刮取配置。定义了2个job，分别是federate-k8scluster-1、federate-k8scluster-2。其中federate-k8scluster-1配置了去x.x.x.x30090采集数据，并且要匹配job名为"kubernetes-"开头。注意下面的labels，这个是自己定义的，它的作用在于给每一条刮取过来的监控数据都加上一个 ==k8scluster: xxxx-k8s== 的Key-Value，xxxx为项目代码。这样我们可以在多个集群数据中区分该条数据是属于哪一个k8s集群，这对于后面的展示和告警都非常有利。
+scrape_configs：监控数据刮取配置。定义了2个job，分别是federate-k8scluster-1、federate-k8scluster-2。其中federate-k8scluster-1配置了去x.x.x.x30090采集数据，并且要匹配job名为"kubernetes-"开头。注意下面的labels，这个是自己定义的，它的作用在于给每一条刮取过来的监控数据都加上一个 **k8scluster: xxxx-k8s** 的Key-Value，xxxx一般指定为项目代码。这样我们可以在多个集群数据中区分该条数据是属于哪一个k8s集群，这对于后面的展示和告警都非常有利。
 
 ---
 
-rule.yaml
+prometheus-server-rule-configmap.yaml
 
 ```
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: prometheus-rule-config
-  namespace: prometheus
+  name: prometheus-server-rule-config
+  namespace: prometheus-server
 data:
   rule.yml: |
     groups:
@@ -702,7 +701,7 @@ apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   name: prometheus-server-dep
-  namespace: prometheus
+  namespace: prometheus-server
 spec:
   replicas: 1
   selector:
@@ -735,7 +734,7 @@ spec:
           name: prometheus-server-config
       - name: rule-config-volume
         configMap:  
-          name: prometheus-rule-config
+          name: prometheus-server-rule-config
 ```
 volumes.data这里使用的是emptyDir，这样其实不妥，应该单独挂载一块盘来存储汇总数据。可使用pv实现。
 
@@ -747,11 +746,11 @@ kind: Service
 apiVersion: v1
 metadata:
   name: prometheus-server-svc
-  namespace: prometheus
+  namespace: prometheus-server
 spec:
   type: LoadBalancer
   ports:
-  - port: 9090
+  - port: 80
     targetPort: 9090
   selector:
     app: prometheus-server-dep

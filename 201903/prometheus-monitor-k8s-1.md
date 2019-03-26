@@ -1,7 +1,6 @@
 ---
 original: https://xianyuluo.com/post/prometheus%E7%9B%91%E6%8E%A7k8s1.html
 author: "xianyuLuo"
-translator: ""
 reviewer: ["rootsongjc"]
 title: "Prometheus监控k8s(一)——监控框架调研"
 description: "本文旨在于寻找一套能够胜任kubernetes集群监控的架构"
@@ -12,7 +11,7 @@ publishDate: 2019-03-13
 ---
 
 # 背景
-由于容器化和微服务的大力发展，Kubernetes基本已经统一了容器管理方案，当我们使用Kubernetes来进行容器化管理的时候，全面监控Kubernetes也就成了我们第一个需要探索的问题。我们需要监控kubernetes的ingress、service、deployment、pod......等等服务，已达到随时掌握Kubernetes集群的内部状况。
+由于容器化和微服务的大力发展，Kubernetes基本已经统一了容器管理方案，当我们使用Kubernetes来进行容器化管理的时候，全面监控Kubernetes也就成了我们第一个需要探索的问题。我们需要监控kubernetes的ingress、service、deployment、pod......等等服务，以达到随时掌握Kubernetes集群的内部状况。
 
 此文章是Prometheus监控系列的第一篇，目的也很明确，旨在于寻找一套能够胜任kubernetes集群监控的架构。
 
