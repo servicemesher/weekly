@@ -49,7 +49,7 @@ MicroProfile是一个快速发展的开源社区。它是一个热情友好的�
 
 ## Istio in a nutshell
 
-云原生微服务非常适合部署到云基础设施上。当有许多微服务时，需要协调微服务之间的通信。业务流程由所谓的服务网格(service mesh)管理，它是一个专用的基础设施层，使服务到服务的通信快速、安全、可靠。它还提供了服务发现、负载平衡、故障恢复、度量和监视。它还可能包括A/B测试、金丝雀发布等等。
+云原生微服务非常适合部署到云基础设施上。当有许多微服务时，需要协调微服务之间的通信。业务流程由所谓的服务网格(service mesh)管理，它是一个专用的基础设施层，使服务到服务的通信快速、安全、可靠。它还提供了服务发现、负载均衡、故障恢复、度量和监视。它还可能包括A/B测试、金丝雀发布等等。
 
 [**Istio**](https://istio.io/) 是最流行的服务网格，旨在连接、管理和安全化微服务。它是一个开源项目，拥有活跃的社区，由IBM、Google和Lyft启动。Istio 1.0于2018年7月底发布。
 
@@ -176,7 +176,7 @@ MicroProfile Config 1.3 以后直接映射任何非字母数字字符 (e.g. “.
 
 有时，微服务暂时无法对外提供服务。例如，微服务可能需要在启动期间加载大型数据或配置文件。
 
-MicroProfile 的健康检查表示微服务是live或者ready。它对外暴露了一个端点 `/health`. 调用这个端点会返回 UP (healthy)或DOWN (unhealthy).
+MicroProfile 的健康检查表示微服务是live或者ready。它对外暴露了一个端点 `/health`. 调用这个端点会返回 UP (healthy)或DOWN (unhealthy)。
 
 ### Health Check of microservices in Istio
 
