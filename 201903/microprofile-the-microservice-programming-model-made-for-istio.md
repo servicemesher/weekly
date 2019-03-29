@@ -49,14 +49,14 @@ MicroProfile是一个快速发展的开源社区。它是一个热情友好的�
 
 ## Istio in a nutshell
 
-云原生微服务非常适合部署到云基础设施上。当有许多微服务时，需要协调微服务之间的通信。业务流程由所谓的服务网格(service mesh)管理，它是一个专用的基础设施层，使服务到服务的通信快速、安全、可靠。它还提供了服务发现、负载平衡、故障恢复、度量和监视。它还可能包括A/B测试、canary发布等等。
+云原生微服务非常适合部署到云基础设施上。当有许多微服务时，需要协调微服务之间的通信。业务流程由所谓的服务网格(service mesh)管理，它是一个专用的基础设施层，使服务到服务的通信快速、安全、可靠。它还提供了服务发现、负载平衡、故障恢复、度量和监视。它还可能包括A/B测试、金丝雀发布等等。
 
 [**Istio**](https://istio.io/) 是最流行的服务网格，旨在连接、管理和安全化微服务。它是一个开源项目，拥有活跃的社区，由IBM、Google和Lyft启动。Istio 1.0于2018年7月底发布。
 
 Istio提供了以下核心功能:
 
 - 流量管理: 
-  - HTTP, gRPC, WebSocket和TCP流量的自动负载平衡。
+  - HTTP, gRPC, WebSocket和TCP流量的自动负载均衡。
   - 使用丰富的路由规则、重试、故障转移和故障注入对流量行为进行细粒度控制。
   - 支持访问控制、速率限制和配额的可插入策略层和API配置。
 - 监控
@@ -156,11 +156,11 @@ public class Demo {
 }
 ```
 
-**注意:**  您可能已经注意到，在上面的Istio配置规则中，configmap定义了性`EXAMPLE_PROPERTY_1` `EXAMPLE_PROPERTY_2` 然而, 上面的代码片段寻找属性 `example.property.1` 和`example.property.2`。为什么呢？这是怎样工作的呢？
+**注意:**  您可能已经注意到，在上面的Istio配置规则中，configmap定义了属性`EXAMPLE_PROPERTY_1` `EXAMPLE_PROPERTY_2` 然而, 上面的代码片段寻找属性 `example.property.1` 和`example.property.2`。为什么呢？这是怎样工作的呢？
 
 在IEEE Std 1003.1-2001的Shell和实用程序卷中，实用程序使用的环境变量名仅由大写字母、数字和可移植字符集中定义的字符中的“_”(下划线)组成，不以数字开头。实现可以允许其他字符；应用程序应容许这些名称的存在。有些shell可能只支持字母、数字和下划线，比如Ubuntu。
 
-MicroProfile Config 1.3 以后直接映射任何非字母数字字符 (e.g. “.”, 在某些操作系统中是无效的环境变量) 到 `_`。 在这这个例子中，在`configmap`里，属性名是 `EXAMPLE_PROPERTY_1 EXAMPLE_PROPERTY_2`，而这正是 `example.property.1`和`example.property.2`的映射名。
+MicroProfile Config 1.3 以后直接映射任何非字母数字字符 (e.g. “.”, 在某些操作系统中是无效的环境变量) 到 `_`。 在这个例子中，在`configmap`里，属性名是 `EXAMPLE_PROPERTY_1 EXAMPLE_PROPERTY_2`，而这正是 `example.property.1`和`example.property.2`的映射名。
 
 
 
@@ -622,7 +622,7 @@ MP_Fault_Tolerance_NonFallback_Enabled: "false"
 
 The two microservices will demonstrate all MicroProfile specifications.  If you are interested in this exercise, please join in the [gitter room](https://gitter.im/eclipse/microprofile-service-mesh) and join the weekly call, where the details can be found the [MicroProfile Calendar](https://calendar.google.com/calendar/embed?src=gbnbc373ga40n0tvbl88nkc3r4%40group.calendar.google.com&ctz=GMT).
 
-MicroProfile设置一个示例github [repository](https://github.com/eclipse/microprofile-servicesmesh/)来探索生态系统，特别关注MicroProfile的容错能力。还有两个微服务用于演示生态系统，[servicea](https://github.com/eclipse/microprofile-service-mesh-service-a/)和[serviceb](https://github.com/eclipse/microprofile-service-mesh-service-b)。这两个微服务将演示所有微概要规范。如果您对这个练习感兴趣，请加入[gitter room](https://gitter.im/eclipse/microprofile-service-mesh)，并加入每周的电话会议，其中的详细信息可以在[MicroProfile Calendar](https://calendar.google.com/calendar/embed?src=gbnbc373ga40n0tvbl88nkc3r4%40group.calendar.google.com&ctz=GMT)中找到。
+MicroProfile设置一个示例github [repository](https://github.com/eclipse/microprofile-servicesmesh/)来探索生态系统，特别关注MicroProfile的容错能力。还有两个微服务用于演示生态系统，[servicea](https://github.com/eclipse/microprofile-service-mesh-service-a/)和[serviceb](https://github.com/eclipse/microprofile-service-mesh-service-b)。这两个微服务将演示所有MicroProfile规范。如果您对这个练习感兴趣，请加入[gitter room](https://gitter.im/eclipse/microprofile-service-mesh)，并加入每周的电话会议，其中的详细信息可以在[MicroProfile Calendar](https://calendar.google.com/calendar/embed?src=gbnbc373ga40n0tvbl88nkc3r4%40group.calendar.google.com&ctz=GMT)中找到。
 
 总之，MicroProfile被看作是为Istio服务网格开发微服务的编程模型。
 
