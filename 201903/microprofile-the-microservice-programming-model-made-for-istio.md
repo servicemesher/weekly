@@ -2,23 +2,20 @@
 original: https://jaxenter.com/microprofile-microservices-istio-151156.html
 author: Emily Jiang
 translator: https://github.com/GuangmingLuo
-reviewer: []
+reviewer: ["haiker2011"]
 title: "MicroProfile，为Istio创建的微服务编程模型"
-description: "本文探讨了如何结合eclipse/microprofile与流行的服务网格Istio安全地部署微服务"
+description: "本文探讨了如何结合eclipse/microprofile与流行的服务网格Istio安全地部署微服务。"
 categories: "译文"
 tags: ["istio","microprofile","microservices"]
 originalPublishDate: 2018-11-26
-publishDate: 2019-03-21
+publishDate: 2019-03-30
 ---
-
 
 ## 编者按
 
 如果说Spring Cloud是以SpingBoot为核心和基础的微服务架构，那么MicroProfile则是将传统JavaEE轻量化以适应微服务时代的一个体系。作者Emily Jiang，开源项目[eclipse/microprofile](https://github.com/eclipse/microprofile)的contributor之一，在本文中探讨了如何结合MicroProfile与流行的服务网格Istio安全地部署微服务，比较了二者的不同之处，并且阐述了二者共存的生态系统的现状及未来。
 
 ![shutterstock.jpg](https://ws1.sinaimg.cn/mw690/bf8f1836ly1g0yo4fnavmj209q063jrd.jpg)
-
-
 
 ## MicroProfile in a nutshell
 
@@ -45,8 +42,6 @@ MicroProfile是一个快速发展的开源社区。它是一个热情友好的�
 
 使用MicroProfile创建的cloud-native微服务可以自由部署在任何地方，包括服务网格架构，例如Istio。在本文中，我们将探讨如何在Istio平台上使用MicroProfile实现微服务。让我们简单地看一下Istio。
 
-
-
 ## Istio in a nutshell
 
 云原生微服务非常适合部署到云基础设施上。当有许多微服务时，需要协调微服务之间的通信。业务流程由所谓的服务网格(service mesh)管理，它是一个专用的基础设施层，使服务到服务的通信快速、安全、可靠。它还提供了服务发现、负载均衡、故障恢复、度量和监视。它还可能包括A/B测试、金丝雀发布等等。
@@ -70,8 +65,6 @@ Istio由一个数据平面和一个控制平面组成 (Istio架构见下图，�
 
 ![microprofile-istio-1.png](https://ws1.sinaimg.cn/mw690/bf8f1836ly1g0yt2h4ed1j20lc0g976a.jpg)
 
-
-
 ## MicroProfile meets Istio
 
 如上一节所述，MicroProfile提供
@@ -93,8 +86,6 @@ Istio能够做到:
 - Fault Injection
 
 乍一看，有一些重叠。接下来，让我们看看每个单独的MicroProfile规范，并研究如何在Istio中使用它们。
-
-
 
 ### MicroProfile config in Istio
 
@@ -162,8 +153,6 @@ public class Demo {
 
 MicroProfile Config 1.3 以后直接映射任何非字母数字字符 (e.g. “.”, 在某些操作系统中是无效的环境变量) 到 `_`。 在这个例子中，在`configmap`里，属性名是 `EXAMPLE_PROPERTY_1 EXAMPLE_PROPERTY_2`，而这正是 `example.property.1`和`example.property.2`的映射名。
 
-
-
 ## MicroProfile health check in Istio
 
 在服务网格体系结构中，Kubernetes集群中的每个pod都有一个生命周期。Kubernetes需要知道何时杀死pod, Istio需要知道何时将请求路由到pod。总之，了解每个pod的健康状况是必要的。pod的健康状况是通过活性(Liveness )和准备度(Readiness)来测量的。
@@ -195,8 +184,6 @@ initialDelaySeconds: 10
 periodSeconds: 10
 ```
 
-
-
 ## MicroProfile metrics in Istio
 
 MicroProfile Metrics提供了一种将遥测技术导出到管理代理和api的统一方法，微服务开发人员可以使用这些代理和api添加遥测数据。例如，下面的指标将保存库存中的系统数量。
@@ -209,8 +196,6 @@ public int getTotal() {
 ```
 
 MicroProfile metrics将能够提供特定于应用程序的指标，而不仅仅是Istio能够获得的指标。它是对遥测技术的补充。
-
-
 
 ## MicroProfile Open API in Istio
 
@@ -249,8 +234,6 @@ public Response getPropertiesForHost(
 
 这个规范为Istio提供了一个很好的补充，因为DevOps可以使用它来查找每个JAX-RS端点的详细信息。
 
-
-
 ## MicroProfile Open Tracing in Istio
 
 在服务网格体系结构中，一个基本的需求是追踪服务调用。从客户端到最终服务的完整请求链将有助于可视化服务调用跳转。如果出了问题，这可以用来识别和定位出错的服务。
@@ -266,8 +249,6 @@ Istio要求微服务传播以下7个头文件，这7个头文件由MicroProfile 
 - `x-b3-sampled`
 - `x-b3-flags`
 - `x-ot-span-context`
-
-
 
 ## MicroProfile JWT in Istio
 
@@ -291,8 +272,6 @@ public Response getJwtUsername() {
 
 - 传输身份验证 (service-to-service authentication): 验证使用[mutual TLS](https://en.wikipedia.org/wiki/Mutual_authentication)作为传输身份验证的完整堆栈解决方案进行连接的直接客户机。这可以在不更改任何微服务代码的情况下使用。
 - 源认证 (end-user authentication): 验证作为最终用户或设备发出请求的原始客户端。它只支持JWT源身份验证。Istio可以通过MicroProfile JWT身份验证添加额外的身份验证和拦截。如果微服务没有嵌入安全性，则可以使用原始身份验证。
-
-
 
 ## MicroProfile Rest Client in Istio
 
@@ -339,8 +318,6 @@ public class InventoryManager {
 
 该规范被微服务使用，并且不涉及任何其他内容。因此，它与Istio没有直接的交互作用，也没有冲突。
 
-
-
 ## MicroProfile Fault Tolerance in Istio
 
 构建弹性微服务是微服务设计的关键。[Eclipse MicroProfile Fault Tolerance](https://github.com/eclipse/microprofile-fault-tolerance)提供了一个简单灵活的解决方案来构建容错微服务，且易于使用和配置。它提供了以下容错策略:
@@ -366,7 +343,7 @@ Istio的故障恢复是通过Envoy代理来协调出站流量，例如复制请�
 
 ![microprofile-istio-3.png](https://ws1.sinaimg.cn/mw690/bf8f1836ly1g1030s8iccj20k3099glq.jpg)
 
-*MicroProfile Fault Tolerance Circuit Breaker为客户端所有，客户端之间不共享；Istio断路器为后端服务所有，这意味着多个连接可以构成一个Circuit Breaker。
+*MicroProfile Fault Tolerance Circuit Breaker* 为客户端所有，客户端之间不共享；Istio断路器为后端服务所有，这意味着多个连接可以构成一个Circuit Breaker。
 
 让我们通过研究每个策略来更详细地比较二者的故障处理。
 
@@ -548,7 +525,7 @@ baseEjectionTime: 15m
 
 如你所见，Istio CircuitBreaker同时覆盖了bulkhead和circuit breaker的部分功能。上述配置可以转换为以下MicroProfile Fault Tolerance。
 
-```
+```bash
 @Bulkhead(1000) @CircuitBreaker(requestVolumeThreshold=7, failureRatio=1.0, delay=15, delayUnit=ChronoUnit.MINUTES)
 ```
 
@@ -576,7 +553,7 @@ private String fallbackForServiceB() {
 }
 ```
 
-### Current ecosystem
+### 当前生态系统
 
 当你读到这里，你可能会想：
 
@@ -598,7 +575,7 @@ MP_Fault_Tolerance_NonFallback_Enabled: "false"
 
 这个生态系统仍然是基本的，因为它直接禁用了MicroProfile Fault Tolerance(Fallback除外)。微服务开发人员错误处理知识完全被抛弃。DevOps必须从头开始创建Istio配置规则。
 
-### Future ecosystem in my view
+### 未来生态系统之我见
 
 生成正确的Istio配置规则可能会令人望而生畏。如果我们可以使用MicroProfile容错注释作为Istio错误处理规则创建的输入，就可以生成相应的Istio配置规则。这样，开发人员关于超时或重试的知识将反映在configure规则中。
 
@@ -626,9 +603,7 @@ MicroProfile设置一个示例github [repository](https://github.com/eclipse/mic
 
 总之，MicroProfile被看作是为Istio服务网格开发微服务的编程模型。
 
-
-
-## References
+## 参考
 
 1. [MicroProfile website](http://microprofile.io/)
 2. [Istio](https://istio.io/)
