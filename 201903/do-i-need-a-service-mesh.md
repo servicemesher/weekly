@@ -48,7 +48,7 @@ Kubernetes在它的API中提供了一个入口（Ingress）资源对象。 这�
 
 ![2](https://ws2.sinaimg.cn/large/006tKfTcly1g1d0pnxtybj30sg0brdgp.jpg)独立的微服务可以使用**Prometheus导出器， 分布式追踪器， 双向TLS和SPIEE进行扩展**。代理可以被部署为独立的服务如①，或者像②一样提供中央路由网格。
 
-其中一些技术需要对每个服务做一些小的修改——例如，将证书注入到容器中，或者为Prometheus和OpenTracing添加模块。NGINX Plus可以为关键服务提供专用的负载平衡，通过服务发现和API驱动的配置来编排更改。NGINX微服务参考架构中的[Router Mesh](https://www.nginx.com/blog/microservices- Reference - Architecture - NGINX - Router - mes-model/)模式实现了一个集群范围的流量控制点.
+其中一些技术需要对每个服务做一些小的修改——例如，将证书注入到容器中，或者为Prometheus和OpenTracing添加模块。NGINX Plus可以为关键服务提供专用的负载均衡，通过服务发现和API驱动的配置来编排更改。NGINX微服务参考架构中的[Router Mesh](https://www.nginx.com/blog/microservices- Reference - Architecture - NGINX - Router - mes-model/)模式实现了一个集群范围的流量控制点.
 
 现在，几乎所有在生产环境中运行的容器化应用都使用类似的技术来提高控制和可见性。
 
@@ -74,4 +74,4 @@ Kubernetes在它的API中提供了一个入口（Ingress）资源对象。 这�
 
 ![4](https://ws2.sinaimg.cn/large/006tKfTcly1g1d1iior8kj30sg0fxjs0.jpg)随着应用程序复杂性的增加，服务网格将成为实现服务到服务的能力的现实选择。
 
-但是，不要让缺乏稳定成熟的服务网格延误你今天正在考虑的任何计划。正如我们所看到的，Kubernetes和其他编排平台提供了丰富的功能，使得我们可以遵循熟悉的、易于理解的方式来实现复杂的功能。现在继续沿着这些路径前进，使用经过验证的解决方案，如入口路由器和内部负载平衡器。当你到达临界点时，将会知道是时候考虑使用服务网格去实现它们了。
+但是，不要让缺乏稳定成熟的服务网格延误你今天正在考虑的任何计划。正如我们所看到的，Kubernetes和其他编排平台提供了丰富的功能，使得我们可以遵循熟悉的、易于理解的方式来实现复杂的功能。现在继续沿着这些路径前进，使用经过验证的解决方案，如入口路由器和内部负载均衡器。当你到达临界点时，将会知道是时候考虑使用服务网格去实现它们了。
