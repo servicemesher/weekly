@@ -1,7 +1,7 @@
 ---
 original: https://www.yangcs.net/posts/circuit_breaking-and-outlier-detection-in-istio/
 author: "杨传胜"
-reviewer: [""]
+reviewer: ["孙海洲"]
 title: "熔断与异常检测在 Istio 中的应用"
 description: "通过 Istio 来窥探 Envoy 的熔断与异常检测机制"
 categories: "istio"
