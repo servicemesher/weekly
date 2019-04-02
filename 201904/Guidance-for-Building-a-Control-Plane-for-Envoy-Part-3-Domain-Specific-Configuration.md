@@ -11,10 +11,6 @@ originalPublishDate: 2019-04-2
 publishDate: 2019-04-2
 ---
 
-[**编者案**]
-
-> TODO
-
 这是探索为 Envoy 代理构建控制面系列文章的第3部分。
 
 在本系列博客中，我们将关注以下领域:
@@ -23,13 +19,13 @@ publishDate: 2019-04-2
 
 * [确定控制面由哪些组件组成，包括支持存储、服务发现 api、安全组件等](https://medium.com/solo-io/guidance-for-building-a-control-plane-for-envoy-proxy-part-2-identify-components-2d0731b0d8a4)
 
-* 建立最适合您的用例和组织的特定于域的配置对象和 api(本条目)
+* 建立最适合您的使用场景和组织架构的特定于域的配置对象和 api(本博客)
 
 * 考虑如何最好地使您的控制面可插在您需要它的地方
 
 * 部署各种控制面组件的选项
 
-* 通过控制面的测试装置来思考
+* 通过控制面的测试工具来思考
 
 在前面的[博客部分](https://medium.com/solo-io/guidance-for-building-a-control-plane-for-envoy-proxy-part-2-identify-components-2d0731b0d8a4)中，我们评估了控制面可能需要的组件。在本节中，我们将探索特定于域的 API 在您的控制面上可能是什么样子的。
 
@@ -57,17 +53,17 @@ Istio 项目旨在成为服务网格平台，用户通过平台，可以在此�
 
 ![](https://ww1.sinaimg.cn/large/006gLaqLgy1g1ocpfgj5dj30ma09dq3j.jpg)
 
-运行在Kubernetes中的所有这些配置对象都实现为 [CustomResourceDefinitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)。
+运行在 Kubernetes 中的所有这些配置对象都实现为 [CustomResourceDefinitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)。
 
 [Heptio/VMWare Contour](https://github.com/heptio/contour) 旨在作为 Kubernetes ingress 网关，并具有一个简化的特定于域的配置模型，具有 CustomResourceDefinition （CRD）风格和 [Kubernetes ingress 资源](https://kubernetes.io/docs/concepts/services-networking/ingress/)
 
-* [IngressRoute](https://github.com/heptio/contour/blob/master/docs/ingressroute.md) 是一个 Kubernetes CRD，它提供一个位置来指定轮廓代理的配置
+* [IngressRoute](https://github.com/heptio/contour/blob/master/docs/ingressroute.md) 是一个 Kubernetes CRD，它提供一个位置来指定 Contour 代理的配置
 
-* [Ingress 资源支持](https://github.com/heptio/contour/blob/master/docs/annotations.md)，允许你在你的 Kubernetes Ingress 资源上指定注解，如果你在这类事情
+* [Ingress 资源支持](https://github.com/heptio/contour/blob/master/docs/annotations.md)，允许你在你的 Kubernetes Ingress 资源上指定注解。
 
 ![](https://ww1.sinaimg.cn/large/006gLaqLly1g1oao8vmp8j30hc05gaa8.jpg)
 
-在 [Gloo 项目](https://gloo.solo.io/)中，我们决定将可用的配置对象分成两个级别：
+在 [Gloo 项目](https://gloo.solo.io/)中，将可用的配置对象分成两个级别：
 
 * 为用户提供最佳符合人机工程学的面向用户的配置，并为可扩展性留下选项(下一节将详细介绍)
 
@@ -75,7 +71,7 @@ Istio 项目旨在成为服务网格平台，用户通过平台，可以在此�
 
 对于用户，Gloo 关注拥有路由配置的团队，因为路由的语义(以及可用的转换/聚合功能)受到 API 和微服务开发人员的严重影响。对于面向用户的 API 对象，我们使用：
 
-* [Gateway](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/gateway.proto.sk/)——指定特定侦听器端口上可用的路由和 API 端点，以及每个 API 的安全性
+* [Gateway](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/gateway.proto.sk/)——指定特定监听器端口上可用的路由和 API 端点，以及每个 API 的安全性
 
 * [VirtualService ](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/virtual_service.proto.sk/)——将 API 路由分组到一组“虚拟 API”中，这些“虚拟 API”可以路由到支持的函数（gRPC、http/1、http/2、lambda 等）；使开发人员能够控制路由如何处理[不同的转换]()，从而尝试将前端 API 与后端 API（以及后端可能引入的任何破坏性更改）分离开来
 
