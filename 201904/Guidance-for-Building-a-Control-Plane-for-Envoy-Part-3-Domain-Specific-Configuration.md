@@ -1,7 +1,7 @@
 ---
 author: "Christian Posta"
 translator: "haiker2011"
-reviewer: ["", ""]
+reviewer: ["rootsongjc"]
 original: "https://medium.com/solo-io/guidance-for-building-a-control-plane-for-envoy-part-3-domain-specific-configuration-c97e8124b9d1"
 title: "为 Envoy 构建控制面指南第3部分：领域特定配置"
 description: "本文介绍如何为 Envoy 构建控制面指南的第3部分：领域特定配置"
@@ -91,6 +91,6 @@ Gloo 控件的两层配置之间的分离允许我们在保持配置 Envoy 的�
 
 除了考虑特定于域的配置之外，还应该考虑 API/对象模型的特定接触点。例如，Kubernetes 非常关注 YAML 和资源文件。您可以构建一个更特定于领域的 CLI 工具（就像 [OpenShift 对 oc CLI](https://docs.openshift.com/enterprise/3.2/dev_guide/new_app.html#dev-guide-new-app) ，[Istio 对 istioctl](https://istio.io/docs/reference/commands/istioctl/) ， [Gloo 对 glooctl](https://gloo.solo.io/cli/glooctl/) 所做的那样）。
 
-## 提要
+## 小结
 
 当您构建一个 Envoy 控制面时，您是带着一个特定的意图或一组架构/用户来做这件事的。您应该考虑到这一点，并构建适合您的用户并改进您的 Envoy 操作工作流使其符合人体工程学的、有主见的特定于领域的 API。[Gloo 团队](https://github.com/solo-io/gloo/graphs/contributors)建议研究现有的 Envoy 控制面实现，只有在其他实现都不合适的情况下才构建自己的 Envoy 控制面。Gloo 的控制为扩展和定制奠定了基础。我们将在下一篇文章中看到，可以构建一个完全可扩展的控制面，以适应许多不同的用户、工作流和操作约束。
