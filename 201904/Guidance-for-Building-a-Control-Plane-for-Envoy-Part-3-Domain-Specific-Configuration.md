@@ -37,7 +37,7 @@ publishDate: 2019-04-2
 
 一旦您考虑了哪些组件可能构成您的控制面体系结构(请参阅前面的部分)，您就需要考虑您的用户将如何与控制面交互，甚至更重要的是，您的用户将是谁?要回答这个问题，您必须决定基于 Envoy 的基础设施将扮演什么角色，以及流量将如何通过体系结构。它可以是：
 
-* API管理网关(南北向流量)
+* API 管理网关(南北向流量)
 
 * 简单 Kubernetes 边缘负载均衡器/反向代理/入口控制((南北向流量)
 
@@ -45,15 +45,15 @@ publishDate: 2019-04-2
 
 * 每个服务的 sidecar (东西向流量)
 
-例如，Istio 项目旨在成为服务网格平台，平台操作员可以在此基础上构建工具来驱动服务和应用程序之间的网络控制。Istio 用于配置 Envoy 的领域特定配置对象主要围绕以下对象：
+Istio 项目旨在成为服务网格平台，用户通过平台，可以在此基础上构建工具来驱动服务和应用程序之间的网络控制。Istio 用于配置 Envoy 的领域特定配置对象主要围绕以下对象：
 
 * [Gateway](https://istio.io/docs/reference/config/networking/)——定义一个共享代理组件(能够集群进入)，该组件指定可用于负载均衡和路由流量的协议、TLS、端口和主机/权限
 
 * [VirtualService](https://istio.io/docs/reference/config/networking/)——如何与特定服务交互的规则；可以指定诸如路由匹配、超时、重试等内容
 
-* [DestinationRule](https://istio.io/docs/reference/config/networking/)——如何与特定服务进行交互的规则，包括熔断、负载均衡、mTLS策略、服务的子集定义等
+* [DestinationRule](https://istio.io/docs/reference/config/networking/)——如何与特定服务进行交互的规则，包括熔断、负载均衡、mTLS 策略、服务的子集定义等
 
-* [ServiceEntry](https://istio.io/docs/reference/config/networking/)——显式地将服务添加到 Isti o的服务注册中心
+* [ServiceEntry](https://istio.io/docs/reference/config/networking/)——显式地将服务添加到 Istio 的服务注册中心
 
 ![](http://ww1.sinaimg.cn/large/006gLaqLly1g1oaexjqwhj30ma09dq3j.jpg)
 
@@ -69,23 +69,23 @@ publishDate: 2019-04-2
 
 在 [Gloo 项目](https://gloo.solo.io/)中，我们决定将可用的配置对象分成两个级别：
 
-* 为用户用例提供最佳人机工程学的面向用户的配置，并为可扩展性留下选项(下一节将详细介绍)
+* 为用户提供最佳符合人机工程学的面向用户的配置，并为可扩展性留下选项(下一节将详细介绍)
 
 * 抽象 Envoy 但不明确用于直接用户操作的低层配置。较高级别的对象被转换为这种较低级别的表示形式，最终用于转换为 Envoy xDS api。这样设计的原因将在下一节中说明
 
 对于用户，Gloo 关注拥有路由配置的团队，因为路由的语义(以及可用的转换/聚合功能)受到 API 和微服务开发人员的严重影响。对于面向用户的 API 对象，我们使用：
 
-* [Gateway](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/gateway.proto.sk/)——指定特定侦听器端口上可用的路由和API端点，以及每个API的安全性
+* [Gateway](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/gateway.proto.sk/)——指定特定侦听器端口上可用的路由和 API 端点，以及每个 API 的安全性
 
-* [VirtualService ](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/virtual_service.proto.sk/)——将API路由分组到一组“虚拟 API”中，这些“虚拟 API”可以路由到支持的函数（gRPC、http/1、http/2、lambda 等）；使开发人员能够控制路由如何处理[不同的转换]()，从而尝试将前端 API 与后端 API（以及后端可能引入的任何破坏性更改）分离开来
+* [VirtualService ](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/virtual_service.proto.sk/)——将 API 路由分组到一组“虚拟 API”中，这些“虚拟 API”可以路由到支持的函数（gRPC、http/1、http/2、lambda 等）；使开发人员能够控制路由如何处理[不同的转换]()，从而尝试将前端 API 与后端 API（以及后端可能引入的任何破坏性更改）分离开来
 
 注意，这些对象与这些对象的 Istio 变体不同。
 
 Gloo 中的面向用户的 API 对象驱动较低层的对象，这些对象最终用于派生 Envoy xDS 配置。例如，Gloo 的底层核心 API 对象是：
 
-* [Upstream](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/upstream.proto.sk/)——获取关于后端集群和在此上公开的函数的详细信息。您可以将 Gloo 上游与 [Envoy 集群](https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/cds.proto)松散地关联起来，但有一个很大的区别:上游可以理解特定端点上可用的实际服务功能（换句话说，了解 `/foo/bar` 和 `/bar/wine`，包括它们的预期参数和参数结构，而不仅仅是 `hostname:port`）。等下再详细讲
+* [Upstream](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/upstream.proto.sk/)——获取关于后端集群和在此上公开的函数的详细信息。您可以将 Gloo 上游与 [Envoy 集群](https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/cds.proto)松散地关联起来，但有一个很大的区别:上游可以理解特定端点上可用的实际服务功能（换句话说，了解 `/foo/bar` 和 `/bar/wine`，包括它们的预期参数和参数结构，而不仅仅是 `hostname:port`），后文会详细解释。
 
-* [Proxy](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto.sk/)——代理是抽象我们可以应用于 Envoy 的所有配置的主要对象。这包括监听器、虚拟主机、路由和上行流。高级对象(VirtualService，Gateway等)用于驱动这个低级代理对象
+* [Proxy](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto.sk/)——代理是抽象我们可以应用于 Envoy 的所有配置的主要对象。这包括监听器、虚拟主机、路由和上行流。高级对象(VirtualService，Gateway等)用于驱动这个低级代理对象。
 
 ![](http://ww1.sinaimg.cn/large/006gLaqLly1g1ob15sfynj30m80cudhe.jpg)
 
@@ -97,4 +97,4 @@ Gloo 控件的两层配置之间的分离允许我们在保持配置 Envoy 的�
 
 ## 提要
 
-当您构建一个 Envoy 控制面时，您是带着一个特定的意图或一组架构/用户来做这件事的。您应该考虑到这一点，并构建适合您的用户并改进您的 Envoy 操作工作流使其符合人体工程学的、有主见的特定于领域的 API。[Gloo 团队](https://github.com/solo-io/gloo/graphs/contributors)建议研究现有的 Envoy 控制面实现，只有在其他实现都不合适的情况下才构建自己的Envoy 控制面。Gloo 的控制为扩展和定制奠定了基础。我们将在下一篇文章中看到，可以构建一个完全可扩展的控制面，以适应许多不同的用户、工作流和操作约束。
+当您构建一个 Envoy 控制面时，您是带着一个特定的意图或一组架构/用户来做这件事的。您应该考虑到这一点，并构建适合您的用户并改进您的 Envoy 操作工作流使其符合人体工程学的、有主见的特定于领域的 API。[Gloo 团队](https://github.com/solo-io/gloo/graphs/contributors)建议研究现有的 Envoy 控制面实现，只有在其他实现都不合适的情况下才构建自己的 Envoy 控制面。Gloo 的控制为扩展和定制奠定了基础。我们将在下一篇文章中看到，可以构建一个完全可扩展的控制面，以适应许多不同的用户、工作流和操作约束。
