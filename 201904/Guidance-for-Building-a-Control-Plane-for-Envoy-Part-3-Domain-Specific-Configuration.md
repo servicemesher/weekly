@@ -55,7 +55,7 @@ Istio 项目旨在成为服务网格平台，用户通过平台，可以在此�
 
 * [ServiceEntry](https://istio.io/docs/reference/config/networking/)——显式地将服务添加到 Istio 的服务注册中心
 
-![](http://ww1.sinaimg.cn/large/006gLaqLly1g1oaexjqwhj30ma09dq3j.jpg)
+![](http://ww1.sinaimg.cn/large/006gLaqLgy1g1ocpfgj5dj30ma09dq3j.jpg)
 
 运行在Kubernetes中的所有这些配置对象都实现为 [CustomResourceDefinitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)。
 
@@ -87,7 +87,7 @@ Gloo 中的面向用户的 API 对象驱动较低层的对象，这些对象最�
 
 * [Proxy](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto.sk/)——代理是抽象我们可以应用于 Envoy 的所有配置的主要对象。这包括监听器、虚拟主机、路由和上行流。高级对象(VirtualService，Gateway等)用于驱动这个低级代理对象。
 
-![](http://ww1.sinaimg.cn/large/006gLaqLly1g1ob15sfynj30m80cudhe.jpg)
+![](http://ww1.sinaimg.cn/large/006gLaqLgy1g1ocqfrwzvj30o20dxabd.jpg)
 
 Gloo 控件的两层配置之间的分离允许我们在保持配置 Envoy 的简单抽象的同时扩展 Gloo 控制面功能。本系列的第 4 部分将对此进行更详细的解释。
 
