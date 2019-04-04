@@ -4,7 +4,7 @@ translator: "haiker2011"
 reviewer: ["rootsongjc"]
 original: "https://medium.com/solo-io/guidance-for-building-a-control-plane-for-envoy-part-3-domain-specific-configuration-c97e8124b9d1"
 title: "为 Envoy 构建控制面指南第3部分：领域特定配置"
-description: "本文介绍如何为 Envoy 构建控制面指南的第3部分：领域特定配置"
+description: "本文介绍如何为 Envoy 构建控制面指南的第3部分：领域特定配置。"
 categories: "translation"
 tags: ["Envoy", "Control Plane", "Istio", "Contour", "Service Mesh"]
 originalPublishDate: 2019-04-02
