@@ -7,8 +7,8 @@ title: "为 Envoy 构建控制面指南第3部分：领域特定配置"
 description: "本文介绍如何为 Envoy 构建控制面指南的第3部分：领域特定配置"
 categories: "translation"
 tags: ["Envoy", "Control Plane", "Istio", "Contour", "Service Mesh"]
-originalPublishDate: 2019-04-2
-publishDate: 2019-04-2
+originalPublishDate: 2019-04-02
+publishDate: 2019-04-02
 ---
 
 这是探索为 Envoy 代理构建控制面系列文章的第3部分。
