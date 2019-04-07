@@ -1,4 +1,4 @@
-+++
+---
 original: https://medium.com/google-cloud/automated-canary-deployments-with-flagger-and-istio-ac747827f9d1
 author: "Stefan Prodan"
 translator: "shonge"
@@ -9,7 +9,7 @@ categories: "译文"
 tags: ["Istio","Service Mesh","Flagger"]
 originalPublishDate: 2019-02-21
 publishDate: 
-+++
+---
 
 持续部署(Continuous delivery)符合企业软件实践,它是完善持续集成(continuous integration)原则的自然演化。
 但持续部署案例却非常罕见，其中原因可能是需要复杂的管理以及担心部署失败而影响系统的可用性。
