@@ -154,7 +154,7 @@ helm upgrade -i flagger-grafana flagger/grafana \
 --set user=admin \
 --set password=change-me
 ```
-创建一个virtual service,使用公共gateway暴露Grafana（用你的域名替换```example.com```）：
+创建一个virtual service，使用公共gateway暴露Grafana（用你的域名替换```example.com```）：
 ```
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -175,10 +175,10 @@ spec:
 ```
 kubectl apply -f ./grafana-virtual-service.yaml
 ```
-在浏览器中访问```http://grafana.istio.example.com```,会重定向到Grafana登录页面。
+在浏览器中访问```http://grafana.istio.example.com```，会重定向到Grafana登录页面。
 ## 使用Flagger部署web应用
 
-Flagger包含一个Kubernetes deployment和一个可选的horizontal pod autoscaler（HPA），然后创建一些资源对象（Kubernetes deployments, ClusterIP services和Istio virtual services）。这些资源对象会在网络上暴露应用并实现金丝雀分析和升级。
+Flagger包含一个Kubernetes deployment和一个可选的horizontal pod autoscaler（HPA），然后创建一些资源对象（Kubernetes deployments， ClusterIP services和Istio virtual services）。这些资源对象会在网络上暴露应用并实现金丝雀分析和升级。
 ![](http://wx4.sinaimg.cn/large/0071hauBly1g1u72wr801j30rs0cdq4w.jpg)
 创建一个test namespace，并开启Istio sidecar注入：
 
@@ -259,7 +259,7 @@ service/podinfo-canary
 service/podinfo-primary
 virtualservice.networking.istio.io/podinfo
 ```
-打开浏览器访问```app.istio.example.com```,你会看到[demo app](https://github.com/stefanprodan/k8s-podinfo)的版本号。
+打开浏览器访问```app.istio.example.com```，你会看到[demo app](https://github.com/stefanprodan/k8s-podinfo)的版本号。
 
 ## 自动金丝雀分析和升级
 
@@ -267,7 +267,7 @@ Flagger实现了一个控制循环，逐渐将流量转移到金丝雀，同时�
 ![](http://wx2.sinaimg.cn/large/0071hauBgy1g1uawf9vhqj30rs0a976b.jpg)
 以下对象的更改会触发金丝雀部署：
 
-- Deployment PodSpec（容器image,command,ports,env,等等）
+- Deployment PodSpec（容器image，command，ports，env，等等）
 - ConfigMaps作为卷挂载或映射到环境变量
 - Secrets作为卷挂载或映射到环境变量
 通过更新容器image触发金丝雀部署：
