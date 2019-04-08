@@ -47,7 +47,7 @@ gcloud beta container clusters create istio \
 --addons=HorizontalPodAutoscaling,Istio \
 --istio-config=auth=MTLS_PERMISSIVE
 ```
-上述命令会创建包含2台虚机的主机池（```n1-standard-2```，vCPU:2，RAM:7.5GB，DISK:30GB）。理想情况下，你可能希望将Istio组件与业务应用隔离部署，但并不容易实现将Istio独立部署于专属主机池。Istio manifest被设置为只读并且GKE会还原对node affinity或pod anti-affinity的任何修改。  
+上述命令会创建包含2台虚机的主机池（```n1-standard-2```，vCPU：2，RAM：7.5GB，DISK：30GB）。理想情况下，你可能希望将Istio组件与业务应用隔离部署，但并不容易实现将Istio独立部署于专属主机池。Istio manifest被设置为只读并且GKE会还原对node affinity或pod anti-affinity的任何修改。  
 
 为```kubectl```设置证书：
 ```
@@ -68,7 +68,7 @@ brew install kubernetes-helm
 
 Homebrew 2.0现在也支持[Linux](https://brew.sh/2019/02/02/homebrew-2.0.0/)。
 
-为Tiller创建service account和cluster role binding:
+为Tiller创建service account和cluster role binding：
 ```
 kubectl -n kube-system create sa tiller && \
 kubectl create clusterrolebinding tiller-cluster-rule \
@@ -196,7 +196,7 @@ kubectl apply -f ${REPO}/artifacts/canaries/hpa.yaml
 helm upgrade -i flagger-loadtester flagger/loadtester \
 --namepace=test
 ```
-创建一个金丝雀custom resource（用你的域名替换```example.com```）:
+创建一个金丝雀custom resource（用你的域名替换```example.com```）：
 ```
 apiVersion: flagger.app/v1alpha3
 kind: Canary
