@@ -12,12 +12,12 @@ publishDate:
 ---
 
 
-持续部署(Continuous delivery)符合企业软件实践，它是完善持续集成(continuous integration)原则的自然演化。
+持续部署（Continuous delivery）符合企业软件实践，它是完善持续集成（continuous integration）原则的自然演化。
 但持续部署案例却非常罕见，其中原因可能是需要复杂的管理以及担心部署失败而影响系统的可用性。
 
 [Flagger](https://github.com/weaveworks/flagger)是一个开源的Kubernetes operator，旨在解决上述复杂性。它使用Istio切换流量并通过Prometheus指标分析业务应用在更新发布期间的状态表现。
 
-以下是在Google Kubernetes Engine(GKE)环境安装和使用Flagger的步骤指导。
+以下是在Google Kubernetes Engine（GKE）环境安装和使用Flagger的步骤指导。
 
 ## 搭建Kubernetes cluster
 
@@ -47,7 +47,7 @@ gcloud beta container clusters create istio \
 --addons=HorizontalPodAutoscaling,Istio \
 --istio-config=auth=MTLS_PERMISSIVE
 ```
-上述命令会创建包含2台虚机的主机池(```n1-standard-2```，vCPU:2，RAM:7.5GB，DISK:30GB)。理想情况下，你可能希望将Istio组件与业务应用隔离部署，但并不容易实现将Istio独立部署于专属主机池。Istio manifest被设置为只读并且GKE会还原对node affinity或pod anti-affinity的任何修改。  
+上述命令会创建包含2台虚机的主机池（```n1-standard-2```，vCPU:2，RAM:7.5GB，DISK:30GB）。理想情况下，你可能希望将Istio组件与业务应用隔离部署，但并不容易实现将Istio独立部署于专属主机池。Istio manifest被设置为只读并且GKE会还原对node affinity或pod anti-affinity的任何修改。  
 
 为```kubectl```设置证书：
 ```
@@ -127,7 +127,7 @@ kubectl apply -f ./public-gateway.yaml
 生产系统向互联网暴露服务应该使用SSL。关于使用cert-manager、CloudDNS和Let's Encrypt加固Istio ingress gateway的步骤，请查看Flagger GKE[文档](https://docs.flagger.app/install/flagger-install-on-google-cloud)。
 ## 安装Flagger
 
-GKE Istio组件并不包含用来获取Istio遥测服务的Prometheus实例。由于Flagger使用Istio HTTP指标来运行金丝雀分析(canary analysis)，你必须部署以下Prometheus配置，该配置类似官方Istio Helm chart。
+GKE Istio组件并不包含用来获取Istio遥测服务的Prometheus实例。由于Flagger使用Istio HTTP指标来运行金丝雀分析（canary analysis），你必须部署以下Prometheus配置，该配置类似官方Istio Helm chart。
 ```
 REPO=https://raw.githubusercontent.com/weaveworks/flagger/master
 kubectl apply -f ${REPO}/artifacts/gke/istio-prometheus.yaml
@@ -178,7 +178,7 @@ kubectl apply -f ./grafana-virtual-service.yaml
 在浏览器中访问```http://grafana.istio.example.com```,会重定向到Grafana登录页面。
 ## 使用Flagger部署web应用
 
-Flagger包含一个Kubernetes deployment和一个可选的horizontal pod autoscaler(HPA)，然后创建一些资源对象(Kubernetes deployments, ClusterIP services和Istio virtual services)。这些资源对象会在网络上暴露应用并实现金丝雀分析和升级。
+Flagger包含一个Kubernetes deployment和一个可选的horizontal pod autoscaler（HPA），然后创建一些资源对象（Kubernetes deployments, ClusterIP services和Istio virtual services）。这些资源对象会在网络上暴露应用并实现金丝雀分析和升级。
 ![](http://wx4.sinaimg.cn/large/0071hauBly1g1u72wr801j30rs0cdq4w.jpg)
 创建一个test namespace，并开启Istio sidecar注入：
 
@@ -196,7 +196,7 @@ kubectl apply -f ${REPO}/artifacts/canaries/hpa.yaml
 helm upgrade -i flagger-loadtester flagger/loadtester \
 --namepace=test
 ```
-创建一个金丝雀custom resource(用你的域名替换```example.com```):
+创建一个金丝雀custom resource（用你的域名替换```example.com```）:
 ```
 apiVersion: flagger.app/v1alpha3
 kind: Canary
