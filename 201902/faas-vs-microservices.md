@@ -1,11 +1,11 @@
 ---
 author: Christian Posta
-title: "选择FAAS还是微服务？"
+title: "选择FaaS还是微服务？"
 translator: "saberuster"
-reviewers: ["rootsongjc"]
-description: "本文主要向读者介绍在FAAS和微服务架构之间的区别以及如何根据自身情况选择正确的架构方案"
+reviewers: ["haiker2011","wujunze"]
+description: "本文主要向读者介绍FaaS和微服务架构之间的区别以及如何根据自身情况选择正确的架构方案。"
 categories: "译文"
-tags: ["FAAS", "microservice", "serverless"]
+tags: ["FaaS", "microservice", "serverless"]
 date: 2018-12-17
 ---
 

@@ -8,4 +8,3 @@
 4. Prometheus监控Kubernetes系列3——业务指标采集，<http://www.servicemesher.com/blog/prometheus-monitor-k8s-3/>，by 罗佳豪
 
 本文归档到https://github.com/servicemesher/trans
-
