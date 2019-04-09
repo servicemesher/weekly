@@ -267,7 +267,7 @@ Flagger实现了一个控制循环，逐渐将流量转移到金丝雀，同时�
 ![](http://wx2.sinaimg.cn/large/0071hauBgy1g1uawf9vhqj30rs0a976b.jpg)
 以下对象的更改会触发金丝雀部署：
 
-- Deployment PodSpec（容器image,command,ports,env等等）
+- Deployment PodSpec（容器image，command，ports，env等）
 - ConfigMaps作为卷挂载或映射到环境变量
 - Secrets作为卷挂载或映射到环境变量
 通过更新容器image触发金丝雀部署：
