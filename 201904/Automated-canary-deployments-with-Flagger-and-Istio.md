@@ -2,7 +2,7 @@
 original: https://medium.com/google-cloud/automated-canary-deployments-with-flagger-and-istio-ac747827f9d1
 author: "Stefan Prodan"
 translator: "shonge"
-reviewer: 
+reviewer: ["rootsongjc","haiker2011"]
 title: "基于Flagger和Istio实现自动化金丝雀部署"
 description: "本文介绍如何使用Flagger和Istio实现自动化金丝雀部署"
 categories: "译文"
