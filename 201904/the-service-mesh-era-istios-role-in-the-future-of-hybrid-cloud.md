@@ -3,14 +3,14 @@ author: "Megan O'Keefe"
 translator: "osswangxining"
 original: "https://cloud.google.com/blog/topics/hybrid-cloud/the-service-mesh-era-istios-role-in-the-future-of-hybrid-cloud"
 reviewer: [""]
-title: "服务网格时代：Istio在未来混合云中扮演的角色"
-description: "谈谈如何使用Istio将混合服务网格变为现实，以及Istio在未来混合云中扮演的角色"
+title: "服务网格时代：Istio在混合云未来扮演的角色"
+description: "谈谈如何使用Istio将混合服务网格变为现实，以及Istio在混合云未来扮演的角色"
 categories: "translation"
 tags: ["Hybrid", "Multicluster", "Istio", "Service Mesh"]
 originalPublishDate: 2019-04-02
 publishDate: 2019-04-08
 ---
-# 服务网格时代：Istio在未来混合云中扮演的角色
+# 服务网格时代：Istio在混合云未来扮演的角色
 欢迎回到我们关于Service Mesh和Istio的博客文章系列。
 
 在之前的帖子中，我们讨论了Istio服务网格是什么，以及它为什么如此重要。然后，我们介绍了如何将Istio投入生产环境中，包括了如何进行高级应用程序部署和安全功能，到SRE监控最佳实践。
