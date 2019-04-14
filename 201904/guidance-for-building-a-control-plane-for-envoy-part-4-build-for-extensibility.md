@@ -261,6 +261,20 @@ spec:
 
 ## 控制平面插件以增强控制平面的现有行为
 
+在Gloo的控制平面中，还有另一个组件称为gatewaycomponent。该组件实现更高级别的特定于域的配置，用户最终将与之交互(直接通过YAML文件或通过glooctl CLI工具间接地交互)。gatewaycomponent知道两个特定于域的对象：
+
+* [Gateway](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/gateway.proto.sk/) — 指定特定侦听器端口上可用的路由和API端点，以及每个API的安全性
+
+* [VirtualService](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/virtual_service.proto.sk/) — 将API路由分组到一组“虚拟API”中，这些“虚拟API”可以路由到支持的函数(gRPC、http/1、http/2、lambda等);让开发人员控制路由如何处理[不同的转换](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/plugins/transformation/transformation.proto.sk/)，以便将前端API与后端API(以及后端可能引入的任何破坏性更改)分离开来
+
+![](https://ws1.sinaimg.cn/large/006gLaqLly1g223285hajj30o20dxabd.jpg)
+
+这些对象允许与代理对象解耦。当用户使用更符合人体工程学的API或固执己见的API创建新的网关或虚拟服务对象时，Gloo的网关组件将接受这些对象(Kubernetes中的crd、领事中的配置条目)并更新底层代理对象。这是扩展Gloo的一种常见模式:首选控件平面组件的可组合性。这允许我们为更有主见的领域特定对象构建更专门化的控制器，以支持不同的使用。比如Solo.io团队还为Gloo构建了一个名为Sqoop的开源控制器，该控制器遵循相同的模式，并扩展了Gloo API，用于声明基于GraphQL引擎的路由规则。在Sqoop中，我们引入模式和resolvermap对象，它们最终贡献给代理对象，然后将代理对象转换为特使xDS。
+
+![](https://ws1.sinaimg.cn/large/006gLaqLly1g2235n0elij30m80i5jsa.jpg)
+
+构建在基本Gloo对象上的领域特定配置分层的另一个例子是，我们最近在[Knative中使用Gloo代理作为Istio的替代方案](https://medium.com/solo-io/gloo-by-solo-io-is-the-first-alternative-to-istio-on-knative-324753586f3a)。Knative有一个用来声明集群入口资源的特定对象，称为[ClusterIngress](https://github.com/knative/serving/blob/master/pkg/client/clientset/versioned/typed/networking/v1alpha1/clusteringress.go)对象，如下图所示：
+
 ```yaml
 routes:
 - matcher:
@@ -281,6 +295,8 @@ routes:
               text: /v2/canary/feature
           passthrough: {}
 ```
+
+为了支持Gloo中的这个用例，我们所做的就是[构建一个新的控制器](https://github.com/solo-io/gloo/blob/ac3bddf202423b297fb909eb6eff498745a8c015/projects/clusteringress/pkg/translator/translate.go#L19)，用于监视和将[ClusterIngress](https://github.com/knative/serving/blob/master/pkg/client/clientset/versioned/typed/networking/v1alpha1/clusteringress.go)对象转换为Gloo的[Proxy](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto.sk/)。有关在Knative中使用Gloo以简化[Knative Serving](https://github.com/knative/serving)安装以使用Gloo作为集群入口的更多信息，请参阅[本博客](https://blog.christianposta.com/guidance-for-building-a-control-plane-for-envoy-build-for-pluggability/)。
 
 ## 利用工具加快前面两个要点
 
