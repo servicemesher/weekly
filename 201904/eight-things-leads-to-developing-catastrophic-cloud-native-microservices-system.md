@@ -3,7 +3,7 @@ original: http://wei-meilin.blogspot.com/2019/03/my2cents-eight-things-leads-to.
 author: "CHRISTINA の J老闆"
 translator: "malphi"
 reviewer: ["microservice"]
-title: "我的两美分 - 八件事导致开发灾难性的云原生微服务系统"
+title: "我的两分钱 - 八件事导致开发灾难性的云原生微服务系统"
 description: "本文介绍了8种开发云原生微服务系统中出现的错误"
 categories: "translation"
 tags: ["microservice"]
@@ -11,36 +11,26 @@ originalPublishDate: 2019-03-19
 publishDate: 2019-04-16
 ---
 
-More of my two cents, just my thoughts. A quick fun read, not too deep, but worth noting :).
+# 我的两分钱 - 八件事导致开发灾难性的云原生微服务系统
 
-\1. 
+大部分标注“我的两分钱”的文章只是我的想法。你只需要快速愉快的阅读，不用太深入，但值得做笔记：）
 
-Setting the domain boundary wrong
+## 1. 设置错误的领域边界
 
+这是一种工作保证策略，它让参与项目的每个人在开发和测试中无休止地循环，而无法将服务投入生产环境！首先，一切都从简单开始，逐渐发现有越来越多的功能、业务逻辑被添加到微服务中，最后甚至不得不重新命名整个该死的东西。
 
+![1](https://ws1.sinaimg.cn/large/006tNc79ly1g23ajtc2kej305k057glt.jpg)
 
+<u>临床症状和副作用</u>
 
+- 不断增长的微服务变得过于臃肿，或者域中的每个微服务都调用你的微服务。（有时核心微服务具有相同的行为，但你不应该在单个域中看到许多此类服务）。这违反了简单、可维护和敏捷的微服务原则。
+- 到处都是重复的微服务/代码。你可以找到一些重复的代码或微服务，它们被复制和部署到其他域中。
 
-This is a job guarantee tactics, it's endless looping in development and testing for everyone involved in the project without making the service to production! First everything starts simple and gradually find more and more functions, business logic gets added into the microservice, at the end, one even have to rename the whole damn thing. 
+![2](https://ws3.sinaimg.cn/large/006tNc79ly1g23ajj6lw8j305k03swei.jpg)
 
-![img](https://3.bp.blogspot.com/-cMJw865hXvs/XJD4_BOc3MI/AAAAAAAAF2k/l2pxr-xYjGcNQp0XVJ3bYwfmhmcR5HnCwCLcBGAs/s200/imageedit_44_4536471448.png)
+如果您陷入了无休止的实现和测试地狱，退一步看看如何分隔域。你是acc标识性的设置来自其他域的上下文或混合不同概念到一个里面？也许回到设计阶段考虑边界是值得的。为了避免到处重复，请确保有适当的文档，比如在域之间可用的使用开放API标准的文档。
 
-Symptoms and side effects 
-
-- A growing microservices becomes too fat, or every single microservices in the domain calls your microservice. (Sometime core microservice has the same behavior, but you should not see many of this type of services in a single domain.) This violates the microservices principle of easy, maintainable and agile.
-- Duplication of microservices/code everywhere. Where you find bits and pieces of duplicate code or microservices being copied and deployed into other domains. 
-
-![img](https://2.bp.blogspot.com/-RyZm0TiTguw/XJD4_IEPI9I/AAAAAAAAF2c/8rz8gE1DIPoMr8BhxJppPLb79P_CjYGhACLcBGAs/s200/imageedit_48_9341058924.png)
-
-If you get into the endless implementation and testing hell, take a step back and look at how you separate the domains. Did you acc
-
-identally place a context from other domains or mixing different concepts int
-
-o one? Maybe it's worthwhile to go back to the design phase and think about the boundaries. To avoid duplication everywhere, make sure there are proper documented catalogs such as API portals using the Open API Standard Doc available between domains.
-
-\2. 
-
-Mixing responsibilities of microservices 
+## 2. 混合微服务的职责
 
 In the mood for some Spaghetti, this is the way to go, and want some meatball to go on the Spaghetti to make it tastier? Mixing some stateful processes in there will get you plenty! 
 
