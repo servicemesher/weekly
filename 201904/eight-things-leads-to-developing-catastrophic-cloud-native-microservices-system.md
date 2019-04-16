@@ -32,32 +32,28 @@ publishDate: 2019-04-16
 
 ## 2. 混合微服务的职责
 
-In the mood for some Spaghetti, this is the way to go, and want some meatball to go on the Spaghetti to make it tastier? Mixing some stateful processes in there will get you plenty! 
+想吃意面的话这是一个不错的选择。在意面上放些肉丸子让它更美味？在服务中混合一些有状态的进程将会给您带来很多!
 
-Mixing
+j
 
-- ![img](https://3.bp.blogspot.com/-DMPAmCWjHDg/XJD4_MjWflI/AAAAAAAAF2g/q_CN82QbZZoaP6raYZXxDETb7svYd6bgACLcBGAs/s320/imageedit_50_9140009164.png)
+- ![3](https://ws2.sinaimg.cn/large/006tNc79ly1g24bk7332yj308w07kmy0.jpg)
 
--   Composing microservices
--   Functional core business
--   Stateless integration
--   Stateful process
+-   组合微服务
+-   功能性的核心业务
+-   无状态整合
+-   有状态的进程
 
-Symptoms and side effects 
+<u>临床症状和副作用</u>
 
-- Client calls becomes complex, if you don't provide a composed view of particular service, the client may require to compose and possibly handle some sort of core business login in it. 
-- Spaghetti relations between services, and it's really easy to lose track of how the flow of data and business logic spread around microservices.  
-- Too much coupling, having stateless and stateful is depended on the storage solution and scaling down could also have potential problems.
+- 客户端调用变得复杂，如果不提供特定服务的组合视图，客户端可能需要组合并在其中处理某种核心业务。
+- 服务之间的关系就好像意大利面条的关系，而且很容易无法追踪数据流和业务逻辑是如何在微服务周围传播的。 
+- 太多的耦合，无状态和有状态依赖于存储解决方案，向下扩展也可能有潜在问题。
 
-I've done a bunch of blogs on this topic, the main concept is always the 
+我写了很多关于这一主题的博客，主要观点都是担心拆分，确保你的云原生微服务是干净、精练和敏捷的，这意味着你需要确保业务组合和实际业务功能需要单独分开到不同的实例和独立部署，以便更好的结构化和模块化。为了可伸缩性和灵活性，确保微服务的组合/编排是无状态的。用专门的存储解决方案在其他实例上保留长时间运行的进程，以保持状态。
 
-separation of concerns
 
-, making sure there your cloud native microservices are clean, lean and agile meaning you need to make sure the business composition and the actual business functions needs to be separated into different instance and deployed individually for better structured and more modularized. Making sure the composition/orchestrations of microservices are stateless for scalability and flexibility. Set aside other long running process on other instance with dedicated proper storage solution to keep the states.
 
-\3. 
-
-Too much coupling with external factors/demands
+## 3. 和外界因素/需求太多的耦合
 
 
 
