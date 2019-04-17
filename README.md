@@ -39,13 +39,13 @@
 
 ```yaml
 ---
-original: 原文链接或者原创作者的GitHub账号
-author: 作者姓名
-translator: 译者的GitHub账号
-original: 原文地址
+original: "原文链接或者原创作者的GitHub账号"
+author: "作者姓名"
+translator: "译者的GitHub账号"
+original: "原文地址"
 reviewer: ["审阅者A的GitHub账","审阅者B的GitHub账号"]
 title: "标题"
-description: "文章摘要"
+summary: "这里是文章摘要。"
 categories: "译文或原创"
 tags: ["taga","tagb","tagc"]
 originalPublishDate: 2018-09-28
@@ -74,7 +74,7 @@ publishDate: 2019-02-28
 
 **目录结构**
 
-新的文档根据提交 PR 的时间在对应的目录中创建。如2018年5月30日提交的PR需要在 `201805` 目录中创建新的文档，即所有文档是按照月来归档的。
+新的文档根据提交 PR 的时间在对应的目录中创建。如2018年5月30日提交的PR需要在 `2018/201805` 目录中创建新的文档，即所有文档是按照月来归档的。
 
 **关于图片**
 
