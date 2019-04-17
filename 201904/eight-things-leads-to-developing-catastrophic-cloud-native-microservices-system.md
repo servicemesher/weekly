@@ -55,30 +55,22 @@ j
 
 ## 3. 和外界因素/需求太多的耦合
 
+有耐心总是好的，如果你想练习在你平静的时候能更加耐心的话，通过与遗留系统的深度耦合将训练你成为耐心大师，并且能够在敏捷和缓慢的遗留更新周期之间平衡且更擅长代码管理。
 
+<u>临床症状和副作用</u>
 
+- 持续的从核心业务更新到更好控制的外部系统。外部系统决定和做出变更请求，反应时间短可能会导致问题。
+- 一旦双方建立了契约，就需要特别小心版本的更新。
 
+![3](https://ws4.sinaimg.cn/large/006tNc79ly1g25q0lfgymj308w07dt9b.jpg)
 
-Being patient is always good, if you want to practice your ability to be extra patient while being calm, by coupling deeply with legacy system will train you to become the patient master, and become better at code management as you need juggle between agile demands and slow legacy update cycles.
+部署周期因系统而异，但是与更敏捷、更动态的云原生应用相比，棕色地带的应用（译注：作者本意应该是比喻新旧代码或功能耦合的有污染的应用）生命周期更长。为了更快，请始终考虑在你的棕色/绿色地带的应用程序之间设置一个屏蔽保护。因此，它适应更少的变化，并帮助绿色领域继续进行敏捷开发。在你的核心域微服务中，请避免添加任何依赖于外部消费者或特定于外部消费者的内容，因为这可能导致过多的自定义，从而破坏了确定的上下文边界。确保你有其他面向模块的公共库或外部系统来进行定制，并对内部业务模型隐藏复杂性。
 
-Symptoms and side effects
-
-- Constant updates to core business to the core business system outside of better control. Having external system decide and make change request and short reaction time could cause issues. 
-- Once contract are establish between parties, will need extra care for version updates. 
-
-![img](https://2.bp.blogspot.com/-oGhZ34E1fd4/XJD4_39hLMI/AAAAAAAAF2o/z3Nc1VgeHiI6AgERXs3GIEevv_CqNLerwCLcBGAs/s320/imageedit_52_6603423796.png)
-
-The deployment cycle varies from system to system, but brown field application will have a longer application lifecycle compare to more agile and dynamic cloud native application. To move things faster, always consider to have a shield protection between your brown/green field application. So it accommodates to the s
-
-lower moving parts as well as help green field cycle to continue on it's agile development. In your core domain microservices, avoid add anything that is dependent or specific for external consumers, as it might leads to too much customization that breaks the definite context boundary. Make sure you have other vendor/external system facing module that does the customization and hide the presentation complexity from internal domain models.
-
-\4. 
-
-Duplicating and replicate non-biz related code in microservices
+## 4. 微服务中重复的业务无关的代码
 
 As a developer, it's nice to be depended on, you feel the satisfaction of being needed. There is a reason why there are 24 hours each day, so you get to work 20 hours per day and you are so important when ever there is a deployment, you needed to be there. 
 
-Symptoms and side effects
+<u>临床症状和副作用</u>
 
 [![img](https://3.bp.blogspot.com/-iuEUUJ0k9OI/XJD4_8xgIPI/AAAAAAAAF2s/mOcswnwz3SwUQj2jWDfVKtr6YAVgXcEtACLcBGAs/s320/imageedit_54_8534297864.png)](https://3.bp.blogspot.com/-iuEUUJ0k9OI/XJD4_8xgIPI/AAAAAAAAF2s/mOcswnwz3SwUQj2jWDfVKtr6YAVgXcEtACLcBGAs/s1600/imageedit_54_8534297864.png)
 
@@ -87,28 +79,24 @@ Symptoms and side effects
 
 Setting retry and routing policy can allows application to be more robust to failure. To have a more centralized view of how these policies are handled instead of spreading them all over individual microservices. Release the burden of developer handling everything in the application and better management and monitoring.
 
-\5. 
-
-Service in mesh, connecting all with APIs
+## 5. 服务网格化，所有的连接通过API
 
 Making API calls are super easy, and service mesh is what everyone is doing today. Every technology has an library to handle REST/JSON. Let's connect all components in the system with APIs! 
 
-Symptoms and side effects
+<u>临床症状和副作用</u>
 
 - Slow to react, since request and response are how most people uses it. And the wait could take longer and more locks for longer process. That becomes the performance bottleneck. 
 - Not utilizing cloud infrastructure. 
 
 When microservice first came out, people wants to get away from ESB therefore many moved away from messaging broker and use API as the only connection method between services, as the Open API standard allows you to build a nice catalog among what is available. But event driven is there for a reason, to achieve true scalability, better decoupling, you need to stop making sticky dependency between calls. And event driven allows you to populate events to related parties, and because it's asynchronies, no resource are wasted when waiting for the reply.
 
-\6. 
-
-Un-sorted events
+## 6. 乱序的事件 
 
 ![img](https://3.bp.blogspot.com/-wV8qmDwaGjM/XJD6Ou07sTI/AAAAAAAAF3I/_7b1Uhwdnts7mgV3cbNHiq-1CHfy4KZsACLcBGAs/s320/imageedit_58_5805145960.png)
 
 Blasting the system with events, notify every corner to any events, will get your system super reactive! By the way, why not stream everything and store all the event! For better traceability!
 
-Symptoms and side effects
+<u>临床症状和副作用</u>
 
 - Events everywhere, you realized you have to listen to insane amount of events to react up on it. 
 - Un-needed code to filter out events.
@@ -117,13 +105,11 @@ Symptoms and side effects
 
 There are various types of events, if not carefully where and how the events are distributed, it's very likely to end up with unwanted events floating around consuming unnecessary resources. Focusing on some of the common ones like events containing data, status and commands. You want to minimize the number of data messages, as it take longer to process, more work to store. Striping down, filter the data could be more efficient. Handling retries of status events and rolling back command events should also be part of the event strategies.
 
-\7. 
-
-Data Silos
+## 7. 数据筒仓
 
 One mircroservice one datasource, that is what experts says. 
 
-Symptoms and side effects
+<u>临床症状和副作用</u>
 
 - Data not consistent among the datasources, or slow. 
 - Un-needed microservices created just for making sure the data are consistent.
@@ -133,13 +119,11 @@ Symptoms and side effects
 
 When you have isolated datasources there are risk of creating data silos, and because of the nature in microservice being distribute and more complex datastore scenario, it has become more difficult to mange the data consistency. You can start looking into how to capture the data change with many existing solutions such as streaming event changes as it happens during process or listen to changes from the main status store.
 
-8.
-
- Limited automation
+## 8. 有限的自动化
 
 Manual is much more flexible, beside that was how it was done before with the JavaEE application on the servers. Automation, it takes too much time to setup, Lets deal with it when we have time?  
 
-Symptoms and side effects
+<u>临床症状和副作用</u>
 
 - Slow updates
 - Long painful steps to productions
