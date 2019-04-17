@@ -8,7 +8,7 @@ description: "本文介绍如何为 Envoy 构建控制面指南的第4部分：�
 categories: "translation"
 tags: ["Envoy", "Control Plane", "Gloo", "Service Mesh"]
 originalPublishDate: 2019-04-12
-publishDate: 2019-04-12
+publishDate: 2019-04-17
 ---
 
 [编者按]
