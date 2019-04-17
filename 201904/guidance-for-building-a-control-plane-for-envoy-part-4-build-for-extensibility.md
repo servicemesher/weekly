@@ -12,7 +12,7 @@ publishDate: 2019-04-12
 ---
 
 [编者按]
-> 
+> 本文介绍如何为 Envoy 构建控制面指南的第4部分：构建的可扩展性。Gloo团队建议将重点放在控制平面的简单核心上，然后通过插件和微服务控制器的可组合性扩展它。Gloo的体系结构是这样构建的，它使Gloo团队能够快速添加任何新特性，以支持任何平台、配置、过滤器，以及更多的新特性。这就是为什么，尽管Gloo是非常kubernets原生的，但它是为在任何云上的任何平台上运行而构建的。核心控制平面的设计允许这样做。
 
 这是探索为 Envoy 代理构建控制平面系列文章的第4部分。请关注[@christianposta](https://twitter.com/christianposta)和[@soloio_inc](https://twitter.com/soloio_inc)，将在一周内推出下一部分内容。
 
@@ -67,7 +67,7 @@ Envoy是一个非常强大的软件，每天都有[新的用例和贡献被提�
 
 让我们来看看每一个层次，以及它们如何构建可扩展和灵活的控制平面。
 
-## 核心API对象，构建时考虑灵活性
+## 核心API对象，构建时要考虑灵活性
 
 在上一节中，我们重点讨论了用于配置控制平面的特定于域的配置对象。在Gloo中，我们有[最低级别的配置对象](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto.sk/)，称为[Proxy](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto.sk/)和[Upstream](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/upstream.proto.sk/)。`Proxy`定义了我们可以对底层代理(在本例中是Envoy)进行的最低级别配置。使用`Proxy`对象，我们定义请求如何路由到`Upstream`。
 
@@ -142,7 +142,7 @@ gloo-565659747c-x7lvf            1/1     Running   0          8m
 
 * `gloo`
 
-负责此`Proxy`->Envoy xDS转换的组件是`gloo`，它是一个事件驱动组件，通过将代理对象转换为Envoy的LDS/RDS/CDS/EDS API，负责核心xDS服务和自定义Envoy过滤器的配置。
+负责此`Proxy`->Envoy xDS转换的组件是`gloo`，它是一个事件驱动组件，通过将`Proxy`对象转换为Envoy的LDS/RDS/CDS/EDS API，负责核心xDS服务和自定义Envoy过滤器的配置。
 
 ![](https://ws1.sinaimg.cn/large/006gLaqLly1g222c27h5dj30ht06174i.jpg)
 
@@ -217,7 +217,7 @@ upstreamSpec:
               transfer-encoding: {}
 ```
 
-注意，对于upstream所公开的函数，我们有更多的保真度。在这种情况下，上游恰好是一个REST服务，它公开了一个[Open API Spec/Swagger](https://github.com/OAI/OpenAPI-Specification)文档。Gloo自动发现这些信息，并用这些信息丰富这个Upstream对象，然后可以在代理对象中使用这些信息。
+注意，我们有更多的责任确定对于upstream的函数我们公开哪些部分。在这种情况下，上游恰好是一个REST服务，它公开了一个[Open API Spec/Swagger](https://github.com/OAI/OpenAPI-Specification)文档。Gloo自动发现这些信息，并用这些信息丰富这个Upstream对象，然后可以在代理对象中使用这些信息。
 
 ![](https://ws1.sinaimg.cn/large/006gLaqLly1g222ij2oucj30ht0ep0ti.jpg)
 
@@ -229,15 +229,15 @@ Gloo控制平面中的`discovery`组件仅使用其UDS和FDS服务来发现`Upst
 
 ## 扩展特定于域的配置层
 
-在Gloo的控制平面中，还有另一个组件称为gatewaycomponent。该组件实现更高级别的特定于域的配置，用户最终将与之交互(直接通过YAML文件或通过glooctl CLI工具间接地交互)。gatewaycomponent知道两个特定于域的对象：
+在Gloo的控制平面中，还有另一个组件称为`gateway`组件。该组件实现更高级别的特定于域的配置，用户最终将与之交互(直接通过YAML文件或通过`glooctl` CLI工具间接地交互)。`gateway`组件知道两个特定于域的对象：
 
-* [Gateway](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/gateway.proto.sk/) — 指定特定侦听器端口上可用的路由和API端点，以及每个API的安全性
+* [Gateway](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/gateway.proto.sk/) — 指定特定监听器端口上可用的路由和API端点，以及每个API的安全性
 
 * [VirtualService](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gateway/api/v1/virtual_service.proto.sk/) — 将API路由分组到一组“虚拟API”中，这些“虚拟API”可以路由到支持的函数(gRPC、http/1、http/2、lambda等);让开发人员控制路由如何处理[不同的转换](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/plugins/transformation/transformation.proto.sk/)，以便将前端API与后端API(以及后端可能引入的任何破坏性更改)分离开来
 
 ![](https://ws1.sinaimg.cn/large/006gLaqLly1g223285hajj30o20dxabd.jpg)
 
-这些对象允许与代理对象解耦。当用户使用更符合人体工程学的API或固执己见的API创建新的网关或虚拟服务对象时，Gloo的网关组件将接受这些对象(Kubernetes中的crd、领事中的配置条目)并更新底层代理对象。这是扩展Gloo的一种常见模式:首选控件平面组件的可组合性。这允许我们为更有主见的领域特定对象构建更专门化的控制器，以支持不同的使用。比如Solo.io团队还为Gloo构建了一个名为Sqoop的开源控制器，该控制器遵循相同的模式，并扩展了Gloo API，用于声明基于GraphQL引擎的路由规则。在Sqoop中，我们引入模式和resolvermap对象，它们最终贡献给代理对象，然后将代理对象转换为特使xDS。
+这些对象允许与代理对象解耦。当用户使用更符合人体工程学的API或固执己见的API创建新的网关或虚拟服务对象时，Gloo的网关组件将接受这些对象(Kubernetes中的crd、领事中的配置条目)并更新底层代理对象。这是扩展Gloo的一种常见模式:首选控件平面组件的可组合性。这允许我们为更有主见的领域特定对象构建更专门化的控制器，以支持不同的使用。比如Solo.io团队还为Gloo构建了一个名为Sqoop的开源控制器，该控制器遵循相同的模式，并扩展了Gloo API，用于声明基于GraphQL引擎的路由规则。在Sqoop中，我们引入模式和resolvermap对象，它们最终贡献给代理对象，然后将代理对象转换为Envoy xDS。
 
 ![](https://ws1.sinaimg.cn/large/006gLaqLly1g2235n0elij30m80i5jsa.jpg)
 
@@ -280,7 +280,7 @@ spec:
 
 ## 控制平面插件以增强控制平面的现有行为
 
-在上一节中，我们讨论了通过在核心对象之上分层特定于域的配置对象来扩展控制平面的功能。另一个扩展点直接位于控件平面核心对象本身中。在Istio中是`VirtualService`和`DestinationRule`，在Contour中是`IngressRoute`，在Gloo中是`Proxy`和`Upstream`对象。例如，Gloo的[Proxy对象](https://github.com/solo-io/gloo/blob/7a5c3a9a7a060841a7047efce79e5b7b3ed981be/projects/gloo/api/v1/proxy.proto#L30)包含[Listeners](https://github.com/solo-io/gloo/blob/7a5c3a9a7a060841a7047efce79e5b7b3ed981be/projects/gloo/api/v1/proxy.proto#L90)、[VirtualHosts](https://github.com/solo-io/gloo/blob/7a5c3a9a7a060841a7047efce79e5b7b3ed981be/projects/gloo/api/v1/proxy.proto#L124)和[Routes](https://github.com/solo-io/gloo/blob/7a5c3a9a7a060841a7047efce79e5b7b3ed981be/projects/gloo/api/v1/proxy.proto#L154)的扩展点。这意味着在Proxy配置中有一些定义良好的点，我们可以将新功能引入到我们的配置中(例如，如果我们希望公开新的Envoy功能，或者如果我们为我们希望公开配置的Envoy编写新的过滤器，等等)。以最小的大惊小怪。例如，我们[编写了一些插件丰富了Envoy的路由和转换功能](https://github.com/solo-io/gloo/blob/a27e1018640c46f7a25e4c1a0dc1f4cadf1773f5/projects/gloo/api/v1/plugins.proto#L44)。例如，要将一个请求转换为Envoy并发送到一个名为`foo-service`的服务，我们可以使用[Inja template](https://github.com/pantor/inja)手工插入头或主体。有关更多信息，请参见[Gloo文档中的函数路由指南](https://gloo.solo.io/user_guides/function_routing/)。
+在上一节中，我们讨论了通过在核心对象之上分层特定于域的配置对象来扩展控制平面的功能。另一个扩展点直接位于控件平面核心对象本身中。在Istio中是`VirtualService`和`DestinationRule`，在Contour中是`IngressRoute`，在Gloo中是`Proxy`和`Upstream`对象。例如，Gloo的[Proxy对象](https://github.com/solo-io/gloo/blob/7a5c3a9a7a060841a7047efce79e5b7b3ed981be/projects/gloo/api/v1/proxy.proto#L30)包含[Listeners](https://github.com/solo-io/gloo/blob/7a5c3a9a7a060841a7047efce79e5b7b3ed981be/projects/gloo/api/v1/proxy.proto#L90)、[VirtualHosts](https://github.com/solo-io/gloo/blob/7a5c3a9a7a060841a7047efce79e5b7b3ed981be/projects/gloo/api/v1/proxy.proto#L124)和[Routes](https://github.com/solo-io/gloo/blob/7a5c3a9a7a060841a7047efce79e5b7b3ed981be/projects/gloo/api/v1/proxy.proto#L154)的扩展点。这意味着在Proxy配置中有一些定义良好的点，我们可以以最小的修改代价将新功能引入到我们的配置中(例如，如果我们希望公开新的Envoy功能，或者如果我们为我们希望公开配置的Envoy编写新的过滤器，等等)。例如，我们[编写了一些插件丰富了Envoy的路由和转换功能](https://github.com/solo-io/gloo/blob/a27e1018640c46f7a25e4c1a0dc1f4cadf1773f5/projects/gloo/api/v1/plugins.proto#L44)。例如，要将一个请求转换为Envoy并发送到一个名为`foo-service`的服务，我们可以使用[Inja template](https://github.com/pantor/inja)手工插入头或正文。有关更多信息，请参见[Gloo文档中的函数路由指南](https://gloo.solo.io/user_guides/function_routing/)。
 
 ```yaml
 routes:
@@ -315,6 +315,6 @@ routes:
 
 ## 小结
 
-控制平面可以简单到您需要的程度，也可以复杂到您需要的程度。Gloo团队建议将重点放在控制平面的简单核心上，然后通过可组合性通过插件和微服务控制器扩展它。Gloo的体系结构是这样构建的，它使[Gloo团队](https://github.com/solo-io/gloo/graphs/contributors)能够快速添加任何新特性，以支持任何平台、配置、过滤器，以及更多的新特性。这就是为什么，尽管Gloo是非常kubernets原生的，但它是为在任何云上的任何平台上运行而构建的。核心控制平面的设计允许这样做。
+控制平面可以简单到您需要的程度，也可以复杂到您需要的程度。Gloo团队建议将重点放在控制平面的简单核心上，然后通过插件和微服务控制器的可组合性扩展它。Gloo的体系结构是这样构建的，它使[Gloo团队](https://github.com/solo-io/gloo/graphs/contributors)能够快速添加任何新特性，以支持任何平台、配置、过滤器，以及更多的新特性。这就是为什么，尽管Gloo是非常kubernets原生的，但它是为在任何云上的任何平台上运行而构建的。核心控制平面的设计允许这样做。
 
 在本系列的下一篇文章中，我们将讨论部署控制平面组件的优缺点，包括可伸缩性、容错、独立性和安全性。请[继续关注！](https://twitter.com/soloio_inc)
