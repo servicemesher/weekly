@@ -6,8 +6,6 @@
 
 通过[提交Issue](https://github.com/servicemesher/trans/issues/new)的方式提交最新资料地址，翻译完成的文档归档到本仓库中。文档翻译完成后会显示在[ServiceMesher社区门户网站](http://www.servicemesher.com)和微信公众号中。
 
-![](https://ws2.sinaimg.cn/large/006tNc79ly1fsyunj8ujoj309k09k748.jpg)
-
 ## 如何参与
 
 参与该项目包括两种方式：
@@ -127,6 +125,4 @@ Mac用户可以直接到App Store中搜索**iPic**就可以免费下载和使用
 
 在 Chrome store 中搜索 “微博图床” 就可以安装了，在 Chrome 浏览器中登陆新浪微博后就可以使用该插件上传图片了。
 
----
-
-© [ServiceMesher](http:/www.servicemesher.com)
+![ServiceMesher](https://ws1.sinaimg.cn/large/006tKfTcly1g0cz6429t2j31jt0beq9s.jpg)
