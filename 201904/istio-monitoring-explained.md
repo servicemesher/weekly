@@ -29,7 +29,7 @@ publishDate: 2019-04-16
 
 选择服务网格的主要特征之一是提高可观察性。到目前为止，开发人员必须让他们的应用程序暴露一系列指标，通常使用公共库或供应商的代理，如[New Relic](https://newrelic.com/)或[Datadog](https://www.datadoghq.com/blog/monitor-istio-with-datadog/)。之后，操作人员可以使用监控解决方案来抓取应用程序的metric端点，从而了解系统的行为方式。但是必须修改代码是一件痛苦的事情，特别是当有许多更改或添加时。并且，将这种方法扩展到多个团队会使其难以维护。
 
-Istio采用的方法是暴露和追踪应用程序行为，而不需要接触任何一行代码。这得益于“sidecar”（边车）概念，它是一个与我们的应用程序并肩运行的容器，并向一个中央遥测组件提供数据。由于能够识别正在使用的协议(redis、mongo、http、grpc等)，sidecars能够捕获许多关于请求的信息。
+Istio采用的方法是暴露和追踪应用程序行为，而不需要接触任何一行代码。这得益于“sidecar”（边车）概念，它是一个与我们的应用程序并肩运行的容器，并向一个中央遥测组件提供数据。由于能够识别正在使用的协议(redis、mongo、http、grpc等)，sidecar能够捕获许多关于请求的信息。
 
 ## 核心组件：Mixer
 
@@ -45,7 +45,7 @@ Istio采用的方法是暴露和追踪应用程序行为，而不需要接触任
 
 聚焦于监控，让我们描述以下最有趣的概念，将帮助我们受益于mixer的设计:
 
-- *Attribute*: mixer处理的一段数据。大多数情况下，这来自一个sidecar，但它也可以由adapter生成。Attributes在实例中用于将所需的数据映射到后端。
+- *Attribute*: mixer处理的一段数据。大多数情况下，这来自一个sidecar，但它也可以由adapter生成。Attribute在实例中用于将所需的数据映射到后端。
 - *Adapter*: mixer组件中嵌入的逻辑，用于管理将数据转发到特定后端。
 - *Handler*: Adapter的配置。由于适配器可以服务于多个用例，所以配置是解耦的，因此可以使用多个设置运行同一个adapter。
 - *Instance*:  是将来自Istio的数据绑定到adapter模型的实体。Istio有一组由它的sidecar容器收集的统一属性。这些数据必须被翻译成后端语言。
@@ -132,7 +132,7 @@ $ kubectl apply -f release/kubernetes-manifests.yaml
 
 接下来便是见证奇迹的时刻。我们将需要在Prometheus中创建三个资源来将该版本公开为一个新的metric指标。
 
-首先，我们将创建实例。在这里，我们使用`metric`实例模板，通过sidecars将供值provider映射到适配器输入。我们只对负载名称(source)和版本(version)感兴趣。
+首先，我们将创建实例。在这里，我们使用`metric`实例模板，通过sidecar将值provider映射到适配器输入。我们只对负载名称(source)和版本(version)感兴趣。
 
 ```yaml
 apiVersion: "config.istio.io/v1alpha2"
