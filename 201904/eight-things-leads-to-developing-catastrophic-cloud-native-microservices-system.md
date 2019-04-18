@@ -68,70 +68,66 @@ j
 
 ## 4. 微服务中重复的业务无关的代码
 
-As a developer, it's nice to be depended on, you feel the satisfaction of being needed. There is a reason why there are 24 hours each day, so you get to work 20 hours per day and you are so important when ever there is a deployment, you needed to be there. 
+作为一个开发人员，如果有人依赖你会让你感到被需要的满足感。为什么每天有24小时是有原因的，你得工作20小时，因为你的重要性，当部署的时候，你需要在那儿。
 
 <u>临床症状和副作用</u>
 
-[![img](https://3.bp.blogspot.com/-iuEUUJ0k9OI/XJD4_8xgIPI/AAAAAAAAF2s/mOcswnwz3SwUQj2jWDfVKtr6YAVgXcEtACLcBGAs/s320/imageedit_54_8534297864.png)](https://3.bp.blogspot.com/-iuEUUJ0k9OI/XJD4_8xgIPI/AAAAAAAAF2s/mOcswnwz3SwUQj2jWDfVKtr6YAVgXcEtACLcBGAs/s1600/imageedit_54_8534297864.png)
+![4](https://ws3.sinaimg.cn/large/006tNc79ly1g26lj2v5nsj308w06edgx.jpg)
 
-- None centralized control, all retry, reroute, versioning and deployment strategy are store in each individual instance.
-- Responsibility not clear between DEV/DEVOPS, again, the networking strategy is better for party that has better access to monitoring stats of how the environment is doing. 
+- 没有集中控制，所有重试、重路由、版本控制和部署策略都存储在每个独立的实例中。
+- 开发和开发运维人员之间的职责不明确，同样的，对于能够访问环境运行情况的监控来说，网络策略更好。
 
-Setting retry and routing policy can allows application to be more robust to failure. To have a more centralized view of how these policies are handled instead of spreading them all over individual microservices. Release the burden of developer handling everything in the application and better management and monitoring.
+设置重试和路由策略可以让应用更加健壮。用更集中化的视图来了解这些策略是如何处理的，而不是将它们分散到各个微服务上。减轻开发人员处理应用程序中所有事情的负担，以及更好的管理和监控。
 
 ## 5. 服务网格化，所有的连接通过API
 
-Making API calls are super easy, and service mesh is what everyone is doing today. Every technology has an library to handle REST/JSON. Let's connect all components in the system with APIs! 
+进行API调用非常简单，服务网格是现在每个人都在做的事情。每种技术都有一个库来处理REST/JSON。让我们用API来连接系统中的所有组件!
 
 <u>临床症状和副作用</u>
 
-- Slow to react, since request and response are how most people uses it. And the wait could take longer and more locks for longer process. That becomes the performance bottleneck. 
-- Not utilizing cloud infrastructure. 
+- 反应慢，因为请求并响应是大多数人使用它的方式。等待时间可能会越来越长，长进程也会有更多的锁。这将成为性能瓶颈。
+- 没有工具化的云基础架构。
 
-When microservice first came out, people wants to get away from ESB therefore many moved away from messaging broker and use API as the only connection method between services, as the Open API standard allows you to build a nice catalog among what is available. But event driven is there for a reason, to achieve true scalability, better decoupling, you need to stop making sticky dependency between calls. And event driven allows you to populate events to related parties, and because it's asynchronies, no resource are wasted when waiting for the reply.
+当微服务首次出现时，人们希望远离ESB，因此许多人不再使用消息传递代理，并使用API作为服务之间唯一的连接方法，因为OpenAPI标准允许你在可用的内容之间构建一个良好的目录。但是事件驱动是有原因的，为了实现真正的可伸缩性，更好的解耦，你需要停止在调用之间进行粘性依赖。事件驱动允许你只向相关方发送事件，因为它是异步的，所以在等待响应时不会浪费任何资源。
 
 ## 6. 乱序的事件 
 
-![img](https://3.bp.blogspot.com/-wV8qmDwaGjM/XJD6Ou07sTI/AAAAAAAAF3I/_7b1Uhwdnts7mgV3cbNHiq-1CHfy4KZsACLcBGAs/s320/imageedit_58_5805145960.png)
+![6](https://ws3.sinaimg.cn/large/006tNc79ly1g26n3fd6mvj308w07omxp.jpg)
 
-Blasting the system with events, notify every corner to any events, will get your system super reactive! By the way, why not stream everything and store all the event! For better traceability!
+用事件来轰炸系统，把任何事件都通知到每个角落，这会让你的系统超级的反抗！顺便说一下，为什么不把所有的东西都序列化并存储所有的事件呢？为了更好的可追踪性！
 
 <u>临床症状和副作用</u>
 
-- Events everywhere, you realized you have to listen to insane amount of events to react up on it. 
-- Un-needed code to filter out events.
-- Confusion between status change or action should taken
-- Don't know what is better to preserve or lose the event messages
+- 事件无处不在，你意识到必须监听大量的事件来做出反应。
+- 不需要的代码过滤掉事件。
+- 混淆状态变化和应该采取的行为。
+- 不知道保存或丢失事件消息哪个更好
 
-There are various types of events, if not carefully where and how the events are distributed, it's very likely to end up with unwanted events floating around consuming unnecessary resources. Focusing on some of the common ones like events containing data, status and commands. You want to minimize the number of data messages, as it take longer to process, more work to store. Striping down, filter the data could be more efficient. Handling retries of status events and rolling back command events should also be part of the event strategies.
+有各种类型的事件，如果不小心的处理事件分发到哪以及如何分发，就很可能以不需要的事件结束并消耗不必要的资源。关注一些通用的，比如包含数据、状态和命令的事件。您希望尽量减少数据消息的数量，因为它需要更长的处理时间和更多的存储工作。分拆和过滤数据可能更有效。处理状态事件重试和回滚命令事件也应该是事件策略的一部分。
 
 ## 7. 数据筒仓
 
-One mircroservice one datasource, that is what experts says. 
+一个微服务一个数据源，专家如是说。
 
 <u>临床症状和副作用</u>
 
-- Data not consistent among the datasources, or slow. 
-- Un-needed microservices created just for making sure the data are consistent.
-- Events everywhere to update status.
+- 数据源之间的数据不一致或同步较慢。
+- 创建了不需要的微服务只是为了确保数据的一致性。
+- 事件到处更新状态。
 
-![img](https://1.bp.blogspot.com/-DOV4sPgmz4c/XJD6Orec7VI/AAAAAAAAF3M/lCFtFLbW9DURh-9eYe4KGy7BzKluQTqxACLcBGAs/s320/imageedit_56_4470457635.png)
+![7](https://ws4.sinaimg.cn/large/006tNc79ly1g26qyic03cj308w03saa7.jpg)
 
-When you have isolated datasources there are risk of creating data silos, and because of the nature in microservice being distribute and more complex datastore scenario, it has become more difficult to mange the data consistency. You can start looking into how to capture the data change with many existing solutions such as streaming event changes as it happens during process or listen to changes from the main status store.
+当您拥有独立的数据源时，就有创建数据筒仓的风险，而且由于微服务的分布式特性和更复杂的数据存储场景，管理数据一致性变得更加困难。你可以开始研究如何使用许多现有的解决方案来捕获数据变更，比如在进程中发生的流事件变更，或者从主存储中监听更改。
 
 ## 8. 有限的自动化
 
-Manual is much more flexible, beside that was how it was done before with the JavaEE application on the servers. Automation, it takes too much time to setup, Lets deal with it when we have time?  
+手动要灵活得多，以前在服务器上使用JavaEE应用时也是如此。自动化需要太多的时间来安装设置，有时间的时候再处理吗？
 
 <u>临床症状和副作用</u>
 
-- Slow updates
-- Long painful steps to productions
+- 更新缓慢
+- 到生成环境需要漫长而痛苦的步骤
 
-The first thing that needs to be in the planning is definitely automation. How to apply automated CI/CD pipelines and the deployment strategy, this how cloud native microservices system achieve the agility. I've done a couple of CI/CD automation with Jenkins in the past. 
+在计划中需要做的第一件事一定是自动化。如何应用自动化的CI/CD流程和部署策略，如何实现云原生微服务系统的敏捷性。我过去做过一些基于Jenkins的CI/CD自动化。[See Github Link](https://github.com/jbossdemocentral/fuse-financial-cicd).
 
-See Github Link
-
-.
-
-Alright, these are just my two cents, let me know if you think there are any other things that could lead to terrible cloud native microservices development? Love to know!
+好了，这就是我的两分钱。如果你认为还有其他可能导致糟糕的云原生微服务开发的事情，请和我分享！
