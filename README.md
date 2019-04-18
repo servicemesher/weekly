@@ -1,10 +1,28 @@
 # Trans
 
-**打造Service Mesh领域最全的中文资料库。**
+**ServiceMesher 社区中文资料库。**
 
-本仓库接受英文翻译与中文原创文章。
+## 关于本仓库
 
-通过[提交Issue](https://github.com/servicemesher/trans/issues/new)的方式提交最新资料地址，翻译完成的文档归档到本仓库中。文档翻译完成后会显示在[ServiceMesher社区门户网站](http://www.servicemesher.com)和微信公众号中。
+在本仓库中，您可以：
+
+- 提交英文文章线索
+- 参与翻译
+- 提交个人原创文章
+- 提交个人已发布文章的转载要求
+
+文章题材包括但不限于：
+
+- Kubernetes
+- Service Mesh
+- Cloud Native
+- Serverless
+
+您提交的文章将首发于：
+
+- ServiceMesher 社区官网：http://www.servicemesher.com
+- ServiceMesher 微信公众号
+- 其他渠道（保留作者署名或 URL 共享）
 
 ## 如何参与
 
@@ -14,26 +32,15 @@
 2. 通过PR参与文章翻译或提交原创文章
 3. 原则上所有认领的文章要在5个工作日内完成翻译或创作
 
-## 发布
-
-所有通过本仓库提交的译文和原创文章将署名译者或作者姓名发布到[ServiceMesher社区](http://www.servicemesher.com)和ServiceMesher微信公众号，原作者保留文章修改的权利。
-
 ### 提交 Issue
 
-[提交Issue](https://github.com/servicemesher/trans/issues/new)，不一定需要翻译该文档，也可以是提交一个文章线索，在Issue模板中填写：
+[提交Issue](https://github.com/servicemesher/trans/issues/new)，请参考[Issue模板](https://github.com/servicemesher/trans/blob/master/ISSUE_TEMPLATE.md)，其中的选项只要打钩即可。
 
-- 原文链接：原始出处URL
-- 原文发布时间
-- 译文链接（如果已翻译完成可以直接填写URL，若未翻译，可以提交PR创建新的文件）
-- 作者：原文作者信息
-- 译者：译者信息
-- 类型：见Issue模板，选择文章对应的类型
-
-**注意**：Issue标题请使用英文原文的标题，将所有字母小写
+**注意**：请在Issue标题中增加类型前缀，如`Translation:`、`Original:`、`Reprint:`。
 
 ### 提交PR
 
-[提交PR](https://github.com/servicemesher/trans/pulls) 就需要提交对应Issue的译文文档或者原创文章，使用Markdown格式，并在文章头部添加元信息，格式如下：
+[提交PR](https://github.com/servicemesher/trans/pulls)，可以为译文、原创或个人文章转载，请在文章头部添加元信息，格式如下：
 
 ```yaml
 ---
@@ -44,19 +51,26 @@ original: "原文地址"
 reviewer: ["审阅者A的GitHub账","审阅者B的GitHub账号"]
 title: "标题"
 summary: "这里是文章摘要。"
-categories: "译文或原创"
+categories: "译文、原创或转载"
 tags: ["taga","tagb","tagc"]
 originalPublishDate: 2018-09-28
 publishDate: 2019-02-28
 ---
 ```
 
-注：若提交原创文章可以直接在 `original` 中添加作者的GitHub ID。
+注：其中 `originalPublishDate` 为所翻译的文章原文的发布日期，`publishDate` 为原创文章或译文的PR 合并日期。
 
-- originalPublishDate：所翻译的文章原文的发布日期
-- publishDate：原创文章或译文的PR 合并日期
+## 关于 PR 的注意事项
 
-对于译文，建议译者在文章首段加上”编者按”一段，该段落主要内容是译者对原文的理解和解读，以帮助读者领会文章中的精神。
+提交 PR 请注意以下事项：
+
+- 请在 PR 中标题中增加类型前缀，如`Translation:`、`Original:`、`Reprint:`
+- 提交的文件名必须全英文、小写、单词间使用连字符
+- 对于译文，建议译者在文章首段加上”编者按”一段，该段落主要内容是译者对原文的理解和解读，以帮助读者领会文章中的精神。
+
+管理员在合并 PR 前请先确认 [PR 模板](<https://github.com/servicemesher/trans/blob/master/PULL_REQUEST_TEMPLATE.md>)中的内容。
+
+注：提交 PR 表明您授权您的创作被发布到 ServiceMesher 社区或以保留您署名的方式转载。
 
 ## 周报
 
