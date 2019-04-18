@@ -2,7 +2,7 @@
 original: http://wei-meilin.blogspot.com/2019/03/my2cents-eight-things-leads-to.html
 author: "CHRISTINA の J老闆"
 translator: "malphi"
-reviewer: ["microservice"]
+reviewer: ["rootsongjc"]
 title: "我的两分钱 - 八件事导致开发灾难性的云原生微服务系统"
 description: "本文介绍了作者认为在开发云原生微服务系统时会出现的8个问题，并告诫大家避免犯错。"
 categories: "translation"
