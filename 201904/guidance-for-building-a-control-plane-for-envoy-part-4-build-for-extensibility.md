@@ -1,14 +1,14 @@
 ---
 author: "Christian Posta"
 translator: "haiker2011"
-reviewer: [""]
+reviewer: ["malphi"]
 original: "https://medium.com/solo-io/guidance-for-building-a-control-plane-for-envoy-part-4-build-for-extensibility-40f8ac8e48e"
 title: "为 Envoy 构建控制面指南第4部分：构建的可扩展性"
 description: "本文介绍如何为 Envoy 构建控制面指南的第4部分：构建的可扩展性。"
 categories: "translation"
 tags: ["Envoy", "Control Plane", "Gloo", "Service Mesh"]
 originalPublishDate: 2019-04-12
-publishDate: 2019-04-17
+publishDate: 2019-04-19
 ---
 
 [编者按]
@@ -20,9 +20,9 @@ publishDate: 2019-04-17
 
 * [采用一种机制来动态更新 Envoy 的路由、服务发现和其他配置](https://medium.com/solo-io/guidance-for-building-a-control-plane-to-manage-envoy-proxy-at-the-edge-as-a-gateway-or-in-a-mesh-badb6c36a2af)
 
-* [确定控制平面由哪些组件组成，包括支持存储、服务发现 api、安全组件等](https://medium.com/solo-io/guidance-for-building-a-control-plane-for-envoy-proxy-part-2-identify-components-2d0731b0d8a4)
+* [确定控制平面由哪些组件组成，包括支持存储、服务发现 API、安全组件等](https://medium.com/solo-io/guidance-for-building-a-control-plane-for-envoy-proxy-part-2-identify-components-2d0731b0d8a4)
 
-* [建立最适合您的使用场景和组织架构的特定于域的配置对象和 api](./Guidance-for-Building-a-Control-Plane-for-Envoy-Part-3-Domain-Specific-Configuration.md)
+* [建立最适合您的使用场景和组织架构的特定于域的配置对象和 API](./Guidance-for-Building-a-Control-Plane-for-Envoy-Part-3-Domain-Specific-Configuration.md)
 
 * 考虑如何让控制平面支持可拔插(本博客)
 
@@ -146,7 +146,7 @@ gloo-565659747c-x7lvf            1/1     Running   0          8m
 
 ![](https://ws1.sinaimg.cn/large/006gLaqLly1g222c27h5dj30ht06174i.jpg)
 
-Gloo知道如何路由到`Upstream`和它上面的函数。[Upstream](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/upstream.proto.sk/)也是Gloo的核心配置对象。我们需要这个`Upstream`对象的原因是，它封装了上游集群功能的更多实现，而不是Envoy所知道的开箱即用的功能。Envoy知道“集群”，但是Gloo(位于Envoy之上)知道其上的函数。此功能支持[功能级路由](https://medium.com/solo-io/announcing-gloo-the-function-gateway-3f0860ef6600)，功能级路由是用于组合新应用程序和api的更强大的路由结构。Envoy从“host:port”端点方面了解集群，但是使用Gloo，我们可以为这些集群附加额外的上下文，以便它们理解“函数”，这些函数可以是REST方法/路径、gRPC操作或Lambda之类的云函数。例如，这里有一个名为`default-petstore-8080`的Gloo上游：
+Gloo知道如何路由到`Upstream`和它上面的函数。[Upstream](https://gloo.solo.io/v1/github.com/solo-io/gloo/projects/gloo/api/v1/upstream.proto.sk/)也是Gloo的核心配置对象。我们需要这个`Upstream`对象的原因是，它封装了上游集群功能的更多实现，而不是Envoy所知道的开箱即用的功能。Envoy知道“集群”，但是Gloo(位于Envoy之上)知道其上的函数。此功能支持[功能级路由](https://medium.com/solo-io/announcing-gloo-the-function-gateway-3f0860ef6600)，功能级路由是用于组合新应用程序和API的更强大的路由结构。Envoy从“host:port”端点方面了解集群，但是使用Gloo，我们可以为这些集群附加额外的上下文，以便它们理解“函数”，这些函数可以是REST方法/路径、gRPC操作或Lambda之类的云函数。例如，这里有一个名为`default-petstore-8080`的Gloo上游：
 
 ```yaml
 ---
