@@ -8,7 +8,7 @@ description: "本文先后阐述服务网格中监控的重要性和Istio相关�
 categories: "译文"
 tags: ["istio","monitor"]
 originalPublishDate: 2019-03-28
-publishDate: 2019-04-16
+publishDate: 2019-04-19
 ---
 
 ## 编者按
