@@ -2,7 +2,7 @@
 original: https://blog.giantswarm.io/Istio-monitoring-explained/
 author: Fernando Ripoll
 translator: https://github.com/GuangmingLuo
-reviewer: []
+reviewer: ["rootsongjc", "haiker2011"]
 title: "Istio监控详解"
 description: "本文先后阐述服务网格中监控的重要性和Istio相关名词概念，再由一个实例切入，详解在Istio中部署和实现监控的全过程。"
 categories: "译文"
