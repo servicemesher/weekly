@@ -2,13 +2,13 @@
 original: http://wei-meilin.blogspot.com/2019/03/my2cents-eight-things-leads-to.html
 author: "CHRISTINA の J老闆"
 translator: "malphi"
-reviewer: ["rootsongjc"]
+reviewer: ["rootsongjc", "haiker2011"]
 title: "导致云原生微服务系统开发灾难性的8件事"
 description: "本文介绍了作者认为在开发云原生微服务系统时会出现的8个问题，并告诫大家避免犯错。"
 categories: "translation"
 tags: ["microservice"]
 originalPublishDate: 2019-03-19
-publishDate: 2019-04-18
+publishDate: 2019-04-22
 ---
 
 # 导致云原生微服务系统开发灾难性的8件事
