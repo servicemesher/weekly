@@ -178,7 +178,7 @@ kubectl apply -f ./grafana-virtual-service.yaml
 ## 使用Flagger部署web应用
 
 Flagger包含一个Kubernetes deployment和一个可选的horizontal pod autoscaler（HPA），然后创建一些资源对象（Kubernetes deployments， ClusterIP services和Istio virtual services）。这些资源对象会在网络上暴露应用并实现金丝雀分析和升级。
-![](http://wx4.sinaimg.cn/large/0071hauBly1g1u72wr801j30rs0cdq4w.jpg)
+![](0071hauBly1g1u72wr801j30rs0cdq4w.jpg)
 创建一个test namespace，并开启Istio sidecar注入：
 
 ```bash
@@ -302,7 +302,7 @@ Promotion completed! Scaling down podinfo.test
 
 在分析过程中，可以使用Grafana监控金丝雀的进展：
 
-![](http://wx4.sinaimg.cn/large/0071hauBly1g1ubacxpukj30rs0mhjvg.jpg)
+![](0071hauBly1g1ubacxpukj30rs0mhjvg.jpg)
 
 请注意，如果在金丝雀分析期间对deployment应用新的更改，Flagger将重新启动分析阶段。
 
@@ -318,7 +318,7 @@ prod        backend   Failed        0        2019-01-14T17:05:07Z
 
 如果你启用了Slack通知，则会收到以下消息：
 
-![](http://wx1.sinaimg.cn/large/0071hauBly1g1ubdv033ej30rs0ap400.jpg)
+![](0071hauBly1g1ubdv033ej30rs0ap400.jpg)
 
 ## 自动回滚
 
@@ -372,7 +372,7 @@ Canary failed! Scaling down podinfo.test
 
 如果你启用了Slack通知，当超出了进度超时，或者分析达到了最大失败次数，你将收到一条消息：
 
-![](http://wx1.sinaimg.cn/large/0071hauBly1g1uc4hvoo6j30rs05ymy8.jpg)
+![](0071hauBly1g1uc4hvoo6j30rs05ymy8.jpg)
 
 # 总结
 

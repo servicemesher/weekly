@@ -107,8 +107,6 @@ $ kubectl label namespace irs-server-dev istio-injection=enabled
 namespace/irs-server-dev labeled
 ```
 
-
-
 ### 安装Linkerd自动注入
 
 要安装Linkerd的sidecar注入，我们使用标注（我通过`kubectl edit`手动添加）：
@@ -136,8 +134,6 @@ spec:
 status:
   phase: Active
 ```
-
-
 
 ### Istio弹性模拟器(IRS)
 
