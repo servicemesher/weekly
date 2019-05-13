@@ -3,7 +3,7 @@ author: "Diógenes Rettori"
 translator: "haiker2011"
 reviewer: [""]
 original: "https://medium.com/solo-io/gloo-by-solo-io-is-the-first-alternative-to-istio-on-knative-324753586f3a"
-title: "Solo.io打造的Gloo——Knative中Istio的首选替代方案"
+title: "Solo.io打造的Gloo——Knative中Istio的替代方案"
 description: "本文介绍如何Solo.io公司研发的Gloo产品，可以作为替代使用Knative时部署Istio的需要"
 categories: "translation"
 tags: ["Kubernetes", "Knative", "Gloo", "Istio", "Serverless"]
@@ -16,9 +16,9 @@ publishDate: 2019-04-23
 
 > *在Knative中，Istio的主要作用是作为一个Ingress技术。Gloo现在加入Istio作为Knative的集成和支持Ingress。有关快速演示demo，请参阅文章末尾。*
 
-简而言之，[Knative的存在](https://github.com/knative/docs)是为了提供在[Kubernetes](https://kubernetes.io/)上构建和服务工作负载的方法。Knative的一个显著特性是它的serverless特性:它将工作负载的执行与事件关联起来，而只在此类事件发生时消耗计算能力（事件驱动）。
+简而言之，[Knative的存在](https://github.com/knative/docs)是为了提供在[Kubernetes](https://kubernetes.io/)上构建和服务工作负载的方法。Knative的一个显著特性是它的serverless特性：它将工作负载的执行与事件关联起来，而只在此类事件发生时消耗计算能力（事件驱动）。
 
-Knative是一项最初在谷歌创建，现在已与Pivotal、Red Hat、SAP、IBM等许多公司联合开发的开放源码协作技术。
+Knative是最初在谷歌创建，现在已与Pivotal、Red Hat、SAP、IBM等许多公司联合开发的开放源码协作技术。
 
 ## 使用Knative服务处理请求
 
@@ -26,7 +26,7 @@ Knative是一项最初在谷歌创建，现在已与Pivotal、Red Hat、SAP、IB
 
 Kubernetes上的*传统*工作负载，比如web应用程序，需要一个运行的Pod和一个Ingress，以允许流量从其他集群流到集群。
 
-现在，通过Knative的视角，让我们考虑下面的示例:有如下一个场景，客户端希望从一个在Knative平台上注册但不一定立即运行的应用程序中检索天气预报信息。使用Knative术语，有一个服务可以创建必要的配置和路由，以便在调用天气预报应用程序时运行它。在Knative上下文中，应用程序包括：
+现在，通过Knative的视角，让我们考虑下面的示例：有如下一个场景，客户端希望从一个在Knative平台上注册但不一定立即运行的应用程序中检索天气预报信息。使用Knative术语，有一个服务可以创建必要的配置和路由，以便在调用天气预报应用程序时运行它。在Knative上下文中，应用程序包括：
 
 * [Knative Service](https://github.com/knative/serving/blob/master/docs/spec/spec.md#service)（不要与Kubernetes Service对象混淆）
 
@@ -80,7 +80,7 @@ Gloo是下一代API网关，它既满足Knative的需求，又不会带来成熟
 
 [Gloo](https://gloo.solo.io/)建立在Envoy之上，[是Knative第一个官方的Istio替代品](https://knative.dev/docs/install/knative-with-gloo/)。
 
-但这在现实中意味着什么呢?当我们决定对这个解决方案投入精力时，我们的主要目标之一就是解决方案的可持续性。当一个新版本出现时，一起工作的项目突然停止工作，这肯定会令人沮丧，我们的集成工作主要集中在三个方面:易用性、实现和持续集成。
+但这在现实中意味着什么呢?当我们决定对这个解决方案投入精力时，我们的主要目标之一就是解决方案的可持续性。当一个新版本出现时，一起工作的项目突然停止工作，这肯定会令人沮丧，我们的集成工作主要集中在三个方面：易用性、实现和持续集成。
 
 ## 易用性
 
