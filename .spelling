@@ -283,7 +283,6 @@ learnings
 LibreSSL
 lifecycle
 LightStep
-linkerd
 Linkerd
 linter
 linters
@@ -344,7 +343,6 @@ openssl
 OpenTracing
 OS-level
 Ostrowski
-outlierDetection
 p50
 p99
 PaaS
