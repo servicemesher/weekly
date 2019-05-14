@@ -16,7 +16,7 @@ publishDate: 2019-04-23
 
 > *在Knative中，Istio的主要作用是作为一个Ingress技术。Gloo现在加入Istio作为Knative的集成和支持Ingress。有关快速演示demo，请参阅文章末尾。*
 
-简而言之，[Knative的存在](https://github.com/knative/docs)是为了定义在[Kubernetes](https://kubernetes.io/)上构建和工作负载服务化的一套标准方法。Knative的一个显著特性是它的serverless特性：它将工作负载的执行与事件关联起来，而只在此类事件发生时消耗计算能力（事件驱动）。
+简而言之，[Knative的存在](https://github.com/knative/docs)是为了定义在[Kubernetes](https://kubernetes.io/)上构建和服务化工作负载的一套标准方法。Knative的一个显著特性是它的serverless特性：它将工作负载的执行与事件关联起来，而只在此类事件发生时消耗计算能力（事件驱动）。
 
 Knative是最初在谷歌创建，现在已与Pivotal、Red Hat、SAP、IBM等许多公司联合开发的开源协作技术。
 
