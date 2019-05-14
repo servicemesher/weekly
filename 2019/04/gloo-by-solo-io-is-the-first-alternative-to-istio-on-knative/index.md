@@ -4,7 +4,7 @@ translator: "haiker2011"
 reviewer: [""]
 original: "https://medium.com/solo-io/gloo-by-solo-io-is-the-first-alternative-to-istio-on-knative-324753586f3a"
 title: "Solo.io打造的Gloo——Knative中Istio的替代方案"
-description: "本文介绍如何Solo.io公司研发的Gloo产品，可以作为替代使用Knative时部署Istio的需要"
+description: "本文介绍如何Solo.io公司研发的Gloo产品，可以作为使用Knative时部署Istio的替代方案。"
 categories: "translation"
 tags: ["Kubernetes", "Knative", "Gloo", "Istio", "Serverless"]
 originalPublishDate: 2019-02-20
@@ -12,19 +12,19 @@ publishDate: 2019-04-23
 ---
 
 [编者按]
-> 之前有社区成员询问是不是想尝试Knative，必须要安装Istio才行，今天就告诉大家一种Istio的替代方案，使用Solo.io公司研发的Gloo来替代Istio来使用Knative。
+> 之前有社区成员询问是不是想尝试Knative时，必须要安装Istio才行，今天就告诉大家一种Istio的替代方案，使用Solo.io公司研发的Gloo来替代Istio来使用Knative。
 
 > *在Knative中，Istio的主要作用是作为一个Ingress技术。Gloo现在加入Istio作为Knative的集成和支持Ingress。有关快速演示demo，请参阅文章末尾。*
 
-简而言之，[Knative的存在](https://github.com/knative/docs)是为了提供在[Kubernetes](https://kubernetes.io/)上构建和服务工作负载的方法。Knative的一个显著特性是它的serverless特性：它将工作负载的执行与事件关联起来，而只在此类事件发生时消耗计算能力（事件驱动）。
+简而言之，[Knative的存在](https://github.com/knative/docs)是为了定义在[Kubernetes](https://kubernetes.io/)上构建和工作负载服务化的一套标准方法。Knative的一个显著特性是它的serverless特性：它将工作负载的执行与事件关联起来，而只在此类事件发生时消耗计算能力（事件驱动）。
 
-Knative是最初在谷歌创建，现在已与Pivotal、Red Hat、SAP、IBM等许多公司联合开发的开放源码协作技术。
+Knative是最初在谷歌创建，现在已与Pivotal、Red Hat、SAP、IBM等许多公司联合开发的开源协作技术。
 
 ## 使用Knative服务处理请求
 
 让我们简要了解一下Knative如何处理请求，以及它与“纯”Kubernetes的比较。
 
-Kubernetes上的*传统*工作负载，比如web应用程序，需要一个运行的Pod和一个Ingress，以允许流量从其他集群流到集群。
+Kubernetes上的*传统*工作负载，比如web应用程序，需要一个运行的Pod和一个Ingress，以允许流量从其他集群流入到当前集群。
 
 现在，通过Knative的视角，让我们考虑下面的示例：有如下一个场景，客户端希望从一个在Knative平台上注册但不一定立即运行的应用程序中检索天气预报信息。使用Knative术语，有一个服务可以创建必要的配置和路由，以便在调用天气预报应用程序时运行它。在Knative上下文中，应用程序包括：
 
@@ -40,9 +40,9 @@ Kubernetes上的*传统*工作负载，比如web应用程序，需要一个运�
 
 深入到流量管理部分，Knative service有一个名为[Activator](https://github.com/knative/serving/tree/master/pkg/activator)的组件，它负责报告某个工作负载需要运行相应数量的pod来处理请求。
 
-这种体系结构的美妙之处在于，如果负责运行应用程序的Pod没有运行，那么请求将被搁置，直到流量可以路由到一个或多个pod为止。这优化了资源利用率。
+这种架构的美妙之处在于，如果负责运行应用程序的Pod没有运行，那么请求将被搁置，直到流量可以路由到一个或多个pod为止。这优化了资源利用率。
 
-如果您想知道，还有一些特性允许您预热应用程序，这样就不会阻塞任何请求。这使您能够基于是否始终保持Pod运行做出明智的决策。
+如果您想知道，还有一些特性允许您预热应用程序，这样就不会阻塞任何请求。这使您能够对是否始终保持Pod运行做出明智的决策。
 
 ![](./gloo-by-solo-io-is-the-first-alternative-to-istio-on-knative-2.png)
 
@@ -98,13 +98,13 @@ $ glooctl install knative
 
 ## 持续集成
 
-我们在[Knative](https://github.com/knative/serving/pull/3087)的CI测试流水线中实现并引入了特定的Gloo测试，这意味着如果Knative中的一个更改破坏了与Gloo的集成，反之亦然，那么社区将得到通知并根据情况采取相应的行动。这为任何正在寻找Knative上的Istio的替代方案的人提供了必要的平静，在撰写本文时，Knative是惟一的替代方案。
+我们在[Knative](https://github.com/knative/serving/pull/3087)的CI测试流水线中实现并引入了特定的Gloo测试，这意味着如果Knative中的一个更改破坏了与Gloo的集成，反之亦然，那么社区将得到通知并根据情况采取相应的行动。这为任何正在寻找Knative上的Istio的替代方案的人提供了可能，在撰写本文时，Knative是唯一的替代方案。
 
 ## 立刻行动吧！
 
 如果您能够访问Kubernetes集群，只需[下载](https://github.com/solo-io/gloo/releases)最适合您的操作系统的`glooctl`版本，然后立即开始您的Knative（和[Gloo](https://gloo.solo.io/)）之旅。我们最近也增加了对Windows的支持。要获得更多帮助，请查看我们的Knative特定[文档](https://gloo.solo.io/installation/#2c-install-the-gloo-knative-cluster-ingress-to-your-kubernetes-cluster-using-glooctl)并加入我们的[Slack](http://slack.solo.io/)。
 
-Gloo可以做的不仅仅是基本的Ingress路由。Gloo被设计为下一代API网关，能够理解功能级别的调用(HTTP1、HTTP2、gRPC、REST/OpenAPISpec、SOAP、WebSockets、Lambda/Cloud函数)，并能够帮助您从单一功能到微服务和serverless的演进。参加我们的[网络研讨会](https://www.solo.io/)，我们将讨论如何渐进地、安全地发展您的应用程序体系结构，以利用新功能来满足您的业务需求，而不必对您的单体应用进行危险的更改。
+Gloo可以做的不仅仅是基本的Ingress路由。Gloo被设计为下一代API网关，能够理解功能级别的调用(HTTP1、HTTP2、gRPC、REST/OpenAPISpec、SOAP、WebSockets、Lambda/Cloud函数)，并能够帮助您从单一功能到微服务和serverless的演进。参加我们的[网络研讨会](https://www.solo.io/)，我们将讨论如何渐进地、安全地发展您的应用程序架构，以利用新功能来满足您的业务需求，而不必对您的单体应用进行危险的更改。
 
 ## 观看介绍视频
 
