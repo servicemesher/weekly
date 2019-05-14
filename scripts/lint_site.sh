@@ -16,38 +16,39 @@ check_pull_request_content() {
 		exit 0
 	fi
 
-	# parse target/local branch
-	CIRCLE_PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
-	echo "PR number: $CIRCLE_PR_NUMBER"
-	URL="https://api.github.com/repos/servicemesher/trans/pulls/$CIRCLE_PR_NUMBER"
-	TARGET_BRANCH=$(curl -s -X GET -G $URL | jq '.base.ref' | tr -d '"')
-	LOCAL_BRANCH=$(curl -s -X GET -G $URL | jq '.head.ref' | tr -d '"')
-
 	# get changed files of this PR
-	git checkout -q -b $LOCAL_BRANCH
-	git checkout -q $TARGET_BRANCH
-	git reset --hard -q origin/$TARGET_BRANCH
-	git checkout -q $LOCAL_BRANCH
+	CIRCLE_PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
+	OWNER=$(echo $CIRCLE_PULL_REQUEST | cut -d / -f 4)
+	REPO=$(echo $CIRCLE_PULL_REQUEST | cut -d / -f 5)
+	URL="https://api.github.com/repos/$OWNER/$REPO/pulls/$CIRCLE_PR_NUMBER/files"
 
-	echo "Getting list of changed markdown files ..."
-	TOTAL_CHANGED_FILES=( $(git diff --name-only $TARGET_BRANCH..$LOCAL_BRANCH) )
-	echo "Total changed files: ${#TOTAL_CHANGED_FILES[@]}"
-	CHANGED_MARKDOWN_FILES=( $(git diff --name-only $TARGET_BRANCH..$LOCAL_BRANCH -- '*.md') )
+	echo
+	echo "Getting list of changed markdown files..."
+	CHANGED_MARKDOWN_FILES=( $(curl -s -X GET -G $URL | jq -r '.[] | select(.status != "removed") | select(.filename | endswith(".md")) | .filename') )
+	echo "Total changed markdown files: ${#CHANGED_MARKDOWN_FILES[@]}"
 	echo ${CHANGED_MARKDOWN_FILES[@]}
 
 	if [[ "${#CHANGED_MARKDOWN_FILES[@]}" != "0" ]]; then
-		echo "Check spell ..."
+		echo
+		echo "Check spell (optional)..."
+		echo
 		mdspell --en-us --ignore-acronyms --ignore-numbers --no-suggestions --report ${CHANGED_MARKDOWN_FILES[@]}
 		if [[ "$?" != "0" ]]; then
-			echo "Spell check failed."
-			echo "Feel free to add the word(s) into our glossary file '.spelling'."
+			echo
+			echo "[WARNING]: Spell check failed. Feel free to add the term(s) into our glossary file '.spelling'."
+			echo
 			# set spell check as a weak check for now
 			# FAILED=1
 		fi
 
-		echo "Check style ..."
+		echo
+		echo "Check markdown style..."
+		echo
 		mdl --ignore-front-matter --style mdl_style.rb ${CHANGED_MARKDOWN_FILES[@]}
 		if [[ "$?" != "0" ]]; then
+			echo
+			echo "[ERROR]: Markdown style check failed."
+			echo
 			FAILED=1
 		fi
 	else
