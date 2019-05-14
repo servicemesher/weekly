@@ -91,15 +91,15 @@ API管理（以及它们相应的网关）通常实现为由"平台团队"，"�
 
 此层面的集群入口控制器由平台团队管理，但是这个基础架构通常与更分散的自助服务工作流程相关联（正如您期望从云原生平台那样）。请参阅[See the "GitOps" workflow as described by the good folks at Weaveworks](https://www.weave.works/blog/gitops-operations-by-pull-request)
 
-## API Gatway模式
+## API Gateway模式
 
-"API网关"这一术语的另一重意思才是我最开始理解的，即它是最接近API Gatway模式的那个。 [Chris Richardson](https://www.chrisrichardson.net/)在第8章的""[微服务设计模式](https://microservices.io/book)""一书中做了很好的工作。我强烈建议将该书用作本文和其他微服务模式的教学。在他的[microservices.io](https://microservices.io/patterns/apigateway.html)网站可以上略扫一下即可知，API Gatway模式，简而言之，是关于策划API以便更好地使用不同类别的消费者。此策略涉及API间接级别。您可能听到的代表API Gatway模式的另一个术语是"服务于前端的后端"，其中"前端"可以是单纯前端界面（UI），移动客户端，物联网客户端，甚至是其他服务/应用开发人员。
+"API网关"这一术语的另一重意思才是我最开始理解的，即它是最接近API Gateway模式的那个。 [Chris Richardson](https://www.chrisrichardson.net/)在第8章的""[微服务设计模式](https://microservices.io/book)""一书中做了很好的工作。我强烈建议将该书用作本文和其他微服务模式的教学。在他的[microservices.io](https://microservices.io/patterns/apigateway.html)网站可以上略扫一下即可知，API Gateway模式，简而言之，是关于策划API以便更好地使用不同类别的消费者。此策略涉及API间接级别。您可能听到的代表API Gatway模式的另一个术语是"服务于前端的后端"，其中"前端"可以是单纯前端界面（UI），移动客户端，物联网客户端，甚至是其他服务/应用开发人员。
 
-在API Gatway模式中，我们明确简化了一组API的调用，以模拟特定用户，客户或消费者的"应用程序"的内聚API。回想一下，当我们使用微服务来构建我们的系统时，"应用程序"的概念就会消失。 API Gatway模式有助于重塑此概念。这里的关键在于API网关，当它实现时，它成为客户端和应用程序的API，并负责与任何后端API和其他应用程序网络端点（那些不符合上述API定义的端点）进行通信。
+在API Gateway模式中，我们明确简化了一组API的调用，以模拟特定用户，客户或消费者的"应用程序"的内聚API。回想一下，当我们使用微服务来构建我们的系统时，"应用程序"的概念就会消失。 API Gateway模式有助于重塑此概念。这里的关键在于API网关，当它实现时，它成为客户端和应用程序的API，并负责与任何后端API和其他应用程序网络端点（那些不符合上述API定义的端点）进行通信。
 
 与上一节中的Ingress控制器不同，此API网关更接近于开发人员的全局视图，并且不太关注为集群外消耗而暴露的端口或服务。这个"API Gateway"也不同于我们对已有API的进行管理所用的API管理观念。这个API网关掩盖了对可能暴露API的后端的调用，但是也可能会谈到较少描述为API的事情，例如对旧系统的RPC调用，使用不符合"REST"式优雅的协议调用，例如JSON over HTTP，gRPC，SOAP，GraphQL，websockets和消息队列这些黑科技。还可以调用这种类型的网关来进行消息级转换，复杂路由，网络负载均衡/回调以及响应的集成。
 
-如果您熟悉[Richardson的REST API的成熟度模型](https://www.crummy.com/writing/speaking/2008-QCon/act3.html)，那么实现API Gatway模式的API网关会被要求集成更多的Level 0请求（以及介于两者之间的所有内容）而不是Level 1-3实现。
+如果您熟悉[Richardson的REST API的成熟度模型](https://www.crummy.com/writing/speaking/2008-QCon/act3.html)，那么实现API Gateway模式的API网关会被要求集成更多的Level 0请求（以及介于两者之间的所有内容）而不是Level 1-3实现。
 
 ![](https://blog.christianposta.com/images/identity-crisis/richardson-model.png)
 
