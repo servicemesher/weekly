@@ -85,7 +85,7 @@ Envoy并没有对Kubernetes的任何依赖。我们编写了自己的小型控�
 
 我们现在正在进行的一个关键项目是将服务移动到Envoy Proxy作为微服务容器的[sidecar](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/)。这意味着，每个服务将拥有自己的Envoy副本，而不是与主机上的Envoy通信(这是一个共享资源)。
 
-我们采用sidecar模型，设置Envoy来处理出入口问题。传入的请求(来自另一个服务或另一个Envoy的入口)将通过本地Envoy传入，我们可以使用规则来验证流量是否合法。向外(出口)的流量将通过sidecar Envoy，sidecar Envoy像以前一样负责将流量路由到。
+我们采用sidecar模型，设置Envoy来处理出入口问题。传入的请求(来自另一个服务或另一个Envoy的入口)将通过本地Envoy传入，我们可以使用规则来验证流量是否合法。向外(出口)的流量将通过sidecar Envoy，sidecar Envoy像以前一样负责将流量路由到正确的地方。
 
 ![img](./envoy-blog-5.png)
 
