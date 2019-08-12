@@ -10,8 +10,8 @@
 
 ## 活动
 
-1. 第 6 届 Service Mesh Meetup 将于 8 月 11 日（星期日）再次登临广州，报名地址：https://tech.antfin.com/community/activities/781
-1. Service Mesh Meetup 当天下午同一地点 SOFA Meetup  #3，报名地址：https://tech.antfin.com/community/activities/779
+1. 8 月 11 日（星期日），第 6 届 Service Mesh Meetup  在广州成功举办，活动回顾及幻灯片下载将在本周陆续放出。
+1. 8 月 11 日（星期日），Service Mesh Meetup 同场的第三届 SOFA Meetup 活动回顾敬请关注：https://tech.antfin.com/community/activities/779
 
 ## 社区投稿
 
