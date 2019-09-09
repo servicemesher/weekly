@@ -6,6 +6,8 @@
 
 2. Contour 学习笔记（一）：使用 Contour 接管 Kubernetes 的南北流量，https://www.servicemesher.com/blog/use-envoy-as-a-kubernetes-ingress/ ，by 杨传胜
 
+3. Kubernetes上的Service Mesh实践：用EnvoyFilter扩展Istio，https://www.servicemesher.com/blog/using-envoyfilter-extend-istio/ ，by 王昌宇
+
 ## 社区投稿
 
 投稿请访问 https://github.com/servicemesher/website 提交 issue。
